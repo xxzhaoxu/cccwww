@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.echo.mobileweb.mapper.DdinputMapper">
+    <resultMap id="BaseResultMap" type="com.echo.mobileweb.entity.Ddinput">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="ID" jdbcType="INTEGER" property="id"/>
+        <result column="DDID" jdbcType="VARCHAR" property="ddid"/>
+        <result column="DDName" jdbcType="VARCHAR" property="ddname"/>
+        <result column="ShopID" jdbcType="VARCHAR" property="shopid"/>
+        <result column="ShopName" jdbcType="VARCHAR" property="shopname"/>
+        <result column="Amount" jdbcType="DECIMAL" property="amount"/>
+        <result column="SaleAmount" jdbcType="DECIMAL" property="saleamount"/>
+        <result column="AddTime" jdbcType="DATE" property="addtime"/>
+        <result column="Remark" jdbcType="VARCHAR" property="remark"/>
+    </resultMap>
+    <insert id="addDdinput" keyProperty="id" parameterType="com.echo.mobileweb.entity.Ddinput" useGeneratedKeys="true">
+    insert  into DdInput (DDID,DDName,ShopID,ShopName,Amount,SaleAount,AddTime,Remark) values (#{ddid},#{ddname},#{shopid},#{shopname},#{amount},#{saleaount},#{addtime},#{remark})
+  </insert>
+
+    <select id="getEveryDayAmount" resultType="com.echo.mobileweb.model.EveryAmountDto">
+--     select SUM(qtlsdmx.金额) as sysamount,qtlsdmx.商店名称 as shopname ,kehu.督导名称 as ddname,kehu.经理名称 as jlname,kehu.总监名称 as zjname,input.Amount,input.SaleAmount  from qtlsdmx
+--     left join kehu on qtlsdmx.商店代码=kehu.商店代码
+--     left join (select * from DdInput where AddTime='2019-07-01')input on qtlsdmx.商店代码=input.ShopID
+--     where 日期&gt;'2019-07-01' and 日期&lt;'2019-07-02'
+--     group by qtlsdmx.商店名称,kehu.督导名称,kehu.经理名称,kehu.总监名称,input.Amount,input.SaleAmount
+--     order by 督导名称 asc,sysAmount desc
+
+        select (sum(CASE
+        WHEN Amount is null THEN qtlsdmx.[金额]
+        ELSE Amount
+        END)) as sysamount,qtlsdmx.商店名称 as shopname ,kehu.督导名称 as ddname,kehu.经理名称 as jlname,kehu.总监名称 as zjname,input.Amount,input.SaleAmount  from qtlsdmx
+        left join kehu on qtlsdmx.商店代码=kehu.商店代码
+        left join (select * from DdInput where AddTime='2019-07-01')input on qtlsdmx.商店代码=input.ShopID
+        where 日期&gt;'2019-07-10' and 日期&lt;'2019-07-11'
+        group by qtlsdmx.商店名称,kehu.督导名称,kehu.经理名称,kehu.总监名称,input.Amount,input.SaleAmount
+
+        order by 总监名称,经理名称,督导名称 asc,sysAmount desc
+  </select>
+
+
+    <select id="getDdRank" resultType="com.echo.mobileweb.model.EveryAmountDto">
+        select t1.*,t2.shopcount from(
+        select (CASE
+        WHEN Amount is null THEN SUM(qtlsdmx.[金额])
+        ELSE 0
+        END) as sysamount,kehu.督导名称 as ddname,input.Amount,input.SaleAmount  from qtlsdmx
+        left join kehu on qtlsdmx.商店代码=kehu.商店代码
+        left join (select * from DdInput where AddTime='2019-07-01')input on qtlsdmx.商店代码=input.ShopID
+        where 日期&gt;'2019-07-10' and 日期&lt;'2019-07-11'
+        group by kehu.督导名称,input.Amount,input.SaleAmount) t1
+        left join (select COUNT(*) as shopcount,督导名称 from dbo.kehu group by 督导名称) as t2 on t1.ddname=t2.督导名称
+        order by sysAmount desc
+  </select>
+    <select id="getJlRank" resultType="com.echo.mobileweb.model.EveryAmountDto">
+        select t1.*,t2.shopcount from(
+        select (sum(CASE
+        WHEN Amount is null THEN qtlsdmx.[金额]
+        ELSE Amount
+        END)) as sysamount,kehu.经理名称 as ddname,input.Amount,input.SaleAmount  from qtlsdmx
+        left join kehu on qtlsdmx.商店代码=kehu.商店代码
+        left join (select * from DdInput where AddTime='2019-07-01')input on qtlsdmx.商店代码=input.ShopID
+        where 日期&gt;'2019-07-10' and 日期&lt;'2019-07-11'
+        group by kehu.经理名称,input.Amount,input.SaleAmount) t1
+        left join (select COUNT(*) as shopcount,经理名称 from dbo.kehu group by 经理名称) as t2 on t1.ddname=t2.经理名称
+        order by sysAmount desc
+  </select>
+    <select id="getZjRank" resultType="com.echo.mobileweb.model.EveryAmountDto">
+        select t1.*,t2.shopcount from(
+        select (sum(CASE
+        WHEN Amount is null THEN qtlsdmx.[金额]
+        ELSE Amount
+        END)) as sysamount,kehu.总监名称 as ddname,input.Amount,input.SaleAmount  from qtlsdmx
+        left join kehu on qtlsdmx.商店代码=kehu.商店代码
+        left join (select * from DdInput where AddTime='2019-07-01')input on qtlsdmx.商店代码=input.ShopID
+        where 日期&gt;'2019-07-10' and 日期&lt;'2019-07-11'
+        group by kehu.总监名称,input.Amount,input.SaleAmount) t1
+        left join (select COUNT(*) as shopcount,总监名称 from dbo.kehu group by 总监名称) as t2 on t1.ddname=t2.总监名称
+        order by sysAmount desc
+  </select>
+    <select id="getDqRank" resultType="com.echo.mobileweb.model.EveryAmountDto">
+        select t1.*,t2.shopcount from(
+        select (sum(CASE
+        WHEN Amount is null THEN qtlsdmx.[金额]
+        ELSE Amount
+        END)) as sysamount,kehu.地区名称 as ddname,input.Amount,input.SaleAmount  from qtlsdmx
+        left join kehu on qtlsdmx.商店代码=kehu.商店代码
+        left join (select * from DdInput where AddTime='2019-07-01')input on qtlsdmx.商店代码=input.ShopID
+        where 日期&gt;'2019-07-10' and 日期&lt;'2019-07-11'
+        group by kehu.地区名称,input.Amount,input.SaleAmount) t1
+        left join (select COUNT(*) as shopcount,地区名称 from dbo.kehu group by 地区名称) as t2 on t1.ddname=t2.地区名称
+        order by sysAmount desc
+  </select>
+</mapper>

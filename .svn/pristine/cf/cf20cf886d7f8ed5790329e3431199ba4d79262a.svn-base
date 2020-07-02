@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.echo.mobileweb.mapper.DdinputMapper">
+    <resultMap id="BaseResultMap" type="com.echo.mobileweb.entity.Ddinput">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="ID" jdbcType="INTEGER" property="id"/>
+        <result column="DDID" jdbcType="VARCHAR" property="ddid"/>
+        <result column="DDName" jdbcType="VARCHAR" property="ddname"/>
+        <result column="ShopID" jdbcType="VARCHAR" property="shopid"/>
+        <result column="ShopName" jdbcType="VARCHAR" property="shopname"/>
+        <result column="Amount" jdbcType="DECIMAL" property="amount"/>
+        <result column="SaleAmount" jdbcType="DECIMAL" property="saleamount"/>
+        <result column="AddTime" jdbcType="DATE" property="addtime"/>
+        <result column="Remark" jdbcType="VARCHAR" property="remark"/>
+    </resultMap>
+    <insert id="addDdinput" keyProperty="id" parameterType="com.echo.mobileweb.entity.Ddinput" useGeneratedKeys="true">
+    insert  into DdInput (DDID,DDName,ShopID,ShopName,Amount,SaleAount,AddTime,Remark) values (#{ddid},#{ddname},#{shopid},#{shopname},#{amount},#{saleaount},#{addtime},#{remark})
+  </insert>
+
+    <select id="getEveryDayAmount" resultType="com.echo.mobileweb.model.EveryAmountDto">
+    select SUM(qtlsdmx.金额) as sysamount,qtlsdmx.商店名称 as shopname ,kehu.督导名称 as ddname,kehu.经理名称 as jlname,kehu.总监名称 as zjname,input.Amount,input.SaleAmount  from qtlsdmx
+    left join kehu on qtlsdmx.商店代码=kehu.商店代码
+    left join (select * from DdInput where AddTime='2019-07-01')input on qtlsdmx.商店代码=input.ShopID
+    where 日期&gt;'2019-07-01' and 日期&lt;'2019-07-02'
+    group by qtlsdmx.商店名称,kehu.督导名称,kehu.经理名称,kehu.总监名称,input.Amount,input.SaleAmount
+    order by 督导名称 asc,sysAmount desc
+  </select>
+</mapper>

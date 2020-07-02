@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.echo.mobileweb.mapper.YuangongMapper">
+  <resultMap id="BaseResultMap" type="com.echo.mobileweb.entity.Yuangong">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="代码" jdbcType="VARCHAR" property="代码" />
+    <result column="名称" jdbcType="VARCHAR" property="名称" />
+    <result column="手机" jdbcType="VARCHAR" property="手机" />
+    <result column="权限" jdbcType="VARCHAR" property="权限" />
+  </resultMap>
+</mapper>

@@ -1,0 +1,16 @@
+package com.echo.mobileweb.mapper;
+
+import com.echo.mobileweb.entity.Ddinput;
+import com.echo.mobileweb.model.EveryAmountDto;
+import tk.mybatis.mapper.common.Mapper;
+
+import java.util.List;
+
+public interface DdinputMapper extends Mapper<Ddinput> {
+    public List<EveryAmountDto> getEveryDayAmount();
+
+    public List<EveryAmountDto> getDdRank();
+    public List<EveryAmountDto> getJlRank();
+    public List<EveryAmountDto> getZjRank();
+    public List<EveryAmountDto> getDqRank();
+}

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <title>罗丽丝</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../css/mui.min.css">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <!--App自定义的css-->
+    <!--<link rel="stylesheet" type="text/css" href="../css/app.css" />-->
+</head>
+
+<body>
+
+<style>
+    .mui-control-content {
+        background-color: white;
+        min-height: 215px;
+    }
+
+    .mui-control-content .mui-loading {
+        margin-top: 50px;
+    }
+</style>
+<header class="mui-bar mui-bar-nav">
+    <a class=" mui-icon mui-icon-left-nav mui-pull-left" href="/index"></a>
+    <h1 class="mui-title">每日报账</h1>
+
+</header>
+<div class="mui-content">
+    <div id="slider" class="mui-slider">
+        <div class="mui-slider-group" style="transform: translate3d(0px, 0px, 0px) translateZ(0px);">
+            <div id="item1mobile" class="mui-slider-item mui-control-content mui-active">
+                <ul class="mui-table-view">
+                    <li class="mui-table-view-cell" style="background-color: #9fd9c2">
+                        <div class="mui-row">
+                            <div class="mui-col-sm-6 mui-col-xs-5" style="text-align: center">
+                                店名
+                            </div>
+                            <div class="mui-col-sm-6 mui-col-xs-2" style="text-align: center">
+                                地区
+                            </div>
+                            <div class="mui-col-sm-6 mui-col-xs-3" style="text-align: center">
+                                业绩
+                            </div>
+                            <div class="mui-col-sm-6 mui-col-xs-2" style="text-align: center">
+                                备注
+                            </div>
+                        </div>
+                    </li>
+                    <div id="list">
+
+                    </div>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+
+</html>
+<script>
+    $.ajax({
+        type: "get",
+        url: "/getEveryDayData",
+        dataType: 'json',
+        success: function (data) {
+            var html = '';
+
+            var ddtemp_sysamout = 0;
+            var ddtemp_count = 1;
+
+            var jltemp_sysamout = 0;
+            var jltemp_count = 1;
+
+            var zjtemp_sysamout = 0;
+            var zjtemp_count = 1;
+            for (var i = 0; i < data.length; i++) {
+                var temp_ddname = data[i].ddname;
+                var temp_jlname=data[i].jlname;
+                var temp_zjname=data[i].zjname;
+                ddtemp_sysamout += data[i].sysamount;
+                jltemp_sysamout+= data[i].sysamount;
+                zjtemp_sysamout+= data[i].sysamount;
+                html += '<li class="mui-table-view-cell">' +
+                    '<div class="mui-row">' +
+                    '<div class="mui-col-sm-6 mui-col-xs-5" style="text-align: center">' +
+                    '<span>' + data[i].shopname + '</span>' +
+                    '</div>' +
+                    '<div class="mui-col-sm-6 mui-col-xs-2" style="text-align: center">' +
+                    '<span>'+data[i].localname+'</span>' +
+                    '</div>' +
+                    '<div class="mui-col-sm-6 mui-col-xs-3" style="text-align: center">' +
+                    '<span>' + data[i].sysamount + '</span>' +
+                    '</div>' +
+                    '<div class="mui-col-sm-6 mui-col-xs-2" style="text-align: center">' +
+                    '<span>' + (data[i].remark == null ? "无" : data[i].remark) + '</span>' +
+                    '</div>' +
+                    '</div>' +
+                    '</li>';
+
+                if (i == data.length-1 || temp_ddname != data[i + 1].ddname) {
+                    html += '<li class="mui-table-view-cell" style="background-color: #9fd9c2">' +
+                        '<div class="mui-row">' +
+                        '<div class="mui-col-sm-6 mui-col-xs-3" style="text-align: center">督导：' + temp_ddname +
+                        '</div>' +
+                        '<div class="mui-col-sm-6 mui-col-xs-9" style="text-align: center">' +
+                        '合计:' + ddtemp_count + '  平均数:' + (ddtemp_sysamout / ddtemp_count).toFixed(0) + '  业绩总计:' + ddtemp_sysamout +
+                        '</div>' +
+                        '</div>' +
+                        '</li>';
+
+                    ddtemp_sysamout = 0;
+                    ddtemp_count = 0;
+                }
+
+                if(i == data.length-1 || temp_jlname != data[i + 1].jlname){
+                    html += '<li class="mui-table-view-cell" style="background-color: #C4C400">' +
+                        '<div class="mui-row">' +
+                        '<div class="mui-col-sm-6 mui-col-xs-3" style="text-align: center">经理：' + temp_jlname +
+                        '</div>' +
+                        '<div class="mui-col-sm-6 mui-col-xs-9" style="text-align: center">' +
+                        '合计:' + jltemp_count + '  平均数:' + (jltemp_sysamout / jltemp_count).toFixed(0) + '  业绩总计:' + jltemp_sysamout +
+                        '</div>' +
+                        '</div>' +
+                        '</li>';
+
+                    jltemp_sysamout = 0;
+                    jltemp_count = 0;
+                }
+
+                if(i == data.length-1 || temp_zjname != data[i + 1].zjname){
+                    html += '<li class="mui-table-view-cell" style="background-color: #AD5A5A">' +
+                        '<div class="mui-row">' +
+                        '<div class="mui-col-sm-6 mui-col-xs-3" style="text-align: center">总监：' + temp_zjname +
+                        '</div>' +
+                        '<div class="mui-col-sm-6 mui-col-xs-9" style="text-align: center">' +
+                        '合计:' + zjtemp_count + '  平均数:' + (zjtemp_sysamout / zjtemp_count).toFixed(0) + '  业绩总计:' + zjtemp_sysamout +
+                        '</div>' +
+                        '</div>' +
+                        '</li>';
+
+                    zjtemp_sysamout = 0;
+                    zjtemp_count = 0;
+                }
+
+                ddtemp_count++;
+                jltemp_count++;
+                zjtemp_sysamout++;
+            }
+            $("#list").html(html);
+        },
+        error: function () {
+
+        }
+    });
+</script>

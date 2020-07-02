@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script src="/laydate/laydate.js"></script>
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="/css/mui.min.css">
+    <style>
+        .title {
+            margin: 20px 15px 7px;
+            color: #6d6d72;
+            font-size: 15px;
+        }
+
+    </style>
+</head>
+<body class="mui-ios mui-ios-11 mui-ios-11-0">
+<header class="mui-bar mui-bar-nav">
+    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+    <h1 class="mui-title">销售对比</h1>
+</header>
+<div class="mui-content">
+    <div id="slider" class="mui-slider">
+        <div class="mui-slider-group" style="transform: translate3d(0px, 0px, 0px) translateZ(0px);">
+            <div id="item1mobile" class="mui-slider-item mui-control-content mui-active">
+                <ul class="mui-table-view">
+                    <li class="mui-table-view-cell" style="background-color:#FFF68F">
+                        <div class="mui-row">
+                            <div class=" mui-col-xs-12" style="text-align: center">
+                                <!--                                <span>上期 </span><span th:text="${shangqi_start}"></span>至<span-->
+                                <!--                                    th:text="${shangqi_end}"></span>-->
+                                <span>上期</span>
+                                <input type="text" id="shangqi_start"
+                                       style="width: 42%;font-size:13px" th:value="${shangqi_start}"/><span>至</span><input type="text"
+                                                                                               id="shangqi_end"
+                                                                                               style="width: 42%;font-size: 13px" th:value="${shangqi_end}"/>
+
+                            </div>
+                        </div>
+                        <div class="mui-row">
+                            <div class="mui-col-xs-12" style="text-align: center">
+                                <!--                                <span>本期 </span><span th:text="${benqi_start}"></span>至<span-->
+                                <!--                                    th:text="${benqi_end}"></span>-->
+                                <!--                                <span>本期</span>-->
+                                <span>本期</span>
+                                <input type="text" id="benqi_start"
+                                       style="width: 42%;font-size: 13px" th:value="${benqi_start}"/><span>至</span><input type="text"
+                                                                                               id="benqi_end"
+                                                                                               style="width: 42%;font-size: 13px" th:value="${benqi_end}"/>
+
+                            </div>
+                        </div>
+                        <div class="mui-row">
+                            <div class="mui-col-xs-12" style="text-align: center">
+                                <button type="button" id="chaxun" class="mui-btn mui-btn-primary" >查询</button>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="mui-table-view-cell" style="background-color: #9fd9c2">
+                        <div class="mui-row">
+                            <div class="mui-col-xs-3" style="text-align: center">
+                                上期
+                            </div>
+                            <div class="mui-col-xs-3" style="text-align: center">
+                                本期
+                            </div>
+                            <div class="mui-col-xs-3" style="text-align: center">
+                                差异
+                            </div>
+                            <div class="mui-col-xs-3" style="text-align: center">
+                                百分比
+                            </div>
+                        </div>
+                    </li>
+                    <div class="list-data" id="list-data">
+                        <li class="mui-table-view-cell">
+                            <div class="mui-row">
+                                <div id="shangqi_amount" class=" mui-col-xs-3" style="text-align: center"><span
+                                        ></span></div>
+                                <div id="benqi_amount" class=" mui-col-xs-3" style="text-align: center"><span
+                                        ></span></div>
+                                <div id="chayi" class=" mui-col-xs-3" style="text-align: center"><span
+                                       ></span>
+                                </div>
+                                <div id="bfb" class="mui-col-xs-3" style="text-align: center"><span
+                                      ></span>
+                                </div>
+                            </div>
+                        </li>
+                    </div>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="/js/mui.min.js"></script>
+<script>
+    laydate.render({
+        elem: '#shangqi_start'
+        , type: 'datetime'
+    });
+    laydate.render({
+        elem: '#shangqi_end'
+        , type: 'datetime'
+    });
+    laydate.render({
+        elem: '#benqi_start'
+        , type: 'datetime'
+    });
+    laydate.render({
+        elem: '#benqi_end'
+        , type: 'datetime'
+    });
+
+
+    mui.init({
+        swipeBack: true //启用右滑关闭功能
+    });
+
+
+    $("#searchForm").submit(function () {
+
+        var shopname = $("#shopname").val();
+
+        console.log(shopname)
+
+        $.ajax({
+            type: "post",
+            data: {"shopname": shopname},
+            url: "/getComparisonData",
+            dataType: 'json',
+            success: function (data) {
+                var html = '';
+                for (var i = 0; i < data.length; i++) {
+                    html += '                        <li class="mui-table-view-cell">' +
+                        '                            <div class="mui-row">' +
+                        '                                <div class=" mui-col-xs-5" style="text-align: center" ><span>' + data[i].shopname + '</span></div>' +
+                        '                                <div class=" mui-col-xs-2" style="text-align: center"><span>' + data[i].yesterday + '</span></div>' +
+                        '                                <div class=" mui-col-xs-2" style="text-align: center"><span>' + data[i].today + '</span>' +
+                        '                                </div>' +
+                        '                                <div class=" mui-col-xs-3" style="text-align: center"><span>' + data[i].zf + '//' + data[i].bfb + '</span>' +
+                        '                                </div>' +
+                        '                            </div>' +
+                        '                        </li>';
+                }
+
+                $("#list-data").html(html);
+            }
+        })
+
+        return false;
+    })
+
+    getData();
+
+    $("#chaxun").click(function () {
+        var shangqi_start=$("#shangqi_start").val();
+        var shangqi_end=$("#shangqi_end").val();
+        var benqi_start=$("#benqi_start").val();
+        var benqi_end=$("#benqi_end").val();
+        $.ajax({
+            type: "post",
+            data: {"shangqi_start": shangqi_start,"shangqi_end": shangqi_end,"benqi_start": benqi_start,"benqi_end": benqi_end},
+            url: "/getComparisonData",
+            dataType: 'json',
+            success: function (data) {
+                $("#shangqi_amount").text(thousands(data.shangqi_amount))
+                $("#benqi_amount").text(thousands(data.benqi_amount))
+                $("#chayi").text(thousands(data.chayi))
+                $("#bfb").text(data.bfb)
+                mui.toast('数据已更新');
+            }
+        })
+    })
+
+
+    function getData(){
+        var shangqi_start=$("#shangqi_start").val();
+        var shangqi_end=$("#shangqi_end").val();
+        var benqi_start=$("#benqi_start").val();
+        var benqi_end=$("#benqi_end").val();
+        $.ajax({
+            type: "post",
+            data: {"shangqi_start": shangqi_start,"shangqi_end": shangqi_end,"benqi_start": benqi_start,"benqi_end": benqi_end},
+            url: "/getComparisonData",
+            dataType: 'json',
+            success: function (data) {
+                $("#shangqi_amount").text(thousands(data.shangqi_amount))
+                $("#benqi_amount").text(thousands(data.benqi_amount))
+                $("#chayi").text(thousands(data.chayi))
+                $("#bfb").text(data.bfb)
+                mui.toast('数据已更新');
+            }
+        })
+    }
+
+    function thousands(num){
+        var str = num.toString();
+        var reg = str.indexOf(".") > -1 ? /(\d)(?=(\d{3})+\.)/g : /(\d)(?=(?:\d{3})+$)/g;
+        return str.replace(reg,"$1,");
+    }
+</script>
+</html>

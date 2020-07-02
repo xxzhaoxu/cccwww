@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.echo.mobileweb.mapper.QtlsdmxMapper">
+  <resultMap id="BaseResultMap" type="com.echo.mobileweb.entity.Qtlsdmx">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="单据编号" jdbcType="VARCHAR" property="单据编号" />
+    <result column="日期" jdbcType="TIMESTAMP" property="日期" />
+    <result column="商店代码" jdbcType="VARCHAR" property="商店代码" />
+    <result column="商店名称" jdbcType="VARCHAR" property="商店名称" />
+    <result column="金额" jdbcType="DOUBLE" property="金额" />
+  </resultMap>
+</mapper>

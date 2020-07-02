@@ -1,0 +1,99 @@
+package com.echo.mobileweb.entity;
+
+import javax.persistence.*;
+
+public class Yuangong {
+    private String 代码;
+
+    private String 名称;
+
+    private String 手机;
+
+    private String 权限;
+
+    private String 状态;
+
+    /**
+     * @return 代码
+     */
+    public String get代码() {
+        return 代码;
+    }
+
+    /**
+     * @param 代码
+     */
+    public void set代码(String 代码) {
+        this.代码 = 代码;
+    }
+
+    /**
+     * @return 名称
+     */
+    public String get名称() {
+        return 名称;
+    }
+
+    /**
+     * @param 名称
+     */
+    public void set名称(String 名称) {
+        this.名称 = 名称;
+    }
+
+    /**
+     * @return 手机
+     */
+    public String get手机() {
+        return 手机;
+    }
+
+    /**
+     * @param 手机
+     */
+    public void set手机(String 手机) {
+        this.手机 = 手机;
+    }
+
+    /**
+     * @return 权限
+     */
+    public String get权限() {
+        return 权限;
+    }
+
+    /**
+     * @param 权限
+     */
+    public void set权限(String 权限) {
+        this.权限 = 权限;
+    }
+
+    /**
+     * @return 状态
+     */
+    public String get状态() {
+        return 状态;
+    }
+
+    /**
+     * @param 状态
+     */
+    public void set状态(String 状态) {
+        this.状态 = 状态;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append(" [");
+        sb.append("Hash = ").append(hashCode());
+        sb.append(", 代码=").append(代码);
+        sb.append(", 名称=").append(名称);
+        sb.append(", 手机=").append(手机);
+        sb.append(", 权限=").append(权限);
+        sb.append("]");
+        return sb.toString();
+    }
+}

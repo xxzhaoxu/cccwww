@@ -1,0 +1,114 @@
+﻿<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <style>
+        h1{
+            color:white
+        }
+        h4 {
+            color: white
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div style="background-color:darkgray;height:30px;text-align:center"><span style="font-size:20px">经理数据报表</span>  </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>经理</th>
+                    <th>业绩</th>
+                    <th>店数</th>
+                    <th>平均数</th>
+                    <th>名次</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">经理1</th>
+                    <td>100</td>
+                    <td>2</td>
+                    <td>30.5</td>
+                    <td style="color:green">2</td>
+                </tr>
+                <tr>
+                    <th scope="row">经理1</th>
+                    <td>100</td>
+                    <td>2</td>
+                    <td>30.5</td>
+                    <td style="color:green">2</td>
+                </tr>
+                <tr>
+                    <th scope="row">经理1</th>
+                    <td>100</td>
+                    <td>2</td>
+                    <td>30.5</td>
+                    <td style="color:green">2</td>
+                </tr>
+                <tr>
+                    <th scope="row">经理1</th>
+                    <td>100</td>
+                    <td>2</td>
+                    <td>30.5</td>
+                    <td style="color:green">2</td>
+                </tr>
+                <tr>
+                    <th scope="row">经理1</th>
+                    <td>100</td>
+                    <td>2</td>
+                    <td>30.5</td>
+                    <td style="color:green">2</td>
+                </tr>
+                <tr>
+                    <th scope="row">经理1</th>
+                    <td>100</td>
+                    <td>2</td>
+                    <td>30.5</td>
+                    <td style="color:green">2</td>
+                </tr>
+                <tr>
+                    <th scope="row">经理1</th>
+                    <td>100</td>
+                    <td>2</td>
+                    <td>30.5</td>
+                    <td style="color:green">2</td>
+                </tr>
+                <tr>
+                    <th scope="row">经理1</th>
+                    <td>100</td>
+                    <td>2</td>
+                    <td>30.5</td>
+                    <td style="color:green">2</td>
+                </tr>
+                <tr>
+                    <th scope="row">经理1</th>
+                    <td>100</td>
+                    <td>2</td>
+                    <td>30.5</td>
+                    <td style="color:green">2</td>
+                </tr>
+                <tr>
+                    <th scope="row">经理1</th>
+                    <td>100</td>
+                    <td>2</td>
+                    <td>30.5</td>
+                    <td style="color:green">2</td>
+                </tr>
+                <tr>
+                    <th scope="row">经理1</th>
+                    <td>100</td>
+                    <td>2</td>
+                    <td>30.5</td>
+                    <td style="color:green">2</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

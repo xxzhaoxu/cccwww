@@ -1,0 +1,27 @@
+package com.echo.mobileweb.controller;
+
+import com.echo.mobileweb.mapper.DdinputMapper;
+import com.echo.mobileweb.model.EveryAmountDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Controller
+public class EveryDayController {
+    @Autowired
+    DdinputMapper ddinputMapper;
+
+    @RequestMapping("/everyday")
+    public String everyDay(Model model) {
+        List<EveryAmountDto> list = ddinputMapper.getEveryDayAmount();
+        Map<String, List<EveryAmountDto>> mapList = list.stream().collect(Collectors.groupingBy(EveryAmountDto::getDdname));
+        double a = mapList.get("刘欢").stream().mapToDouble(EveryAmountDto::getSysamount).sum();
+        model.addAttribute("mapList", mapList);
+        return "everyDay";
+    }
+}

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <title>罗丽丝</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../css/mui.min.css">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/mui.picker.min.css"/>
+    <link href="https://cdn.bootcss.com/select2/4.0.6-rc.1/css/select2.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/select2/4.0.6-rc.1/js/select2.js"></script>
+    <!--    <link rel="stylesheet" type="text/css" href="../jqselect/jquery.searchableSelect.css"/>-->
+    <!--App自定义的css-->
+    <!--<link rel="stylesheet" type="text/css" href="../css/app.css" />-->
+</head>
+
+<body>
+
+<style>
+    .mui-control-content {
+        background-color: white;
+        min-height: 215px;
+    }
+
+    .mui-control-content .mui-loading {
+        margin-top: 50px;
+    }
+
+
+    #select2-choose-select-container {
+        text-align: center;
+    }
+</style>
+<header class="mui-bar mui-bar-nav">
+    <a class=" mui-icon mui-icon-left-nav mui-pull-left" href="/index"></a>
+    <h1 class="mui-title">每日报账</h1>
+
+</header>
+<div class="mui-content">
+    <div style="z-index: 100">
+        <select id="choose-select" style="text-align: center">
+            <option value="-1">全部商户</option>
+            <option value="全部商户" th:each="kehu : ${kehuMap}" th:text="${kehu.key}" th:value="${kehu.value}"></option>
+
+        </select>
+
+    </div>
+    <div><input type="text" id="dateSelect" th:value="${date}" placeholder="请选择日期..." style="text-align: center;"
+                readonly="readonly"></div>
+
+    <div id="slider" class="mui-slider">
+        <div id="sliderSegmentedControl"
+             class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+            <a class="mui-control-item" href="#item1mobile">
+                每日报账
+            </a>
+            <a class="mui-control-item" href="#item2mobile">
+                万达店
+            </a>
+            <a class="mui-control-item" href="#item3mobile">
+                特卖
+            </a>
+        </div>
+        <div id="sliderProgressBar" class="mui-slider-progress-bar mui-col-xs-4"></div>
+
+        <div class="mui-slider-group" style="transform: translate3d(0px, 0px, 0px) translateZ(0px);">
+            <div id="item1mobile" class="mui-slider-item mui-control-content mui-active">
+                <ul class="mui-table-view">
+                    <li class="mui-table-view-cell" style="background-color: #9fd9c2">
+                        <div class="mui-row">
+                            <div class=" mui-col-xs-5" style="text-align: center">
+                                店名
+                            </div>
+                            <div class=" mui-col-xs-2" style="text-align: center">
+                                地区
+                            </div>
+                            <div class=" mui-col-xs-3" style="text-align: center">
+                                业绩
+                            </div>
+                            <div class=" mui-col-xs-2" style="text-align: center">
+                                备注
+                            </div>
+                        </div>
+                    </li>
+                    <div class="list-data">
+                        <p class="mui-progressbar mui-progressbar-infinite"></p>
+                    </div>
+                </ul>
+            </div>
+            <div id="item2mobile" class="mui-slider-item mui-control-content">
+
+                <ul class="mui-table-view">
+                    <li class="mui-table-view-cell" style="background-color: #9fd9c2">
+                        <div class="mui-row">
+                            <div class=" mui-col-xs-5" style="text-align: center">
+                                店名
+                            </div>
+                            <div class=" mui-col-xs-2" style="text-align: center">
+                                地区
+                            </div>
+                            <div class=" mui-col-xs-3" style="text-align: center">
+                                业绩
+                            </div>
+                            <div class=" mui-col-xs-2" style="text-align: center">
+                                备注
+                            </div>
+                        </div>
+                    </li>
+                    <div class="list-data">
+                        <p class="mui-progressbar mui-progressbar-infinite"></p>
+                    </div>
+                </ul>
+            </div>
+            <div id="item3mobile" class="mui-slider-item mui-control-content">
+                <ul class="mui-table-view">
+                    <li class="mui-table-view-cell" style="background-color: #9fd9c2">
+                        <div class="mui-row">
+                            <div class=" mui-col-xs-5" style="text-align: center">
+                                店名
+                            </div>
+                            <div class=" mui-col-xs-2" style="text-align: center">
+                                地区
+                            </div>
+                            <div class=" mui-col-xs-3" style="text-align: center">
+                                业绩
+                            </div>
+                            <div class=" mui-col-xs-2" style="text-align: center">
+                                备注
+                            </div>
+                        </div>
+                    </li>
+                    <div class="list-data">
+                        <p class="mui-progressbar mui-progressbar-infinite"></p>
+                    </div>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div id="topPopover" class="mui-popover">
+    <div class="mui-popover-arrow"></div>
+    <div class="mui-scroll-wrapper" data-scroll="1">
+        <div class="mui-scroll" style="transform: translate3d(0px, 0px, 0px) translateZ(0px);">
+            <ul class="mui-table-view">
+                <li class="mui-table-view-cell">
+                    <a href="#">Item1</a>
+                </li>
+                <li class="mui-table-view-cell"><a href="#">Item2</a>
+                </li>
+                <li class="mui-table-view-cell"><a href="#">Item3</a>
+                </li>
+                <li class="mui-table-view-cell"><a href="#">Item4</a>
+                </li>
+                <li class="mui-table-view-cell"><a href="#">Item5</a>
+                </li>
+                <li class="mui-table-view-cell"><a href="#">Item6</a>
+                </li>
+                <li class="mui-table-view-cell"><a href="#">Item7</a>
+                </li>
+                <li class="mui-table-view-cell"><a href="#">Item8</a>
+                </li>
+                <li class="mui-table-view-cell"><a href="#">Item9</a>
+                </li>
+                <li class="mui-table-view-cell"><a href="#">Item10</a>
+                </li>
+            </ul>
+        </div>
+        <div class="mui-scrollbar mui-scrollbar-vertical">
+            <div class="mui-scrollbar-indicator"
+                 style="transition-duration: 0ms; display: none; height: 8px; transform: translate3d(0px, -8px, 0px) translateZ(0px);"></div>
+        </div>
+    </div>
+
+</div>
+</body>
+
+</html>
+<script src="../js/mui.min.js"></script>
+<script src="../js/mui.picker.min.js"></script>
+<script src="../jqselect/jquery.searchableSelect.js"></script>
+<script>
+    var first = 0;
+    var select = 0
+    var shopname = '全部商户'
+    mui.init({
+        swipeBack: false,
+        gestureConfig: {
+            drag: false //默认为true
+        }
+    });
+
+    $(function () {
+        // $('select').searchableSelect({
+        //     afterSelectItem:function(){
+        //         // debugger;
+        //         if(first!=0){
+        //             shopname= this.holder.text()
+        //             bzData(select,shopname);
+        //         }
+        //
+        //         first++;
+        //     }
+        // });
+        $("#choose-select").select2()
+
+        selectTelehone = $("#choose-select");
+
+
+        selectTelehone.on("select2:select", function (evt) {
+            //这里是选中触发的事件
+            //evt.params.data 是选中项的信息
+            bzData(select, evt.params.data.text);
+
+        });
+
+
+        function watermark(settings) {
+            $(".mask_div").remove()
+            //默认设置
+            var defaultSettings = {
+                watermark_txt: '[[${username}]]',
+                watermark_x: 20,//水印起始位置x轴坐标
+                watermark_y: 150,//水印起始位置Y轴坐标
+                watermark_rows: 1000,//水印行数
+                watermark_cols: 2000,//水印列数
+                watermark_x_space: 10,//水印x轴间隔
+                watermark_y_space: 10,//水印y轴间隔
+                watermark_color: '#aaa',//水印字体颜色
+                watermark_alpha: 0.4,//水印透明度
+                watermark_fontsize: '15px',//水印字体大小
+                watermark_font: '微软雅黑',//水印字体
+                watermark_width: 60,//水印宽度
+                watermark_height: 60,//水印长度
+                watermark_angle: 15//水印倾斜度数
+            };
+            //采用配置项替换默认值，作用类似jquery.extend
+            if (arguments.length === 1 && typeof arguments[0] === "object") {
+                var src = arguments[0] || {};
+                for (key in src) {
+                    if (src[key] && defaultSettings[key] && src[key] === defaultSettings[key])
+                        continue;
+                    else if (src[key])
+                        defaultSettings[key] = src[key];
+                }
+            }
+
+            var oTemp = document.createDocumentFragment();
+
+            //获取页面最大宽度
+            var page_width = Math.max(document.body.scrollWidth, document.body.clientWidth);
+            var cutWidth = page_width * 0.0150;
+            var page_width = page_width - cutWidth;
+            //获取页面最大高度
+            var page_height = Math.max(document.body.scrollHeight, document.body.clientHeight);
+            // var page_height = document.body.scrollHeight+document.body.scrollTop;
+            //如果将水印列数设置为0，或水印列数设置过大，超过页面最大宽度，则重新计算水印列数和水印x轴间隔
+            if (defaultSettings.watermark_cols == 0 || (parseInt(defaultSettings.watermark_x + defaultSettings.watermark_width * defaultSettings.watermark_cols + defaultSettings.watermark_x_space * (defaultSettings.watermark_cols - 1)) > page_width)) {
+                defaultSettings.watermark_cols = parseInt((page_width - defaultSettings.watermark_x + defaultSettings.watermark_x_space) / (defaultSettings.watermark_width + defaultSettings.watermark_x_space));
+                defaultSettings.watermark_x_space = parseInt((page_width - defaultSettings.watermark_x - defaultSettings.watermark_width * defaultSettings.watermark_cols) / (defaultSettings.watermark_cols - 1));
+            }
+            //如果将水印行数设置为0，或水印行数设置过大，超过页面最大长度，则重新计算水印行数和水印y轴间隔
+            if (defaultSettings.watermark_rows == 0 || (parseInt(defaultSettings.watermark_y + defaultSettings.watermark_height * defaultSettings.watermark_rows + defaultSettings.watermark_y_space * (defaultSettings.watermark_rows - 1)) > page_height)) {
+                defaultSettings.watermark_rows = parseInt((defaultSettings.watermark_y_space + page_height - defaultSettings.watermark_y) / (defaultSettings.watermark_height + defaultSettings.watermark_y_space));
+                defaultSettings.watermark_y_space = parseInt(((page_height - defaultSettings.watermark_y) - defaultSettings.watermark_height * defaultSettings.watermark_rows) / (defaultSettings.watermark_rows - 1));
+            }
+            var x;
+            var y;
+            for (var i = 0; i < defaultSettings.watermark_rows; i++) {
+                y = defaultSettings.watermark_y + (defaultSettings.watermark_y_space + defaultSettings.watermark_height) * i;
+                for (var j = 0; j < defaultSettings.watermark_cols; j++) {
+                    x = defaultSettings.watermark_x + (defaultSettings.watermark_width + defaultSettings.watermark_x_space) * j;
+
+                    var mask_div = document.createElement('div');
+                    mask_div.id = 'mask_div' + i + j;
+                    mask_div.className = 'mask_div';
+                    mask_div.appendChild(document.createTextNode(defaultSettings.watermark_txt));
+                    //设置水印div倾斜显示
+                    mask_div.style.webkitTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                    mask_div.style.MozTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                    mask_div.style.msTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                    mask_div.style.OTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                    mask_div.style.transform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                    mask_div.style.visibility = "";
+                    mask_div.style.position = "absolute";
+                    mask_div.style.left = x + 'px';
+                    mask_div.style.top = y + 'px';
+                    mask_div.style.overflow = "hidden";
+                    mask_div.style.zIndex = "9999999999999";
+                    mask_div.style.pointerEvents = 'none';//pointer-events:none  让水印不遮挡页面的点击事件
+                    //mask_div.style.border="solid #eee 1px";
+                    mask_div.style.opacity = defaultSettings.watermark_alpha;
+                    mask_div.style.fontSize = defaultSettings.watermark_fontsize;
+                    mask_div.style.fontFamily = defaultSettings.watermark_font;
+                    mask_div.style.color = defaultSettings.watermark_color;
+                    mask_div.style.textAlign = "center";
+                    mask_div.style.width = defaultSettings.watermark_width + 'px';
+                    mask_div.style.height = defaultSettings.watermark_height + 'px';
+                    mask_div.style.display = "block";
+                    oTemp.appendChild(mask_div);
+                }
+                ;
+            }
+            ;
+            document.body.appendChild(oTemp);
+        }
+    });
+
+
+    $("#dateSelect").click(function () {
+        var dtPicker = new mui.DtPicker({type: 'date'});
+
+        /*参数：'datetime'-完整日期视图(年月日时分)
+                'date'--年视图(年月日)
+                'time' --时间视图(时分)
+                'month'--月视图(年月)
+                'hour'--时视图(年月日时)
+        */
+        dtPicker.show(function (selectItems) {
+            var y = selectItems.y.text;  //获取选择的年
+            var m = selectItems.m.text;  //获取选择的月
+            var d = selectItems.d.text;  //获取选择的日
+            var date = y + "-" + m + "-" + d;
+            $("#dateSelect").val(date);
+            //var selectindex = document.getElementById("selectindex").value;
+            console.log(selectItems)
+            bzData(select, shopname)
+            //
+        })
+        //gerank(selectindex);
+    });
+
+
+    bzData(0, "全部商户");
+
+    function bzData(selectindex, shopname) {
+        var date = $("#dateSelect").val();
+        $(".list-data").html("");
+        $.ajax({
+            type: "get",
+            url: "/getEveryDayData",
+            data: {"selectindex": selectindex, "shopname": shopname, "date": date},
+            dataType: 'json',
+            success: function (data) {
+                //mui.toast('查询成功');
+                var html = '';
+                var all_amount = 0;
+
+                var ddtemp_sysamout = 0;
+                var ddtemp_count = 1;
+
+                var jltemp_sysamout = 0;
+                var jltemp_count = 1;
+
+                var zjtemp_sysamout = 0;
+                var zjtemp_count = 1;
+                for (var i = 0; i < data.length; i++) {
+                    var temp_ddname = data[i].ddname;
+                    var temp_jlname = data[i].jlname;
+                    var temp_zjname = data[i].zjname;
+                    ddtemp_sysamout += data[i].sysamount;
+                    jltemp_sysamout += data[i].sysamount;
+                    zjtemp_sysamout += data[i].sysamount;
+                    all_amount+=data[i].sysamount;
+                    html += '<li class="mui-table-view-cell">' +
+                        '<div class="mui-row">' +
+                        '<div class=" mui-col-xs-5" style="text-align: center">' +
+                        '<span>' + data[i].shopname + '</span>' +
+                        '</div>' +
+                        '<div class=" mui-col-xs-2" style="text-align: center">' +
+                        '<span>' + data[i].localname + '</span>' +
+                        '</div>' +
+                        '<div class=" mui-col-xs-3" style="text-align: center">' +
+                        '<span>' + data[i].sysamount + '</span>' +
+                        '</div>' +
+                        '<div class=" mui-col-xs-2" style="text-align: center">' +
+                        '<span>' + (data[i].remark == null ? "无" : data[i].remark) + '</span>' +
+                        '</div>' +
+                        '</div>' +
+                        '</li>';
+
+                    if (selectindex == 0 && (i == data.length - 1 || temp_ddname != data[i + 1].ddname)) {
+                        html += '<li class="mui-table-view-cell" style="background-color: #9fd9c2">' +
+                            '<div class="mui-row">' +
+                            '<div class=" mui-col-xs-3" style="text-align: center">督导：' + temp_ddname +
+                            '</div>' +
+                            '<div class=" mui-col-xs-9" style="text-align: center">' +
+                            '合计:' + ddtemp_count + '  平均数:' + (ddtemp_sysamout / ddtemp_count).toFixed(0) + '  业绩总计:' +thousands(ddtemp_sysamout)  +
+                            '</div>' +
+                            '</div>' +
+                            '</li>';
+
+                        ddtemp_sysamout = 0;
+                        ddtemp_count = 0;
+                    }
+
+                    if (selectindex == 0 && (i == data.length - 1 || temp_jlname != data[i + 1].jlname)) {
+                        html += '<li class="mui-table-view-cell" style="background-color: #C4C400">' +
+                            '<div class="mui-row">' +
+                            '<div class=" mui-col-xs-3" style="text-align: center">经理：' + temp_jlname +
+                            '</div>' +
+                            '<div class=" mui-col-xs-9" style="text-align: center">' +
+                            '合计:' + jltemp_count + '  平均数:' + (jltemp_sysamout / jltemp_count).toFixed(0) + '  业绩总计:' +thousands(jltemp_sysamout)  +
+                            '</div>' +
+                            '</div>' +
+                            '</li>';
+
+                        jltemp_sysamout = 0;
+                        jltemp_count = 0;
+                    }
+
+                    if (selectindex == 0 && (i == data.length - 1 || temp_zjname != data[i + 1].zjname)) {
+                        html += '<li class="mui-table-view-cell" style="background-color: #AD5A5A">' +
+                            '<div class="mui-row">' +
+                            '<div class=" mui-col-xs-3" style="text-align: center">总监：' + temp_zjname +
+                            '</div>' +
+                            '<div class=" mui-col-xs-9" style="text-align: center">' +
+                            '合计:' + zjtemp_count + '  平均数:' + (zjtemp_sysamout / zjtemp_count).toFixed(0) + '  业绩总计:' + thousands(zjtemp_sysamout) +
+                            '</div>' +
+                            '</div>' +
+                            '</li>';
+
+                        zjtemp_sysamout = 0;
+                        zjtemp_count = 0;
+                    }
+
+                    if(i == data.length - 1){
+                        html += '<li class="mui-table-view-cell" style="background-color: #FFFFAA">' +
+                            '<div class="mui-row">' +
+                            '<div class=" mui-col-xs-12" style="text-align: center">' +
+                            '店铺数量:' + data.length + '  平均数:' + (all_amount / data.length).toFixed(0) + '  业绩总计:' + thousands(all_amount) +
+                            '</div>' +
+                            '</div>' +
+                            '</li>';
+                    }
+
+                    ddtemp_count++;
+                    jltemp_count++;
+                    zjtemp_sysamout++;
+                    zjtemp_count++;
+                }
+                //$("#list").html(html);
+                var item = document.getElementById('item' + (selectindex + 1) + 'mobile');
+                item.querySelector('.list-data').innerHTML = html;
+                watermark()
+            },
+            error: function () {
+
+            }
+        });
+    }
+
+    function thousands(num) {
+        var str = num.toString();
+        var reg = str.indexOf(".") > -1 ? /(\d)(?=(\d{3})+\.)/g : /(\d)(?=(?:\d{3})+$)/g;
+        return str.replace(reg, "$1,");
+    }
+
+
+    function watermark(settings) {
+        $(".mask_div").remove()
+        //默认设置
+        var defaultSettings = {
+            watermark_txt: '[[${username}]]',
+            watermark_x: 20,//水印起始位置x轴坐标
+            watermark_y: 150,//水印起始位置Y轴坐标
+            watermark_rows: 1000,//水印行数
+            watermark_cols: 2000,//水印列数
+            watermark_x_space: 10,//水印x轴间隔
+            watermark_y_space: 10,//水印y轴间隔
+            watermark_color: '#aaa',//水印字体颜色
+            watermark_alpha: 0.4,//水印透明度
+            watermark_fontsize: '15px',//水印字体大小
+            watermark_font: '微软雅黑',//水印字体
+            watermark_width: 60,//水印宽度
+            watermark_height: 60,//水印长度
+            watermark_angle: 15//水印倾斜度数
+        };
+        //采用配置项替换默认值，作用类似jquery.extend
+        if (arguments.length === 1 && typeof arguments[0] === "object") {
+            var src = arguments[0] || {};
+            for (key in src) {
+                if (src[key] && defaultSettings[key] && src[key] === defaultSettings[key])
+                    continue;
+                else if (src[key])
+                    defaultSettings[key] = src[key];
+            }
+        }
+
+        var oTemp = document.createDocumentFragment();
+
+        //获取页面最大宽度
+        var page_width = Math.max(document.body.scrollWidth, document.body.clientWidth);
+        var cutWidth = page_width * 0.0150;
+        var page_width = page_width - cutWidth;
+        //获取页面最大高度
+        var page_height = Math.max(document.body.scrollHeight, document.body.clientHeight);
+        // var page_height = document.body.scrollHeight+document.body.scrollTop;
+        //如果将水印列数设置为0，或水印列数设置过大，超过页面最大宽度，则重新计算水印列数和水印x轴间隔
+        if (defaultSettings.watermark_cols == 0 || (parseInt(defaultSettings.watermark_x + defaultSettings.watermark_width * defaultSettings.watermark_cols + defaultSettings.watermark_x_space * (defaultSettings.watermark_cols - 1)) > page_width)) {
+            defaultSettings.watermark_cols = parseInt((page_width - defaultSettings.watermark_x + defaultSettings.watermark_x_space) / (defaultSettings.watermark_width + defaultSettings.watermark_x_space));
+            defaultSettings.watermark_x_space = parseInt((page_width - defaultSettings.watermark_x - defaultSettings.watermark_width * defaultSettings.watermark_cols) / (defaultSettings.watermark_cols - 1));
+        }
+        //如果将水印行数设置为0，或水印行数设置过大，超过页面最大长度，则重新计算水印行数和水印y轴间隔
+        if (defaultSettings.watermark_rows == 0 || (parseInt(defaultSettings.watermark_y + defaultSettings.watermark_height * defaultSettings.watermark_rows + defaultSettings.watermark_y_space * (defaultSettings.watermark_rows - 1)) > page_height)) {
+            defaultSettings.watermark_rows = parseInt((defaultSettings.watermark_y_space + page_height - defaultSettings.watermark_y) / (defaultSettings.watermark_height + defaultSettings.watermark_y_space));
+            defaultSettings.watermark_y_space = parseInt(((page_height - defaultSettings.watermark_y) - defaultSettings.watermark_height * defaultSettings.watermark_rows) / (defaultSettings.watermark_rows - 1));
+        }
+        var x;
+        var y;
+        for (var i = 0; i < defaultSettings.watermark_rows; i++) {
+            y = defaultSettings.watermark_y + (defaultSettings.watermark_y_space + defaultSettings.watermark_height) * i;
+            for (var j = 0; j < defaultSettings.watermark_cols; j++) {
+                x = defaultSettings.watermark_x + (defaultSettings.watermark_width + defaultSettings.watermark_x_space) * j;
+
+                var mask_div = document.createElement('div');
+                mask_div.id = 'mask_div' + i + j;
+                mask_div.className = 'mask_div';
+                mask_div.appendChild(document.createTextNode(defaultSettings.watermark_txt));
+                //设置水印div倾斜显示
+                mask_div.style.webkitTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                mask_div.style.MozTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                mask_div.style.msTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                mask_div.style.OTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                mask_div.style.transform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                mask_div.style.visibility = "";
+                mask_div.style.position = "absolute";
+                mask_div.style.left = x + 'px';
+                mask_div.style.top = y + 'px';
+                mask_div.style.overflow = "hidden";
+                mask_div.style.zIndex = "9999999999999";
+                mask_div.style.pointerEvents = 'none';//pointer-events:none  让水印不遮挡页面的点击事件
+                //mask_div.style.border="solid #eee 1px";
+                mask_div.style.opacity = defaultSettings.watermark_alpha;
+                mask_div.style.fontSize = defaultSettings.watermark_fontsize;
+                mask_div.style.fontFamily = defaultSettings.watermark_font;
+                mask_div.style.color = defaultSettings.watermark_color;
+                mask_div.style.textAlign = "center";
+                mask_div.style.width = defaultSettings.watermark_width + 'px';
+                mask_div.style.height = defaultSettings.watermark_height + 'px';
+                mask_div.style.display = "block";
+                oTemp.appendChild(mask_div);
+            }
+            ;
+        }
+        ;
+        document.body.appendChild(oTemp);
+    }
+
+
+    (function ($) {
+        $('.mui-scroll-wrapper').scroll({
+            indicators: true //是否显示滚动条
+        });
+
+
+        var html2 = '<ul class="mui-table-view"><li class="mui-table-view-cell">第二个选项卡子项-1</li><li class="mui-table-view-cell">第二个选项卡子项-2</li><li class="mui-table-view-cell">第二个选项卡子项-3</li><li class="mui-table-view-cell">第二个选项卡子项-4</li><li class="mui-table-view-cell">第二个选项卡子项-5</li></ul>';
+        var html3 = '<ul class="mui-table-view"><li class="mui-table-view-cell">第三个选项卡子项-1</li><li class="mui-table-view-cell">第三个选项卡子项-2</li><li class="mui-table-view-cell">第三个选项卡子项-3</li><li class="mui-table-view-cell">第三个选项卡子项-4</li><li class="mui-table-view-cell">第三个选项卡子项-5</li></ul>';
+        var item2 = document.getElementById('item2mobile');
+        var item3 = document.getElementById('item3mobile');
+        document.getElementById('slider').addEventListener('slide', function (e) {
+            select = e.detail.slideNumber;
+            //document.getElementById("selectindex").value = select;
+            //mui.toast(select)
+
+            setTimeout(function () {
+                bzData(select, shopname);
+            }, 500);
+
+
+        });
+        var sliderSegmentedControl = document.getElementById('sliderSegmentedControl');
+        $('.mui-input-group').on('change', 'input', function () {
+            console(1)
+            if (this.checked) {
+                sliderSegmentedControl.className = 'mui-slider-indicator mui-segmented-control mui-segmented-control-inverted mui-segmented-control-' + this.value;
+                //force repaint
+                sliderProgressBar.setAttribute('style', sliderProgressBar.getAttribute('style'));
+            }
+        });
+    })(mui);
+</script>

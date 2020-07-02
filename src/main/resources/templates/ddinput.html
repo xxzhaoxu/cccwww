@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="/css/mui.min.css">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <!--App自定义的css-->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/app.css" /> -->
+    <style>
+        h5 {
+            margin: 5px 7px;
+        }
+    </style>
+</head>
+
+<body>
+<header class="mui-bar mui-bar-nav">
+    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+    <h1 class="mui-title">督导填入</h1>
+</header>
+<div class="mui-content">
+    <div class="mui-content-padded" style="margin: 5px;">
+        <div class="mui-input-group">
+            <div class="mui-input-row">
+                <label>门店名称</label>
+                <input id="shopname" type="text" readonly="readonly" th:value="${shopname}"/>
+                <input type="hidden" th:value="${shopid}" id="shopid"/>
+            </div>
+            <div class="mui-input-row">
+                <label>系统金额</label>
+                <input type="text" th:value="${#numbers.formatDecimal(amount,1,0)}" readonly="readonly">
+            </div>
+            <div class="mui-input-row">
+                <label>录入金额</label>
+                <input id="amount" type="number" min="0" max="999999" placeholder="无法打单截止到22:30填入" th:value="${#numbers.formatDecimal(ddinput.getAmount(),1,0)}">
+            </div>
+            <div class="mui-input-row">
+                <label>特卖金额</label>
+                <input id="saleAmount" type="number" min="0" max="999999" placeholder="特卖,装修不计算平均数" th:value="${#numbers.formatDecimal(ddinput.getSaleamount(),1,0)}">
+            </div>
+            <div class="mui-input-row">
+                <label>备注</label>
+                <input id="remark" type="text" placeholder="装修、老店翻新、开业" th:value="${ddinput.getRemark()}">
+            </div>
+            <div class="mui-button-row">
+                <button id="submit" type="button" class="mui-btn mui-btn-primary">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/js/mui.min.js"></script>
+<script src="./xjcontent/layer/layer.js"></script>
+</body>
+
+</html>
+<script>
+    $("#submit").click(function(){
+        var shopid=$("#shopid").val();
+        var shopname=$("#shopname").val();
+        var amount=$("#amount").val();
+        var saleAmount=$("#saleAmount").val();
+        var remark=$("#remark").val();
+
+        if(amount==""&&saleAmount==""&&remark==""){
+            layer.msg("所有项不得同时为空")
+            return;
+        }
+
+        if(amount!=""&&saleAmount!=""){
+            layer.msg("录入金额和特卖金额只能同时输入一项")
+            return;
+        }
+
+
+
+
+        $.ajax({
+            type: "post",
+            data: {"shopname":shopname, "shopid":shopid,"amount": amount, "saleAmount": saleAmount,"remark":remark},
+            url: "/ddinputAction",
+            dataType: 'text',
+            success: function (data) {
+                if(data=="ok"){
+                    layer.msg("保存成功")
+                    location.href="/ddindex";
+                    return;
+                }else{
+                    layer.msg(data)
+                    return;
+                }
+            }
+        })
+
+    })
+
+</script>

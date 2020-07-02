@@ -1,0 +1,47 @@
+package com.echo.mobileweb.controller;
+
+import com.echo.mobileweb.mapper.DdinputMapper;
+import com.echo.mobileweb.model.DayDto;
+import com.echo.mobileweb.model.DayZj;
+import com.echo.mobileweb.model.EveryAmountDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Array;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Controller
+public class EveryDayController {
+    @Autowired
+    DdinputMapper ddinputMapper;
+
+    @RequestMapping("/everyday")
+    public String everyDay(HttpServletRequest request) {
+        return "everyday";
+    }
+
+    @ResponseBody
+    @RequestMapping("/getEveryDayData")
+    public List<EveryAmountDto> getEveryDayData(){
+        String starttime = LocalDate.now().plusDays(-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
+        String endtime = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
+        String inputtime = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        if ((LocalDateTime.now().getHour()==22&&LocalDateTime.now().getMinute()>30)||LocalDateTime.now().getHour()>22) {
+            starttime = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
+            endtime = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
+            inputtime = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        }
+        List<EveryAmountDto> list = ddinputMapper.getEveryDayAmount(starttime,endtime,inputtime);
+        return list;
+    }
+}

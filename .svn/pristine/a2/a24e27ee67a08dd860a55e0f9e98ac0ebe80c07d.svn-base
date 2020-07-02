@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.echo.mobileweb.mapper.KehuMapper">
+  <resultMap id="BaseResultMap" type="com.echo.mobileweb.entity.Kehu">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="商店代码" jdbcType="VARCHAR" property="商店代码" />
+    <result column="状态" jdbcType="VARCHAR" property="状态" />
+    <result column="商店名称" jdbcType="VARCHAR" property="商店名称" />
+    <result column="地区名称" jdbcType="VARCHAR" property="地区名称" />
+    <result column="总监名称" jdbcType="VARCHAR" property="总监名称" />
+    <result column="经理名称" jdbcType="VARCHAR" property="经理名称" />
+    <result column="督导名称" jdbcType="VARCHAR" property="督导名称" />
+  </resultMap>
+</mapper>

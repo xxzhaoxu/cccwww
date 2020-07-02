@@ -1,0 +1,19 @@
+package com.echo.mobileweb.mapper;
+
+import com.echo.mobileweb.entity.Ddinput;
+import com.echo.mobileweb.model.EveryAmountDto;
+import org.apache.ibatis.annotations.Param;
+import tk.mybatis.mapper.common.Mapper;
+
+import java.util.List;
+
+public interface DdinputMapper extends Mapper<Ddinput> {
+    public List<EveryAmountDto> getEveryDayAmount(String starttime, String endtime,String inputtime);
+
+    public List<EveryAmountDto> getShopAmountByKehu(String starttime, String endtime,String inputtime,String name);
+
+    public List<EveryAmountDto> getDdRank(String starttime, String endtime,String inputtime);
+    public List<EveryAmountDto> getJlRank(String starttime, String endtime,String inputtime);
+    public List<EveryAmountDto> getZjRank(String starttime, String endtime,String inputtime);
+    public List<EveryAmountDto> getDqRank(String starttime, String endtime,String inputtime);
+}

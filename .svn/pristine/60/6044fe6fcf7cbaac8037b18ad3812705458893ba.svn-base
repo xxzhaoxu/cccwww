@@ -1,0 +1,67 @@
+package com.echo.mobileweb.model;
+
+public class EveryAmountDto {
+    private String shopname;
+    private String ddname;
+    private String jlname;
+    private String zjname;
+    private String sysamount;
+    private String amount;
+    private String saleamount;
+
+    public String getShopname() {
+        return shopname;
+    }
+
+    public void setShopname(String shopname) {
+        this.shopname = shopname;
+    }
+
+    public String getDdname() {
+        return ddname;
+    }
+
+    public void setDdname(String ddname) {
+        this.ddname = ddname;
+    }
+
+    public String getJlname() {
+        return jlname;
+    }
+
+    public void setJlname(String jlname) {
+        this.jlname = jlname;
+    }
+
+    public String getZjname() {
+        return zjname;
+    }
+
+    public void setZjname(String zjname) {
+        this.zjname = zjname;
+    }
+
+    public String getSysamount() {
+        return sysamount;
+    }
+
+    public void setSysamount(String sysamount) {
+        this.sysamount = sysamount;
+    }
+
+    public String getAmount() {
+        return amount;
+    }
+
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
+
+    public String getSaleamount() {
+        return saleamount;
+    }
+
+    public void setSaleamount(String saleamount) {
+        this.saleamount = saleamount;
+    }
+}

@@ -1,0 +1,33 @@
+###################基础配置###################
+server.port=8070
+server.servlet.context-path=/
+spring.datasource.type=com.alibaba.druid.pool.DruidDataSource
+spring.datasource.driver-class-name=com.microsoft.sqlserver.jdbc.SQLServerDriver
+spring.jackson.date-format=yyyy-MM-dd HH:mm:ss
+spring.jackson.time-zone=GMT+8
+############################################
+
+
+#################TkMybatis相关配置###############
+mapper.plugin=tk.mybatis.mapper.generator.MapperPlugin
+mapper.Mapper=tk.mybatis.mapper.common.Mapper
+#此句一定要配置  不然insert会出现问题
+#mapper.before=false
+mybatis.mapper-locations=classpath*:/mapper/**Mapper.xml
+mybatis.configuration.log-impl=org.apache.ibatis.logging.stdout.StdOutImpl
+##############################################
+
+
+#################thymeleaf配置###############
+spring.thymeleaf.cache=false
+spring.thymeleaf.prefix=classpath:/templates/
+spring.thymeleaf.suffix=.html
+spring.thymeleaf.encoding=UTF-8
+spring.thymeleaf.servlet.content-type=text/html
+##############################################
+
+#################数据库配置#####################
+spring.datasource.url=jdbc:sqlserver://121.17.184.69:2533;databasename=bz
+spring.datasource.username=bz2
+spring.datasource.password=gavincxl
+##############################################

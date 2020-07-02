@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<!--[if IE 8]>
+<html lang="en" class="ie8"> <![endif]-->
+<!--[if IE 9]>
+<html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en">
+<!--<![endif]-->
+<head>
+    <title></title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="./xjcontent/images/logo.ico">
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="./xjcontent/plugins/bootstrap/css/bootstrap.min.css">
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="./xjcontent/plugins/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="./xjcontent/plugins/flexslider/flexslider.css">
+    <link rel="stylesheet" href="./xjcontent/plugins/animate-css/animate.min.css">
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="./xjcontent/css/styles.css">
+    <script type="text/javascript" src="./xjcontent/plugins/jquery-1.12.3.min.js"></script>
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        html, body {
+            height: 100%;
+            width: 100%
+        }
+    </style>
+</head>
+
+<body data-spy="scroll">
+
+
+<section id="contact" class="contact section has-pattern" style="height:100%">
+
+    <div class="container">
+        <div class="row text-center">
+            <h2 class="title">欢迎</h2>
+            <div class="intro col-md-6 col-sm-12 col-xs-12 col-md-offset-3">
+                <p></p>
+            </div>
+        </div>
+        <div class="row text-center">
+            <div class="contact-form col-md-6 col-sm-12 col-xs-12 col-md-offset-3">
+                <form action="/Login" id="loginForm" method="post">
+                    <div class="form-group name">
+                        <label class="sr-only" for="phonenum">手机号</label>
+                        <input id="phonenum" name="phonenum" type="text" class="form-control" placeholder="请输入手机号"
+                               maxlength="20">
+                    </div><!--//form-group-->
+                    <div class="form-group email">
+                        <label class="sr-only" for="pwd">密码</label>
+                        <input id="pwd" name="pwd" type="password" class="form-control" placeholder="请输入密码"
+                               maxlength="20">
+                    </div><!--//form-group-->
+
+                    <a id="btn-login" class="btn btn-theme btn-block" href="#">立即登录</a>
+                    <a class="btn btn-theme btn-block" href="/register">没有账号？马上注册！</a>
+                    <a class="btn btn-theme btn-block" href="/forget">忘记密码/重新绑定</a>
+                </form>
+
+            </div><!--//contact-form-->
+        </div>
+    </div><!--//container-->
+</section>
+<script>
+
+</script>
+
+
+<!-- Javascript -->
+
+<script type="text/javascript" src="./xjcontent/plugins/isMobile/isMobile.min.js"></script>
+<script type="text/javascript" src="./xjcontent/plugins/jquery.easing.1.3.js"></script>
+<script type="text/javascript" src="./xjcontent/plugins/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="./xjcontent/plugins/jquery-inview/jquery.inview.min.js"></script>
+<script type="text/javascript" src="./xjcontent/plugins/FitVids/jquery.fitvids.js"></script>
+<script type="text/javascript" src="./xjcontent/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
+<script type="text/javascript" src="./xjcontent/plugins/jquery-placeholder/jquery.placeholder.js"></script>
+<script type="text/javascript" src="./xjcontent/plugins/flexslider/jquery.flexslider-min.js"></script>
+<script type="text/javascript" src="./xjcontent/plugins/jquery-match-height/jquery.matchHeight-min.js"></script>
+<script type="text/javascript" src="./xjcontent/js/main.js"></script>
+<script src="./xjcontent/layer/layer.js"></script>
+<!--[if !IE]>-->
+<script type="text/javascript" src="./xjcontent/js/animations.js"></script>
+<!--<![endif]-->
+</body>
+</html>
+<script>
+    $("#btn-login").click(function () {
+        var phonenum = $("#phonenum").val();
+        var pwd = $("#pwd").val();
+
+        if (phonenum == "" || pwd == "") {
+            alert("手机号或密码不得为空！");
+            return false;
+        }
+
+        $.ajax({
+            type: "post",
+            data: {"phonenum": phonenum, "pwd": pwd},
+            async: true,
+            url: "/userLogin",
+            dataType: 'text',
+            success: function (data) {
+                if(data=="ok"){
+                    location.href="/index";
+                    return;
+                }else{
+                    layer.msg(data)
+                    return;
+                }
+            }
+        })
+
+
+    });
+
+
+</script>
+
+
+
+
+
+
+
