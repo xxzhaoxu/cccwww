@@ -67,7 +67,6 @@ public class HomeController {
         }
     }
 
-
     public String getCookies(HttpServletRequest request) {
         //HttpServletRequest 装请求信息类
         //HttpServletRespionse 装相应信息的类

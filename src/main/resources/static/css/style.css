@@ -1,0 +1,28 @@
+.container{
+    min-width: 400px;
+    overflow-x: scroll;
+}
+.search-tab{
+    position: relative;
+    top: 50px;
+}
+.search-tab tr{
+    height: 50px;
+    line-height: 50px;
+}
+.search-tab td{
+    white-space:nowrap;
+}
+.search-btn{
+    width: 100%;
+}
+.table-head{
+    display: flex;
+    white-space:nowrap;
+}
+
+.table-row {
+    flex-direction: row;
+    flex-wrap:nowrap;
+    flex-grow: 1;
+}

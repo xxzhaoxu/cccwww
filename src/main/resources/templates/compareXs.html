@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+<body>
+<div id="app">
+    <div style="display: flex;flex-direction: column;align-items: center;">
+        <div class="block">
+            <span class="demonstration">上期</span>
+            <el-date-picker
+                    v-model="value6"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期">
+            </el-date-picker>
+        </div>
+        <div class="block">
+            <span class="demonstration">本期</span>
+            <el-date-picker
+                    v-model="value7"
+                    type="daterange"
+                    align="right"
+                    unlink-panels
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    :picker-options="pickerOptions2">
+            </el-date-picker>
+        </div>
+        <el-button type="primary">搜索</el-button>
+    </div>
+    <div>
+        <el-table
+                :data="tableData3"
+                :style="'width:'+wd+'px'">
+            <el-table-column
+                    prop="index"
+                    label="#"
+                    width="150">
+            </el-table-column>
+                <el-table-column
+                        prop="zd"
+                        label="终端"
+                        width="120">
+                </el-table-column>
+                    <el-table-column
+                            prop="sqje"
+                            label="上期金额"
+                            width="120">
+                    </el-table-column>
+                    <el-table-column
+                            prop="bqje"
+                            label="本期金额"
+                            width="120">
+                    </el-table-column>
+                    <el-table-column
+                            prop="sqxse"
+                            label="上年同期销售额"
+                            width="300">
+                    </el-table-column>
+                    <el-table-column
+                            prop="hb"
+                            label="环比"
+                            width="120">
+                    </el-table-column>
+                    <el-table-column
+                            prop="tb"
+                            label="同比"
+                            width="120">
+                    </el-table-column>
+                    <el-table-column
+                            prop="sqmb"
+                            label="上期目标"
+                            width="120">
+                    </el-table-column>
+                    <el-table-column
+                            prop="bqmb"
+                            label="本期目标"
+                            width="120">
+                    </el-table-column>
+                    <el-table-column
+                            prop="wcl"
+                            label="完成率"
+                            width="120">
+                    </el-table-column>
+
+        </el-table>
+    </div>
+</div>
+
+
+
+
+</body>
+<!-- 先引入 Vue -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: function() {
+            return {
+                wd:800,
+                tableData3: [{
+                    index:'1',
+                    zd:'观音桥1',
+                    sqje: '1',
+                    bqje: '王小虎',
+                    sqxse: '上海',
+                    hb: '普陀区',
+                    tb: '上海市普陀区金沙江路 1518 弄',
+                    sqmb: 200333,
+                    bqmb: 200333,
+                    wcl: 200333,
+                },{
+                        index:'2',
+                        zd:'观音桥2',
+                        sqje: '1',
+                        bqje: '王小虎',
+                        sqxse: '上海',
+                        hb: '普陀区',
+                        tb: '上海市普陀区金沙江路 1518 弄',
+                        sqmb: 200333,
+                        bqmb: 200333,
+                        wcl: 200333,
+                    },
+                    {
+                    index:'3',
+                    zd:'观音桥3',
+                    sqje: '1',
+                    bqje: '王小虎',
+                    sqxse: '上海',
+                    hb: '普陀区',
+                    tb: '上海市普陀区金沙江路 1518 弄',
+                    sqmb: 200333,
+                    bqmb: 200333,
+                    wcl: 200333,
+                },{
+                    index:'4',
+                    zd:'观音桥4',
+                    sqje: '1',
+                    bqje: '王小虎',
+                    sqxse: '上海',
+                    hb: '普陀区',
+                    tb: '上海市普陀区金沙江路 1518 弄',
+                    sqmb: 200333,
+                    bqmb: 200333,
+                    wcl: 200333,
+                }
+                    ] ,
+                pickerOptions2: {
+                    shortcuts: [{
+                        text: '最近一周',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近一个月',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近三个月',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }]
+                },
+                value6: '',
+                value7: ''
+            }
+        },
+        created: function () {
+
+            console.log("111111111111111111")
+            this.getwidth();
+        },
+
+
+        methods:{
+            getwidth(){
+                this.wd =  document.body.clientWidth;
+                console.log(this.wd)
+            },
+        },
+    })
+
+</script>
+</html>

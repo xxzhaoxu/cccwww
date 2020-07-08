@@ -4,25 +4,23 @@ import com.echo.mobileweb.entity.Userinfo;
 import com.echo.mobileweb.entity.Yuangong;
 import com.echo.mobileweb.mapper.DdinputMapper;
 import com.echo.mobileweb.mapper.YuangongMapper;
-import com.echo.mobileweb.model.ComparisonModel;
 import com.echo.mobileweb.model.DayAmount;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Controller
 public class ComparisonController {
-    @Autowired
+    @Resource
     DdinputMapper ddinputMapper;
-    @Autowired
+    @Resource
     YuangongMapper yuangongMapper;
 
     @RequestMapping("comparison")
@@ -81,10 +79,11 @@ public class ComparisonController {
         //List<ComparisonModel> list = ddinputMapper.getComparison(null,shangqi_start,shangqi_end,benqi_start,benqi_end,shangqi_input,benqi_input);
 
         //model.addAttribute("list",list);
+        Double sq = ddinputMapper.getAmountByDay(shangqi_start, shangqi_end);
+        Double bq =  ddinputMapper.getAmountByDay(benqi_start, benqi_end);
+        Integer shangqi_amount =sq==null?0:sq.intValue();
 
-        Integer shangqi_amount =ddinputMapper.getAmountByDay(shangqi_start, shangqi_end).intValue();
-
-        Integer benqi_amount = ddinputMapper.getAmountByDay(benqi_start, benqi_end).intValue();
+        Integer benqi_amount = bq==null?0:bq.intValue();
 
         DecimalFormat df = new DecimalFormat("#.00");
         String bfb=df.format ((Double.parseDouble(benqi_amount+"") - shangqi_amount)/shangqi_amount*100);
