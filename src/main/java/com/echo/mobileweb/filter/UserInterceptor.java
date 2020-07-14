@@ -21,7 +21,7 @@ public class UserInterceptor implements HandlerInterceptor {
     private UserinfoMapper userinfoMapper;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        List<Userinfo> userInfos = userinfoMapper.selectAll();
+//        List<Userinfo> userInfos = userinfoMapper.selectAll();
         String uri = request.getRequestURI();
         System.out.println(uri);
         Userinfo currentUserInfo = (Userinfo) request.getSession().getAttribute("user");

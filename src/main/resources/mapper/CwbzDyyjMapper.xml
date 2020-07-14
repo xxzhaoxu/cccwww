@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.echo.mobileweb.mapper.CwbzDyyjMapper">
+  <resultMap id="BaseResultMap" type="com.echo.mobileweb.entity.CwbzDyyj">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="唯一码" jdbcType="NVARCHAR" property="唯一码" />
+    <result column="日期" jdbcType="NVARCHAR" property="日期" />
+    <result column="店铺代码" jdbcType="NVARCHAR" property="店铺代码" />
+    <result column="店铺名称" jdbcType="NVARCHAR" property="店铺名称" />
+    <result column="店员代码" jdbcType="NVARCHAR" property="店员代码" />
+    <result column="店员名称" jdbcType="NVARCHAR" property="店员名称" />
+    <result column="目标金额" jdbcType="BIGINT" property="目标金额" />
+    <result column="销售金额" jdbcType="NUMERIC" property="销售金额" />
+  </resultMap>
+  
+  <select id="selectSaleRank" resultType="java.util.Map">
+select
+	t1.店员名称 as 店员名称,
+	t1.店铺名称 as 店铺名称,
+	t1.销售金额 as 销售金额,
+	t1.目标金额 as 本月目标,
+	Round((CONVERT(float,t1.销售金额)/CONVERT(float,NULLIF(t1.目标金额,0)))*100,2) as 本月完成率,
+	t2.销售金额 as 上月金额,
+	t2.目标金额 as 上月目标,
+	Round((CONVERT(float,t2.销售金额)/CONVERT(float,NULLIF(t2.目标金额,0)))*100,2) as 上月完成率
+from  ((
+	select year(日期) as 年,
+	month(日期) as 月,
+	sum(销售金额) as 销售金额,
+	sum(目标金额) as 目标金额,
+	店员名称,
+	店铺名称
+	from
+		cwbz_dyyj
+	where
+		日期
+			between
+				cast('${start}' as datetime)
+			and  cast('${end}' as datetime)
+	group by 店员名称,店铺名称, year(日期), month(日期)
+	)  as t1
+	left join (
+	select
+		year(日期) as 年,
+		month(日期) as 月,
+		sum(销售金额) as 销售金额,
+		sum(目标金额) as 目标金额,
+		店铺名称
+	from
+		cwbz_dyyj
+	where
+		日期
+		between  cast('${lastStart}' as datetime)
+		and  cast('${lastEnd}' as datetime)
+	group by 店铺名称, year(日期), month(日期) ) as t2  on t1.店铺名称 = t2.店铺名称)
+  </select>
+</mapper>

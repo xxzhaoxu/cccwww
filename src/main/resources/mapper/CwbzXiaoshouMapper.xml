@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.echo.mobileweb.mapper.CwbzXiaoshouMapper">
+  <resultMap id="BaseResultMap" type="com.echo.mobileweb.entity.CwbzXiaoshou">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="唯一码" jdbcType="NVARCHAR" property="唯一码" />
+    <result column="店铺代码" jdbcType="NVARCHAR" property="店铺代码" />
+    <result column="店铺名称" jdbcType="NVARCHAR" property="店铺名称" />
+    <result column="日期" jdbcType="TIMESTAMP" property="日期" />
+    <result column="目标金额" jdbcType="BIGINT" property="目标金额" />
+    <result column="销售金额" jdbcType="NUMERIC" property="销售金额" />
+  </resultMap>
+  <select id="selectCwbzXiaoshouById" resultMap="BaseResultMap">
+        select * from cccwww.dbo.cwbz_xiaoshou where 唯一码=#{id}
+  </select>
+  <select id="selectCwbzXiaoshouList" resultMap="BaseResultMap">
+    SELECT top ${pageSize} *
+ 	from cwbz_xiaoshou
+    where
+ 	唯一码 not in (
+ 		select top ${pageStart} 唯一码 from [cwbz_xiaoshou]
+ 	) and 日期 between cast('${start}' as datetime) and cast('${end}' as datetime)
+
+  </select>
+
+    <select id="selectCwbzXiaoshou" resultType="java.util.Map">
+        select top ${pageSize} 店铺名称 as shopName,sum(销售金额) as xsje ,sum(目标金额) as mbje
+        from cwbz_xiaoshou where 店铺名称 not in ( select   top ${pageStart} 店铺名称 from [cwbz_xiaoshou])
+        and 日期 between cast('${start}' as datetime) and cast('${end}' as datetime)
+        <if test="shopName!=null">
+            and 店铺名称=#{shopName}
+        </if>
+ 	 group by 店铺名称
+
+    </select>
+  <select id="selectCwbzXiaoshouByName" resultType="java.util.Map">
+    select   店铺名称 as shopName,sum(销售金额) as xsje ,sum(目标金额) as mbje   from cwbz_xiaoshou where 店铺名称  = #{shopName}
+       and 日期 between cast('${start}' as datetime) and cast('${end}' as datetime)  group by 店铺名称
+  </select>
+
+    <select id="selectAllShopName" resultType="java.util.Map">
+        select  店铺名称 as shopName from cwbz_xiaoshou group by 店铺名称;
+    </select>
+
+    <select id="selectLastYearCharge" resultType="java.lang.String">
+        select sum(销售金额) as xsje from cwbz_xiaoshou where 日期 between #{start} and #{end}
+    </select>
+</mapper>

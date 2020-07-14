@@ -38,8 +38,8 @@
 <!--        <table tableName="qtlsdmx">-->
 <!--            <generatedKey column="id" sqlStatement="JDBC"/>-->
 <!--        </table>-->
-        <table tableName="UserInfo">
-            <generatedKey column="ID" sqlStatement="JDBC"/>
+        <table tableName="cwbz_dyyj">
+            <generatedKey column="唯一码" sqlStatement="JDBC"/>
         </table>
 <!--        <table tableName="yuangong">-->
 <!--            <generatedKey column="id" sqlStatement="JDBC"/>-->

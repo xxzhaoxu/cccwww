@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>导购排行</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
+    <!-- 引入样式 -->
+<!--    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
+    <!-- 引入样式文件 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.9/lib/index.css"/>
+    <!-- 先引入 Vue -->
+<!--    <script src="https://unpkg.com/vue/dist/vue.js"></script>-->
+    <!-- 引入组件库 -->
+<!--    <script src="https://unpkg.com/element-ui/lib/index.js"></script>-->
+    <!-- 引入axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- 引入 Vue 和 Vant 的 JS 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vant@2.9/lib/vant.min.js"></script>
+
+</head>
+<body>
+
+<div id="app">
+<!--    <van-cell title="选择日期区间" :value="date" @click="show = true" />-->
+<!--    <van-calendar v-model="show" type="range" @confirm="onConfirm" />-->
+
+    <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
+        <van-list
+                v-model="loading"
+                :finished="finished"
+                finished-text="没有更多了"
+                @load="onLoad"
+        >
+            <van-cell v-for="item in list" :key="item" :title="item" />
+        </van-list>
+    </van-pull-refresh>
+</div>
+
+</body>
+
+<script>
+    new Vue({
+        el: '#app',
+        data: function() {
+            return{
+                list: [],
+                loading: false,
+                finished: false,
+                refreshing: false
+            }
+        },
+        methods: {
+            onLoad() {
+                setTimeout(() => {
+                    if (this.refreshing) {
+                        this.list = [];
+                        this.refreshing = false;
+                    }
+
+                    for (let i = 0; i < 10; i++) {
+                        this.list.push(this.list.length + 1);
+                    }
+                    this.loading = false;
+
+                    if (this.list.length >= 40) {
+                        this.finished = true;
+                    }
+                }, 1000);
+            },
+            onRefresh() {
+                // 清空列表数据
+                this.finished = false;
+
+                // 重新加载数据
+                // 将 loading 设置为 true，表示处于加载状态
+                this.loading = true;
+                this.onLoad();
+            },
+        },
+    });
+
+    // Vue.use(vant.Lazyload);
+</script>
+</html>

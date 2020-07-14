@@ -2,36 +2,62 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
+
     <!-- 引入样式 -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 </head>
 <body>
-<div id="app">
-    <div style="display: flex;flex-direction: column;align-items: center;">
-        <div class="block">
-            <span class="demonstration">上期</span>
-            <el-date-picker
-                    v-model="value6"
-                    type="daterange"
-                    range-separator="至"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期">
-            </el-date-picker>
-        </div>
-        <div class="block">
-            <span class="demonstration">本期</span>
-            <el-date-picker
-                    v-model="value7"
-                    type="daterange"
-                    align="right"
-                    unlink-panels
-                    range-separator="至"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期"
-                    :picker-options="pickerOptions2">
-            </el-date-picker>
-        </div>
-        <el-button type="primary">搜索</el-button>
+<div id="app"
+     v-loading="loading"
+     element-loading-text="拼命加载中"
+     element-loading-spinner="el-icon-loading"
+     element-loading-background="rgba(0, 0, 0, 0.8)">
+    <div style="display: flex; justify-content: center; align-items: center;">
+
+     <div style="flex-direction: row; flex-grow:2">
+         <div class="block">
+             <span class="demonstration">上期</span>
+             <el-date-picker
+                     v-model="sq_date"
+                     format="yyyy-MM-dd"
+                     value-format="yyyy-MM-dd"
+                     type="daterange"
+                     range-separator="至"
+                     start-placeholder="开始日期"
+                     end-placeholder="结束日期">
+             </el-date-picker>
+         </div>
+         <div class="block">
+             <span class="demonstration">本期</span>
+             <el-date-picker
+                     v-model="bq_date"
+                     format="yyyy-MM-dd"
+                     value-format="yyyy-MM-dd"
+                     type="daterange"
+                     align="right"
+                     unlink-panels
+                     range-separator="至"
+                     start-placeholder="开始日期"
+                     end-placeholder="结束日期"
+                     :picker-options="pickerOptions2">
+             </el-date-picker>
+         </div>
+         <div>
+             <span class="demonstration">店铺</span>
+             <el-select v-model="value" clearable placeholder="请选择">
+                 <el-option
+                         v-for="item in options"
+                         :key="item.shopName"
+                         :label="item.shopName"
+                         :value="item.shopName">
+                 </el-option>
+             </el-select>
+         </div>
+     </div>
+    </div>
+    <div style="display: flex;justify-content: center;">
+        <el-button type="primary" v-on:click="search">搜索</el-button>
     </div>
     <div>
         <el-table
@@ -40,9 +66,11 @@
             <el-table-column
                     prop="index"
                     label="#"
+                    type="index"
                     width="150">
             </el-table-column>
                 <el-table-column
+                        fixed
                         prop="zd"
                         label="终端"
                         width="120">
@@ -58,7 +86,7 @@
                             width="120">
                     </el-table-column>
                     <el-table-column
-                            prop="sqxse"
+                            prop="sqtqxsj"
                             label="上年同期销售额"
                             width="300">
                     </el-table-column>
@@ -87,7 +115,6 @@
                             label="完成率"
                             width="120">
                     </el-table-column>
-
         </el-table>
     </div>
 </div>
@@ -100,59 +127,19 @@
 <script src="https://unpkg.com/vue/dist/vue.js"></script>
 <!-- 引入组件库 -->
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<!-- 引入axios -->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
 <script>
     new Vue({
         el: '#app',
         data: function() {
             return {
+                loading: false,
+                options:[],
+                value: '观音桥①店',
                 wd:800,
-                tableData3: [{
-                    index:'1',
-                    zd:'观音桥1',
-                    sqje: '1',
-                    bqje: '王小虎',
-                    sqxse: '上海',
-                    hb: '普陀区',
-                    tb: '上海市普陀区金沙江路 1518 弄',
-                    sqmb: 200333,
-                    bqmb: 200333,
-                    wcl: 200333,
-                },{
-                        index:'2',
-                        zd:'观音桥2',
-                        sqje: '1',
-                        bqje: '王小虎',
-                        sqxse: '上海',
-                        hb: '普陀区',
-                        tb: '上海市普陀区金沙江路 1518 弄',
-                        sqmb: 200333,
-                        bqmb: 200333,
-                        wcl: 200333,
-                    },
-                    {
-                    index:'3',
-                    zd:'观音桥3',
-                    sqje: '1',
-                    bqje: '王小虎',
-                    sqxse: '上海',
-                    hb: '普陀区',
-                    tb: '上海市普陀区金沙江路 1518 弄',
-                    sqmb: 200333,
-                    bqmb: 200333,
-                    wcl: 200333,
-                },{
-                    index:'4',
-                    zd:'观音桥4',
-                    sqje: '1',
-                    bqje: '王小虎',
-                    sqxse: '上海',
-                    hb: '普陀区',
-                    tb: '上海市普陀区金沙江路 1518 弄',
-                    sqmb: 200333,
-                    bqmb: 200333,
-                    wcl: 200333,
-                }
-                    ] ,
+                tableData3: [] ,
                 pickerOptions2: {
                     shortcuts: [{
                         text: '最近一周',
@@ -180,22 +167,53 @@
                         }
                     }]
                 },
-                value6: '',
-                value7: ''
+                bq_date: ['2019-01-01','2019-02-01'],
+
             }
         },
         created: function () {
-
-            console.log("111111111111111111")
             this.getwidth();
+            this.getOptions();
         },
 
-
         methods:{
+            getOptions(){
+                const _vm = this;
+                axios.get('http://192.168.0.11:9090/api/findAllShopName')
+                    .then(function (response) {
+                        console.log(response)
+                        _vm.options=response.data
+                        console.log(_vm.tableData3);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            },
             getwidth(){
                 this.wd =  document.body.clientWidth;
                 console.log(this.wd)
             },
+            search:function () {
+               console.log(this.sq_date)
+               console.log(this.bq_date)
+                const _vm = this;
+                if (this.sq_date===''||this.sq_date===''){
+                    alert("请选择时间")
+                    return
+                }
+                _vm.loading = true;
+                const  param = 'bqDate='+this.bq_date+'&sqDate='+this.sq_date+'&name='+_vm.value+'&pageSize=100'+'&pageIndex=1'
+                axios.get('http://192.168.0.11:9090/api/hbtbData?'+param)
+                    .then(function (response) {
+                        console.log(response)
+                        _vm.tableData3=response.data
+                        _vm.loading = false;
+                        console.log(_vm.tableData3);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            }
         },
     })
 
