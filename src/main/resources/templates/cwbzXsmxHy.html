@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>大类销售占比+会员占比</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
+
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+
+    <!-- 引入样式文件 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.9/lib/index.css"/>
+    <!-- 先引入 Vue -->
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <!-- 引入axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- 引入 Vue 和 Vant 的 JS 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/vant@2.9/lib/vant.min.js"></script>
+</head>
+<body>
+<div id="app">
+    <div class="block">
+        <span class="demonstration">开始时间</span>
+        <el-date-picker
+                v-model="start"
+                type="date"
+                format="yyyy-MM-dd"
+                value-format="yyyy-MM-dd"
+                @change="startDate"
+                placeholder="选择日期">
+        </el-date-picker>
+    </div>
+    <div class="block">
+        <span class="demonstration">结束时间</span>
+        <el-date-picker
+                v-model="end"
+                type="date"
+                format="yyyy-MM-dd"
+                value-format="yyyy-MM-dd"
+                @change="endTime"
+                placeholder="选择日期">
+        </el-date-picker>
+    </div>
+    <div>
+        <span class="demonstration">终端名称</span>
+        <el-select v-model="defaultShop" clearable placeholder="请选择">
+            <el-option
+                    v-for="item in shopList"
+                    :key="item.shopName"
+                    :label="item.shopName"
+                    :value="item.shopName">
+            </el-option>
+        </el-select>
+    </div>
+
+    <div>
+        <el-table
+                :data="tableData3"
+                :style="'width:'+wd+'px'">
+            <el-table-column
+                    prop="index"
+                    label="#"
+                    type="index"
+                    width="50">
+            </el-table-column>
+            <el-table-column
+                    fixed
+                    prop="店铺名称"
+                    label="终端"
+                    width="120">
+            </el-table-column>
+            <el-table-column
+                    prop="店员名称"
+                    label="店员名称"
+                    width="120">
+            </el-table-column>
+            <el-table-column
+                    prop="销售金额"
+                    label="销售金额"
+                    width="120">
+            </el-table-column>
+            <el-table-column
+                    prop="上月金额"
+                    label="上月金额"
+                    width="120">
+            </el-table-column>
+            <el-table-column
+                    prop="本月目标"
+                    label="本月目标"
+                    width="120">
+            </el-table-column>
+            <el-table-column
+                    prop="上月目标"
+                    label="上月目标"
+                    width="120">
+            </el-table-column>
+            <el-table-column
+                    prop="本月完成率"
+                    label="本月完成率"
+                    width="120">
+            </el-table-column>
+            <el-table-column
+                    label="上月完成率"
+                    value="100%"
+                    width="120">
+                <template slot-scope="scope">
+                    <span>
+                        {{scope.row.上月完成率||'0.00'}}%
+                    </span>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+</div>
+
+<script>
+    new Vue({
+        el: '#app',
+        data: function() {
+            return {
+                start: '',
+                end: '',
+                shopList:[],
+                defaultShop:'观音桥①店'
+            }
+        },
+        computed: {
+
+        },
+        created: function () {
+            this.allShop()
+        },
+        methods: {
+            startDate(date){
+                console.log(date)
+            },
+            endTime(date){
+                console.log(date)
+            },
+            allShop(){
+                const _vm = this;
+                axios.get('http://192.168.0.11:9090/api/findAllShopName')
+                    .then(function (response) {
+                        console.log(response.data)
+                        _vm.shopList=response.data
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            }
+        }
+
+    })
+</script>
+</body>
+</html>

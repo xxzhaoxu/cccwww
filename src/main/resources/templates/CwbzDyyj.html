@@ -4,82 +4,263 @@
     <meta charset="UTF-8">
     <title>导购排行</title>
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
-    <!-- 引入样式 -->
-<!--    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
+
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+
     <!-- 引入样式文件 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.9/lib/index.css"/>
     <!-- 先引入 Vue -->
-<!--    <script src="https://unpkg.com/vue/dist/vue.js"></script>-->
-    <!-- 引入组件库 -->
-<!--    <script src="https://unpkg.com/element-ui/lib/index.js"></script>-->
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <!-- 引入axios -->
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <!-- 引入 Vue 和 Vant 的 JS 文件 -->
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vant@2.9/lib/vant.min.js"></script>
+
 
 </head>
 <body>
+<div id="app" v-loading="loading">
+    <div style="flex-direction: column; flex-grow:2">
+        <div class="block">
+            <span class="demonstration">日期</span>
+            <el-date-picker
+                    v-model="bq_date"
+                    format="yyyy-MM-dd"
+                    value-format="yyyy-MM-dd"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期">
+            </el-date-picker>
+        </div>
+        <div>
+            <span class="demonstration">终端</span>
+            <el-select v-model="value" clearable placeholder="请选择">
+                <el-option
+                        v-for="item in options"
+                        :key="item.shopName"
+                        :label="item.shopName"
+                        :value="item.shopName">
+                </el-option>
+            </el-select>
+        </div>
+    </div>
+    <div style="display: flex;justify-content: center;">
+        <el-button type="primary" v-on:click="search">搜索</el-button>
+    </div>
 
-<div id="app">
-<!--    <van-cell title="选择日期区间" :value="date" @click="show = true" />-->
-<!--    <van-calendar v-model="show" type="range" @confirm="onConfirm" />-->
-
-    <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
-        <van-list
-                v-model="loading"
-                :finished="finished"
-                finished-text="没有更多了"
-                @load="onLoad"
-        >
-            <van-cell v-for="item in list" :key="item" :title="item" />
-        </van-list>
-    </van-pull-refresh>
+    <div>
+        <el-table
+                :data="tableData3"
+                :style="'width:'+wd+'px'">
+            <el-table-column
+                    prop="index"
+                    label="#"
+                    type="index"
+                    width="50">
+            </el-table-column>
+            <el-table-column
+                    fixed
+                    prop="店铺名称"
+                    label="终端"
+                    width="120">
+            </el-table-column>
+            <el-table-column
+                    prop="店员名称"
+                    label="店员名称"
+                    width="120">
+            </el-table-column>
+            <el-table-column
+                    prop="销售金额"
+                    label="销售金额"
+                    width="120">
+            </el-table-column>
+            <el-table-column
+                    prop="上月金额"
+                    label="上月金额"
+                    width="120">
+            </el-table-column>
+            <el-table-column
+                    prop="本月目标"
+                    label="本月目标"
+                    width="120">
+            </el-table-column>
+            <el-table-column
+                    prop="上月目标"
+                    label="上月目标"
+                    width="120">
+            </el-table-column>
+            <el-table-column
+                    prop="本月完成率"
+                    label="本月完成率"
+                    width="120">
+            </el-table-column>
+            <el-table-column
+                    label="上月完成率"
+                    value="100%"
+                    width="120">
+                <template slot-scope="scope">
+                    <span>
+                        {{scope.row.上月完成率||'0.00'}}%
+                    </span>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+    <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            @prev-click="prePage"
+            @next-click="nextPage"
+            :current-page.sync="currentPage3"
+            :page-size="100"
+            layout="prev, pager, next, jumper"
+            :total="total"
+            :page-sizes="[10, 20, 30, 40, 50, 100]"
+            background
+    >
+    </el-pagination>
 </div>
+
 
 </body>
 
 <script>
     new Vue({
         el: '#app',
+        div: '<van-button>按钮</van-button>',
         data: function() {
-            return{
-                list: [],
+            return {
+                pageIndex: 1,
+                pageSize:10,
+                total:0,
+                date: '',
+                show: false,
                 loading: false,
-                finished: false,
-                refreshing: false
+                options:[],
+                value: '观音桥①店',
+                wd:800,
+                tableData3: [] ,
+                pickerOptions2: {
+                    shortcuts: [{
+                        text: '最近一周',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近一个月',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近三个月',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }]
+                },
+                bq_date: ['2020-01-01','2020-05-01'],
+                currentPage3: 1,
+
             }
         },
-        methods: {
-            onLoad() {
-                setTimeout(() => {
-                    if (this.refreshing) {
-                        this.list = [];
-                        this.refreshing = false;
-                    }
+        created: function () {
+            this.allShop()
 
-                    for (let i = 0; i < 10; i++) {
-                        this.list.push(this.list.length + 1);
-                    }
-                    this.loading = false;
-
-                    if (this.list.length >= 40) {
-                        this.finished = true;
-                    }
-                }, 1000);
-            },
-            onRefresh() {
-                // 清空列表数据
-                this.finished = false;
-
-                // 重新加载数据
-                // 将 loading 设置为 true，表示处于加载状态
-                this.loading = true;
-                this.onLoad();
-            },
         },
-    });
+        mounted: function(){
+            const t = this;
+            t.getNowDate()
+            t.search()
 
-    // Vue.use(vant.Lazyload);
+        },
+        methods:{
+            allShop(){
+                const _vm = this;
+                axios.get('http://192.168.0.11:9090/api/findAllShopName')
+                    .then(function (response) {
+                        console.log(response)
+                        _vm.options=response.data
+                        console.log(_vm.tableData3);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            },
+            getNowDate() {
+                const  t =this;
+                const nowDate = new Date();
+                let date = {
+                    year: nowDate.getFullYear(),
+                    month: (nowDate.getMonth() + 1)>10?(nowDate.getMonth()+1):"0"+(nowDate.getMonth()+1),
+                    date: nowDate.getDate()>10?nowDate.getDate():"0"+nowDate.getDate(),
+                }
+                const  dt = date.year + '-'+ date.month + '-'+ date.date;
+                t.bq_date = [dt,dt];
+
+            },
+            search:function () {
+                const _vm = this;
+                console.log(_vm.bq_date)
+                if (_vm.sq_date===''){
+                    alert("请选择时间")
+                    return
+                }
+                _vm.loading = true;
+                let  param = 'date='+this.bq_date+'&pageIndex='+_vm.pageIndex+'&pageSize='+_vm.pageSize;
+                if (_vm.value){
+                    param+='&shopName='+_vm.value
+                }
+                axios.get('http://192.168.0.11:9090/api/findSaleRank?'+param)
+                    .then(function (response) {
+                        console.log(response)
+                        _vm.tableData3=response.data.list
+                        _vm.total = response.data.total
+                        _vm.loading = false;
+                        console.log(_vm.tableData3);
+
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            },
+            handleSizeChange(val) {
+
+                const t = this
+
+                t.pageSize = val
+                t.search()
+            },
+            handleCurrentChange(val) {
+                const t = this
+
+                t.pageIndex = val
+                t.search()
+            },
+            prePage(val){
+                const t = this
+                t.pageIndex = val
+                t.search()
+            },
+            nextPage(val){
+                const t = this
+                t.pageIndex = val
+                t.search()
+            }
+        }
+
+    })
+
 </script>
 </html>

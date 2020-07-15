@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.echo.mobileweb.mapper.CwbzXsmxHyMapper">
+  <resultMap id="BaseResultMap" type="com.echo.mobileweb.entity.CwbzXsmxHy">
+    <result column="小票号" jdbcType="VARCHAR" property="小票号" />
+    <result column="日期" jdbcType="TIMESTAMP" property="日期" />
+    <result column="店铺代码" jdbcType="VARCHAR" property="店铺代码" />
+    <result column="店铺名称" jdbcType="VARCHAR" property="店铺名称" />
+    <result column="经理名称" jdbcType="VARCHAR" property="经理名称" />
+    <result column="督导名称" jdbcType="VARCHAR" property="督导名称" />
+    <result column="总监名称" jdbcType="VARCHAR" property="总监名称" />
+    <result column="地区名称" jdbcType="VARCHAR" property="地区名称" />
+    <result column="商品代码" jdbcType="VARCHAR" property="商品代码" />
+    <result column="数量" jdbcType="DOUBLE" property="数量" />
+    <result column="金额" jdbcType="DOUBLE" property="金额" />
+    <result column="大类名称" jdbcType="VARCHAR" property="大类名称" />
+    <result column="小类名称" jdbcType="VARCHAR" property="小类名称" />
+    <result column="VIP卡号" jdbcType="VARCHAR" property="vip卡号" />
+    <result column="顾客名字" jdbcType="NVARCHAR" property="顾客名字" />
+    <result column="顾客手机" jdbcType="NVARCHAR" property="顾客手机" />
+    <result column="累计消费" jdbcType="NUMERIC" property="累计消费" />
+    <result column="厂家" jdbcType="VARCHAR" property="厂家" />
+    <result column="吊牌价" jdbcType="VARCHAR" property="吊牌价" />
+  </resultMap>
+
+	<resultMap id="CwbzXsmxHyResultMap" type="com.echo.mobileweb.result.CwbzXsmxHyResult">
+		<result column="店铺" jdbcType="VARCHAR" property="shopName" />
+		<result column="类别" jdbcType="VARCHAR" property="cType" />
+		<result column="销售数量" jdbcType="VARCHAR" property="saleNum" />
+		<result column="销售金额" jdbcType="VARCHAR" property="salePrice" />
+		<result column="会员消费金额" jdbcType="VARCHAR" property="vipPrice" />
+		<result column="数量占比" jdbcType="VARCHAR" property="numProportion" />
+		<result column="金额占比" jdbcType="VARCHAR" property="priceProportion" />
+		<result column="会员占比" jdbcType="VARCHAR" property="vipProportion" />
+	</resultMap>
+
+  <select id="selectCwbzXsmxHy" resultMap="CwbzXsmxHyResultMap">
+
+ select
+	t1.店铺名称 as 店铺,
+	t1.大类名称 as 类别,
+	t1.数量 as 销售数量,
+	t1.金额 as 销售金额,
+	t3.会员总金额 as 会员消费金额,
+	NULLIF(Round((CONVERT(float,t1.数量)/CONVERT(float,NULLIF(t2.总数量,0)))*100,2),'0') as 数量占比,
+	NULLIF(Round((CONVERT(float,t1.金额)/CONVERT(float,NULLIF(t2.总金额,0)))*100,2),'0') as 金额占比,
+	NULLIF(Round((CONVERT(float,t3.会员总金额)/CONVERT(float,NULLIF(t2.总金额,0)))*100,2),'0') as 会员占比
+  from (
+	(
+		select
+			店铺名称,
+			大类名称,
+			SUM(数量) as 数量,
+			SUM(金额) as 金额
+		from
+			cwbz_xsmx_hy
+		where
+			日期
+		between
+			cast('${start}' as datetime)
+		and
+			cast('${end}' as datetime)
+        <if test="shopName!=null">
+          and 店铺名称=#{shopName}
+        </if>
+		group by
+			店铺名称 ,大类名称) as t1
+  left join
+	(
+		select
+			店铺名称,
+			SUM(数量) as 总数量,
+			SUM(金额) as 总金额
+		from
+			cwbz_xsmx_hy
+		where
+			日期
+		between
+			cast('${start}' as datetime)
+		and
+			cast('${end}' as datetime)
+        <if test="shopName!=null">
+          and 店铺名称=#{shopName}
+        </if>
+		group by
+			店铺名称
+	)   as t2 on  t1.店铺名称 = t2.店铺名称
+	left join(
+	select
+			店铺名称,
+			SUM(数量) as 会员总数量,
+			SUM(金额) as 会员总金额
+		from
+			cwbz_xsmx_hy
+		where
+			日期
+		between
+			cast('${start}' as datetime)
+		and
+			cast('${end}' as datetime)
+		and
+		    len(VIP卡号)>0
+        <if test="shopName!=null">
+          and 店铺名称=#{shopName}
+        </if>
+		group by
+			店铺名称
+	) as t3 on t1.店铺名称 =t3.店铺名称
+	)
+    </select>
+
+  <select id="selectAll" resultMap="BaseResultMap">
+    select * from   cwbz_xsmx_hy;
+  </select>
+
+</mapper>
