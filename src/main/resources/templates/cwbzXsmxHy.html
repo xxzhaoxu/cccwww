@@ -19,7 +19,9 @@
     <script src="https://cdn.jsdelivr.net/npm/vant@2.9/lib/vant.min.js"></script>
 </head>
 <body>
-<div id="app">
+<div id="app"
+     v-loading="loading"
+>
     <div class="block">
         <span class="demonstration">开始时间</span>
         <el-date-picker
@@ -43,7 +45,7 @@
         </el-date-picker>
     </div>
     <div>
-        <span class="demonstration">终端名称</span>
+         <span class="demonstration">终端名称</span>
         <el-select v-model="defaultShop" clearable placeholder="请选择">
             <el-option
                     v-for="item in shopList"
@@ -52,11 +54,13 @@
                     :value="item.shopName">
             </el-option>
         </el-select>
+     </div>
+    <div style="display: flex;justify-content: center;">
+        <el-button type="primary" v-on:click="search">搜索</el-button>
     </div>
-
     <div>
         <el-table
-                :data="tableData3"
+                :data="tableData"
                 :style="'width:'+wd+'px'">
             <el-table-column
                     prop="index"
@@ -66,52 +70,73 @@
             </el-table-column>
             <el-table-column
                     fixed
-                    prop="店铺名称"
+                    prop="shopName"
                     label="终端"
                     width="120">
             </el-table-column>
             <el-table-column
-                    prop="店员名称"
-                    label="店员名称"
+                    prop="cType"
+                    label="类别"
                     width="120">
             </el-table-column>
             <el-table-column
-                    prop="销售金额"
+                    prop="saleNum"
+                    label="销售数量"
+                    width="120">
+            </el-table-column>
+            <el-table-column
+                    prop="salePrice"
                     label="销售金额"
                     width="120">
             </el-table-column>
             <el-table-column
-                    prop="上月金额"
-                    label="上月金额"
+                    prop="vipPrice"
+                    label="会员消费金额"
                     width="120">
             </el-table-column>
             <el-table-column
-                    prop="本月目标"
-                    label="本月目标"
+                    prop="numProportion"
+                    label="数量占比"
                     width="120">
             </el-table-column>
             <el-table-column
-                    prop="上月目标"
-                    label="上月目标"
+                    prop="priceProportion"
+                    label="金额占比"
                     width="120">
             </el-table-column>
             <el-table-column
-                    prop="本月完成率"
-                    label="本月完成率"
-                    width="120">
-            </el-table-column>
-            <el-table-column
-                    label="上月完成率"
+                    prop="singlePrice"
+                    label="单价"
                     value="100%"
                     width="120">
-                <template slot-scope="scope">
-                    <span>
-                        {{scope.row.上月完成率||'0.00'}}%
-                    </span>
-                </template>
+<!--                <template slot-scope="scope">-->
+<!--                    <span>-->
+<!--                        {{scope.row.上月完成率||'0.00'}}%-->
+<!--                    </span>-->
+<!--                </template>-->
+            </el-table-column>
+            <el-table-column
+                    prop="vipProportion"
+                    label="会员占比"
+                    width="120">
             </el-table-column>
         </el-table>
     </div>
+    <div>
+        <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                @prev-click="prePage"
+                @next-click="nextPage"
+                :current-page.sync="currentPage3"
+                :page-size="100"
+                layout="prev, pager, next, jumper"
+                :total="total"
+                :page-sizes="[10, 20, 30, 40, 50, 100]"
+                background
+        >
+        </el-pagination>
+</div>
 </div>
 
 <script>
@@ -122,14 +147,30 @@
                 start: '',
                 end: '',
                 shopList:[],
-                defaultShop:'观音桥①店'
+                defaultShop:'观音桥①店',
+                tableData:[],
+                wd:800,
+                pageSize:10,
+                pageIndex:1,
+                currentPage3:1,
+                loading:false,
+                total:0,
+                currentPage3: 1,
             }
         },
         computed: {
 
         },
+        mounted: function(){
+            const t = this;
+            t.search()
+
+        },
         created: function () {
-            this.allShop()
+            const t = this;
+            t.allShop();
+            t.getNowDate();
+
         },
         methods: {
             startDate(date){
@@ -148,7 +189,70 @@
                     .catch(function (error) {
                         console.log(error);
                     });
+            },
+            search(){
+                const _vm = this;
+                if (_vm.start===''){
+                    alert("请选择开始时间")
+                    return
+                }
+                if (_vm.end===""){
+                    alert("请选择结束时间")
+                    return
+                }
+                _vm.loading = true;
+                let  param = 'start='+_vm.start+'&end='+_vm.end+'&pageIndex='+_vm.pageIndex+'&pageSize='+_vm.pageSize;
+                if (_vm.value){
+                    param+='&shopName='+_vm.value
+                }
+                axios.get('http://192.168.0.11:9090/api/findCwbzXsmxHy?'+param)
+                    .then(function (response) {
+                        _vm.tableData=response.data.list
+                        _vm.total = response.data.total
+                        _vm.loading = false;
+                        // console.log(_vm.tableData);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            },
+            getNowDate() {
+                const  t =this;
+                const nowDate = new Date();
+                let date = {
+                    year: nowDate.getFullYear(),
+                    month: (nowDate.getMonth() + 1)>10?(nowDate.getMonth()+1):"0"+(nowDate.getMonth()+1),
+                    date: nowDate.getDate()>10?nowDate.getDate():"0"+nowDate.getDate(),
+                }
+                const  start = date.year + '-'+ date.month + '-'+ (date.date-1);
+                const  end = date.year + '-'+ date.month + '-'+ date.date;
+                t.start = start;
+                t.end = end;
+            } ,
+            handleSizeChange(val) {
+
+                const t = this
+
+                t.pageSize = val
+                t.search()
+            },
+            handleCurrentChange(val) {
+                const t = this
+
+                t.pageIndex = val
+                t.search()
+            },
+            prePage(val){
+                const t = this
+                t.pageIndex = val
+                t.search()
+            },
+            nextPage(val){
+                const t = this
+                t.pageIndex = val
+                t.search()
             }
+
         }
 
     })

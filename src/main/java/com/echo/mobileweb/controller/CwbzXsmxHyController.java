@@ -32,11 +32,9 @@ public class CwbzXsmxHyController {
             @RequestParam(defaultValue = "1")Integer pageIndex,
             @RequestParam(defaultValue = "10")Integer pageSize,
             @RequestParam(required = false)String shopName){
-//        String name = shopName.equals("")?null:shopName;
-//        String orderBy = "t1.销售金额 desc";
         PageHelper.startPage(pageIndex,pageSize);
         List<CwbzXsmxHyResult> list = cwbzXsmxHyMapper.selectCwbzXsmxHy(start,end,shopName);
-//        List<CwbzXsmxHy> cwbzXsmxHyList = cwbzXsmxHyMapper.selectAll();
+        System.out.println(pageSize +"---"+pageIndex);
         PageInfo<CwbzXsmxHyResult> pageInfo = new PageInfo<CwbzXsmxHyResult>(list);
         return pageInfo;
     }

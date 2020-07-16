@@ -32,6 +32,7 @@
 		<result column="数量占比" jdbcType="VARCHAR" property="numProportion" />
 		<result column="金额占比" jdbcType="VARCHAR" property="priceProportion" />
 		<result column="会员占比" jdbcType="VARCHAR" property="vipProportion" />
+		<result column="单价" jdbcType="VARCHAR" property="singlePrice" />
 	</resultMap>
 
   <select id="selectCwbzXsmxHy" resultMap="CwbzXsmxHyResultMap">
@@ -44,7 +45,8 @@
 	t3.会员总金额 as 会员消费金额,
 	NULLIF(Round((CONVERT(float,t1.数量)/CONVERT(float,NULLIF(t2.总数量,0)))*100,2),'0') as 数量占比,
 	NULLIF(Round((CONVERT(float,t1.金额)/CONVERT(float,NULLIF(t2.总金额,0)))*100,2),'0') as 金额占比,
-	NULLIF(Round((CONVERT(float,t3.会员总金额)/CONVERT(float,NULLIF(t2.总金额,0)))*100,2),'0') as 会员占比
+	NULLIF(Round((CONVERT(float,t3.会员总金额)/CONVERT(float,NULLIF(t2.总金额,0)))*100,2),'0') as 会员占比,
+	nullif (Round(t2.总金额/t2.总数量,2),0) as 单价
   from (
 	(
 		select
@@ -106,7 +108,7 @@
 		group by
 			店铺名称
 	) as t3 on t1.店铺名称 =t3.店铺名称
-	)
+	) order by t1.店铺名称
     </select>
 
   <select id="selectAll" resultMap="BaseResultMap">
