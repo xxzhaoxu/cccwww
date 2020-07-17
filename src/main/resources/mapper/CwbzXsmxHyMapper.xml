@@ -108,11 +108,52 @@
 		group by
 			店铺名称
 	) as t3 on t1.店铺名称 =t3.店铺名称
-	) order by t1.店铺名称
+	)
+
     </select>
 
   <select id="selectAll" resultMap="BaseResultMap">
     select * from   cwbz_xsmx_hy;
   </select>
 
+	<select id="selectAllArea" resultType="java.lang.String">
+		select 地区名称 from cwbz_xsmx_hy  group by 地区名称
+	</select>
+	<select id="selectareaTypeData" resultType="java.util.Map">
+	select
+	   t1.地区名称 as 地区名称,
+	   t1.大类名称 as 大类名称,
+	   t1.金额 as 金额,
+	   t1.数量 as 数量,
+	NULLIF(Round((CONVERT(float,t1.数量)/CONVERT(float,NULLIF(t2.总数量,0)))*100,2),'0') as 数量占比,
+	NULLIF(Round((CONVERT(float,t1.金额)/CONVERT(float,NULLIF(t2.总金额,0)))*100,2),'0') as 金额占比,
+		t2.总数量 as 总数量,
+		t2.总金额 as 总金额
+
+	from (
+  (select 地区名称, 大类名称, SUM(数量) as 数量,SUM(金额) as 金额 from cwbz_xsmx_hy
+   where
+   		日期
+		between
+			cast('${start}' as datetime)
+		and
+			cast('${end}' as datetime)
+		<if test="area!=null">
+			and 地区名称=#{area}
+		</if>
+   group by 地区名称,大类名称 ) as t1
+  left join
+  (
+  	select 地区名称, SUM(金额) 总金额,SUM(数量) as 总数量 from cwbz_xsmx_hy where
+   日期
+		between
+			cast('${start}' as datetime)
+		and
+			cast('${end}' as datetime)
+		<if test="area!=null">
+			and 地区名称=#{area}
+		</if>
+   group by 地区名称) as t2 on t1.地区名称 = t2.地区名称
+  ) order by 地区名称
+	</select>
 </mapper>

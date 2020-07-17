@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>大类销售占比+会员占比</title>
+    <title>地区大类销售占比</title>
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
 
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
@@ -19,9 +19,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vant@2.9/lib/vant.min.js"></script>
 </head>
 <body>
-<div id="app"
-     v-loading="loading"
->
+<div id="app" v-loading="loading">
     <div class="block">
         <span class="demonstration">开始时间</span>
         <el-date-picker
@@ -45,16 +43,16 @@
         </el-date-picker>
     </div>
     <div>
-         <span class="demonstration">终端名称</span>
-        <el-select v-model="defaultShop" clearable placeholder="请选择">
+        <span class="demonstration">终端名称</span>
+        <el-select v-model="defaultArea" clearable placeholder="请选择">
             <el-option
                     v-for="item in shopList"
-                    :key="item.shopName"
-                    :label="item.shopName"
-                    :value="item.shopName">
+                    :key="item"
+                    :label="item"
+                    :value="item">
             </el-option>
         </el-select>
-     </div>
+    </div>
     <div style="display: flex;justify-content: center;">
         <el-button type="primary" v-on:click="search">搜索</el-button>
     </div>
@@ -71,94 +69,58 @@
                     width="50">
             </el-table-column>
             <el-table-column
-                    fixed
-                    prop="shopName"
-                    label="终端"
-                    width="120">
-            </el-table-column>
-            <el-table-column
-                    prop="cType"
-                    label="类别"
-                    sortable="custom"
-                    width="120">
-            </el-table-column>
-            <el-table-column
-                    prop="saleNum"
-                    label="销售数量"
-                    sortable="custom"
-                    width="120">
-            </el-table-column>
-            <el-table-column
-                    prop="salePrice"
-                    label="销售金额"
-                    sortable="custom"
-                    width="120">
-            </el-table-column>
-            <el-table-column
-                    prop="vipPrice"
-                    label="会员消费金额"
-                    sortable="custom"
-                    width="130">
-            </el-table-column>
-            <el-table-column
 
+                    prop="地区名称"
+                    label="地区"
+                    width="120">
+            </el-table-column>
+            <el-table-column
+                    prop="大类名称"
+                    label="类别"
+                     width="120">
+            </el-table-column>
+            <el-table-column
+                    prop="数量"
+                    label="数量"
+                     width="120">
+            </el-table-column>
+            <el-table-column
+                    prop="金额"
+                    label="金额"
+                     width="120">
+            </el-table-column>
+            <el-table-column
                     label="数量占比"
-                    sortable="custom"
+
+                    width="130">
+                <template slot-scope="scope">
+                                    <span>
+                                        {{scope.row.数量占比}}%
+                                    </span>
+                </template>
+            </el-table-column>
+            <el-table-column
+                    label="金额占比"
                     width="120">
                 <template slot-scope="scope">
                                     <span>
-                                        {{scope.row.numProportion}}%
+                                        {{scope.row.金额占比}}%
                                     </span>
                 </template>
             </el-table-column>
             <el-table-column
-
-                    label="金额占比"
-                    sortable="custom"
-                    width="120">
-                                <template slot-scope="scope">
-                                    <span>
-                                        {{scope.row.priceProportion}}%
-                                    </span>
-                                </template>
-            </el-table-column>
-            <el-table-column
-                    prop="singlePrice"
-                    label="单价"
-                    sortable="custom"
+                    prop="总数量"
+                    label="总数量"
                     width="120">
             </el-table-column>
             <el-table-column
-                    prop="vipProportion"
-                    label="会员占比"
-                    sortable="custom"
+                    prop="总数量"
+                    label="总数量"
                     width="120">
-                <template
-                        slot-scope="scope">
-                                    <span>
-                                        {{scope.row.vipProportion}}%
-                                    </span>
-                </template>
             </el-table-column>
         </el-table>
     </div>
-    <div>
-        <el-pagination
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-                @prev-click="prePage"
-                @next-click="nextPage"
-                :current-page.sync="currentPage3"
-                :page-size="100"
-                layout="prev, pager, next, jumper"
-                :total="total"
-                :page-sizes="[10, 20, 30, 40, 50, 100]"
-                background
-        >
-        </el-pagination>
 </div>
-</div>
-
 <script>
     new Vue({
         el: '#app',
@@ -167,10 +129,10 @@
                 start: '',
                 end: '',
                 shopList:[],
-                defaultShop:'观音桥①店',
+                defaultArea:"重庆区域",
                 tableData:[],
                 wd:800,
-                pageSize:10,
+                pageSize:1000,
                 pageIndex:1,
                 currentPage3:1,
                 loading:false,
@@ -180,9 +142,6 @@
                 prop:''
             }
         },
-        computed: {
-
-        },
         mounted: function(){
             const t = this;
             t.search()
@@ -190,7 +149,7 @@
         },
         created: function () {
             const t = this;
-            t.allShop();
+            t.allArea();
             t.getNowDate();
 
         },
@@ -201,9 +160,9 @@
             endTime(date){
                 console.log(date)
             },
-            allShop(){
+            allArea(){
                 const _vm = this;
-                axios.get('http://192.168.0.11:9090/api/findAllShopName')
+                axios.get('http://192.168.0.11:9090/api/findAllarea')
                     .then(function (response) {
                         console.log(response.data)
                         _vm.shopList=response.data
@@ -222,22 +181,20 @@
                     alert("请选择结束时间")
                     return
                 }
-
-
                 _vm.loading = true;
                 let  param = 'start='+_vm.start+'&end='+_vm.end+'&pageIndex='+_vm.pageIndex+'&pageSize='+_vm.pageSize;
-                if (_vm.defaultShop){
-                    param+='&shopName='+_vm.defaultShop
+                if (_vm.defaultArea){
+                    param+='&area='+_vm.defaultArea
                 }
-                if (_vm.order!=null&&_vm.order!=''){
-                    param+='&order='+_vm.order+'&prop='+_vm.prop
-                }
-                axios.get('http://192.168.0.11:9090/api/findCwbzXsmxHy?'+param)
+                // if (_vm.order!=null&&_vm.order!=''){
+                //     param+='&order='+_vm.order+'&prop='+_vm.prop
+                // }
+                axios.get('http://192.168.0.11:9090/api/findareaTypeData?'+param)
                     .then(function (response) {
                         _vm.tableData=response.data.list
                         _vm.total = response.data.total
                         _vm.loading = false;
-                        // console.log(_vm.tableData);
+                        console.log(_vm.tableData);
                     })
                     .catch(function (error) {
                         console.log(error);
@@ -286,9 +243,7 @@
                 t.prop = v.prop;
                 t.search();
             }
-
         }
-
     })
 </script>
 </body>

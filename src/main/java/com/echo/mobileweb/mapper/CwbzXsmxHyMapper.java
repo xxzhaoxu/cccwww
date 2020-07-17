@@ -13,7 +13,16 @@ public interface CwbzXsmxHyMapper extends Mapper<CwbzXsmxHy> {
             @Param("start")String start,
             @Param("end")String end,
             @Param("shopName")String shopName
+//            @Param("order")String order,
+//            @Param("prop")String prop
     );
 
+
     List<CwbzXsmxHy> selectAll();
+
+    List<String> selectAllArea();
+
+    List<Map<String,String>> selectareaTypeData(  @Param("start")String start,
+                                                  @Param("end")String end,
+                                                  @Param("area")String area);
 }
