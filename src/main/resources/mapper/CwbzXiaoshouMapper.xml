@@ -38,7 +38,7 @@
   </select>
 
     <select id="selectAllShopName" resultType="java.util.Map">
-        select  店铺名称 as shopName from cwbz_xiaoshou group by 店铺名称;
+        select  店铺代码,店铺名称 as shopName from cwbz_xiaoshou group by 店铺名称,店铺代码;
     </select>
 
     <select id="selectLastYearCharge" resultType="java.lang.String">

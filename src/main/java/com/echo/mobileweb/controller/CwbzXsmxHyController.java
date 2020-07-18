@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -34,6 +33,10 @@ public class CwbzXsmxHyController {
     @GetMapping("areaType")
     public String areaType(){
         return "areaType";
+    }
+    @GetMapping("/saleRange")
+    public String saleRange(){
+        return "saleRange";
     }
     @ResponseBody
     @GetMapping("api/findCwbzXsmxHy")
@@ -98,7 +101,8 @@ public class CwbzXsmxHyController {
 
         Map<String,String> map1;
 
-        Map<String,Map<String,String>> addMap = new HashMap();
+        Map<Integer, Map<String, String>> addMap = new TreeMap<>();
+
         int index=0;
         for (Map<String,String> map : list){
             index++;
@@ -124,17 +128,38 @@ public class CwbzXsmxHyController {
                totalNumprop = BigDecimal.ZERO;
                totaljeprop = BigDecimal.ZERO;
 
-               addMap.put(String.valueOf(index-1),map1);
+               addMap.put(index-1,map1);
+
+               totalje = totalje.add(new BigDecimal(String.valueOf(map.get("金额"))).setScale(2,BigDecimal.ROUND_HALF_UP));
+               totalNum = totalNum.add(new BigDecimal(String.valueOf(map.get("数量"))).setScale(2,BigDecimal.ROUND_HALF_UP));
+               totalNumprop = totalNumprop.add(new BigDecimal(String.valueOf(map.get("数量占比"))).setScale(2,BigDecimal.ROUND_HALF_UP));
+               totaljeprop = totaljeprop.add(new BigDecimal(String.valueOf(map.get("金额占比"))).setScale(2,BigDecimal.ROUND_HALF_UP));
            }
             tmp = areaName;
-
         }
+
+        map1 = new HashMap<>(4);
+        map1.put("地区名称","总计");
+        map1.put("数量",String.valueOf(totalNum));
+        map1.put("金额",String.valueOf(totalje));
+        map1.put("数量占比",String.valueOf(totalNumprop));
+        map1.put("金额占比",String.valueOf(totalNumprop));
+
+        addMap.put(index,map1);
+        Map<Integer,Map> result = addMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+
         int j=0;
-        for (Map.Entry<String, Map<String, String>> entry: addMap.entrySet()){
-            String key = entry.getKey();
-            Map<String,String> m = entry.getValue();
-            list.add(Integer.parseInt(key),m);
-            j++;
+        int k=0;
+        for (Map.Entry entry: result.entrySet()){
+            Integer key = (Integer) entry.getKey();
+            System.out.println(key);
+            j = key;
+            Map<String,String> m = (Map<String, String>) entry.getValue();
+            list.add( (j+k),m);
+            k++;
         }
         System.out.println(list.toString());
         PageInfo<Map<String,String>> pageInfo = new PageInfo<>(list);
@@ -145,5 +170,33 @@ public class CwbzXsmxHyController {
     @GetMapping("api/findAllarea")
     public Object findAllarea(){
         return cwbzXsmxHyMapper.selectAllArea();
+    }
+
+    @ResponseBody
+    @GetMapping("api/vipRangeData")
+    public Object vipRangeData(
+            @RequestParam("start")String start,
+            @RequestParam("end")String end,
+            @RequestParam(defaultValue = "1")Integer pageIndex,
+            @RequestParam(defaultValue = "10")Integer pageSize,
+            @RequestParam(required = false)String shopName
+    ){
+        PageHelper.startPage(pageIndex,pageSize);
+        List<Map<String,String>> list = cwbzXsmxHyMapper.selectVIPrangeData(start, end, shopName);
+        PageInfo<Map<String,String>> pageInfo = new PageInfo<Map<String, String>>(list);
+        return pageInfo;
+    }
+
+    @ResponseBody
+    @GetMapping("api/findSalerangeData")
+    public Object findSalerangeData(  @RequestParam("start")String start,
+                                      @RequestParam("end")String end,
+                                      @RequestParam(defaultValue = "1")Integer pageIndex,
+                                      @RequestParam(defaultValue = "10")Integer pageSize,
+                                      @RequestParam(required = false)String shopCode){
+        PageHelper.startPage(pageIndex,pageSize);
+        List<Map<String,String>> list = cwbzXsmxHyMapper.selectSalerangeData(start, end, shopCode);
+        PageInfo<Map<String,String>> pageInfo = new PageInfo<Map<String, String>>(list);
+        return pageInfo;
     }
 }

@@ -156,4 +156,64 @@
    group by 地区名称) as t2 on t1.地区名称 = t2.地区名称
   ) order by 地区名称
 	</select>
+
+	<select id="selectVIPrangeData" resultType="java.util.Map">
+		select
+			顾客名字,
+			顾客手机,
+			SUM(累计消费) as 金额,
+			SUM(数量) as 数量
+		from
+			cwbz_xsmx_hy
+		where
+			日期
+		between
+		cast('${start}' as datetime)
+		and
+		cast('${end}' as datetime)
+		and
+		LEN(VIP卡号) >0
+		<if test="shopName!=null">
+			and 店铺名称=#{shopName}
+		</if>
+		   group by 顾客名字,顾客手机 order by 金额 desc;
+	</select>
+
+	<select id="selectSalerangeData" resultType="java.util.Map">
+	select
+		*
+	from  ((
+		select
+		  商品代码,
+		  SUM(数量) as 数量
+		from
+			cwbz_xsmx_hy
+		where
+		  日期
+		between
+		cast('${start}' as datetime)
+		and
+		cast('${end}' as datetime)
+		<if test="shopName!=null">
+			and 店铺代码=#{shopName}
+		</if>
+		group by 商品代码
+		)  as t1
+		left join (
+		select
+		  商品代码 as 库存商品代码,
+		  SUM(数量) as 库存数量
+		from
+			cwbz_spkcb
+		group by 商品代码  ) as t2
+		on t1.商品代码 = t2.库存商品代码 )
+	</select>
+	
+	<select id="selectSaleDayAve" resultType="java.util.Map">
+		select SUM(金额) from cwbz_xsmx_hy where 日期 between
+		cast('${start}' as datetime)
+		and
+		cast('${end}' as datetime)  店铺代码 in ( select   店铺代码 from cwbz_mrkc)
+
+	</select>
 </mapper>

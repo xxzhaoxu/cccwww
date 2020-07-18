@@ -61,6 +61,7 @@
                 :data="tableData"
                 border
                 @sort-change="sortChange"
+
                 :style="'width:'+wd+'px'">
             <el-table-column
                     prop="index"
@@ -108,16 +109,7 @@
                                     </span>
                 </template>
             </el-table-column>
-            <el-table-column
-                    prop="总数量"
-                    label="总数量"
-                    width="120">
-            </el-table-column>
-            <el-table-column
-                    prop="总数量"
-                    label="总数量"
-                    width="120">
-            </el-table-column>
+
         </el-table>
     </div>
 </div>
@@ -242,7 +234,8 @@
                 t.order = v.order;
                 t.prop = v.prop;
                 t.search();
-            }
+            },
+
         }
     })
 </script>
