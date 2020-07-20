@@ -19,7 +19,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vant@2.9/lib/vant.min.js"></script>
 </head>
 <body>
-    <div id="app">
+    <div id="app"  v-loading="loading">
         <div class="block">
             <span class="demonstration">开始时间</span>
             <el-date-picker
@@ -44,12 +44,11 @@
         </div>
         <div>
             <span class="demonstration">终端名称</span>
-            <el-select v-model="defaultShop"     @change="optionChange" clearable placeholder="请选择">
+            <el-select v-model="defaultShop" @change="optionChange" clearable placeholder="请选择">
                 <el-option
                         v-for="item in shopList"
                         :key="item.店铺代码"
                         :label="item.shopName"
-
                         :value="item.店铺代码">
                 </el-option>
             </el-select>

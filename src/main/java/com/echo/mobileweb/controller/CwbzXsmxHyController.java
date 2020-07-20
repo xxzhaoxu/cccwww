@@ -1,5 +1,7 @@
 package com.echo.mobileweb.controller;
 
+import com.echo.mobileweb.common.Common;
+import com.echo.mobileweb.common.Utils;
 import com.echo.mobileweb.mapper.CwbzXsmxHyMapper;
 import com.echo.mobileweb.result.CwbzXsmxHyResult;
 import com.github.pagehelper.PageHelper;
@@ -38,6 +40,11 @@ public class CwbzXsmxHyController {
     public String saleRange(){
         return "saleRange";
     }
+
+    @GetMapping("dayAvg")
+    public String dayAvg(){
+        return "saleAvg";
+    }
     @ResponseBody
     @GetMapping("api/findCwbzXsmxHy")
     public Object findCwbzXsmxHy(
@@ -49,7 +56,6 @@ public class CwbzXsmxHyController {
             @RequestParam(required = false)String order,
             @RequestParam(required = false)String prop
     ){
-
         String orderBy ="";
         if (order!=null){
             order =  order.replace("ending","");
@@ -199,4 +205,35 @@ public class CwbzXsmxHyController {
         PageInfo<Map<String,String>> pageInfo = new PageInfo<Map<String, String>>(list);
         return pageInfo;
     }
+    @ResponseBody
+    @GetMapping("api/findDaySaleAvgData")
+    public Object findDaySaleAvgData(
+//            @RequestParam("start")String start,
+            @RequestParam("end")String end
+    ) throws Exception {
+
+          String firstDay = Utils.getFirstDay(end);
+          Long dayNum = Utils.DaySubtractNum(firstDay,end);
+          Long shopNum =  cwbzXsmxHyMapper.selectShopTotalNum(firstDay, end);
+          Float saleJe =  cwbzXsmxHyMapper.selectShopSaleMoney(firstDay, end);
+          saleJe = saleJe==null?0:saleJe;
+          BigDecimal je = new BigDecimal(0);
+          if (shopNum!=0&&saleJe!=0){
+              je = new BigDecimal(saleJe).divide(new BigDecimal(shopNum),2, BigDecimal.ROUND_HALF_UP).divide(new BigDecimal(dayNum),2, BigDecimal.ROUND_HALF_UP);
+          }
+
+          Map<String,String> reMap = new HashMap<>(4);
+          reMap.put("店铺数量",String.valueOf(shopNum));
+          reMap.put("当前金额",String.valueOf(saleJe));
+
+          reMap.put("当月天数",String.valueOf(dayNum));
+          reMap.put("日销售金额",String.valueOf(je));
+
+          System.out.println(shopNum);
+          System.out.println(saleJe);
+          List reList = new ArrayList();
+          reList.add(reMap);
+          return reList;
+    }
+
 }

@@ -214,6 +214,21 @@
 		cast('${start}' as datetime)
 		and
 		cast('${end}' as datetime)  店铺代码 in ( select   店铺代码 from cwbz_mrkc)
-
 	</select>
+
+	<select id="selectShopTotalNum" resultType="java.lang.Long">
+		select count(0) from cwbz_mrkc
+			where
+			 日期 between
+			cast('${start}' as datetime)
+			and
+			cast('${end}' as datetime)
+	</select>
+	<select id="selectShopSaleMoney" resultType="java.lang.Float">
+		  select nullif (SUM(金额),0) from cwbz_xsmx_hy where 日期 between
+			cast('${start}' as datetime)
+			and
+			cast('${end}' as datetime)
+	</select>
+
 </mapper>

@@ -41,7 +41,6 @@ public class CompareXsController {
         Integer start = (pageIndex-1)*pageSize;
         String bqStart = "";
         String bqEnd =  "";
-
         String sqStart = "";
         String sqEnd = "";
         name = "".equals(name)?null:name;

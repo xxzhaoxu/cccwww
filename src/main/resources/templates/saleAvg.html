@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>月日均销售</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
+
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+
+    <!-- 引入样式文件 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.9/lib/index.css"/>
+    <!-- 先引入 Vue -->
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <!-- 引入axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- 引入 Vue 和 Vant 的 JS 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/vant@2.9/lib/vant.min.js"></script>
+</head>
+<body>
+ <div id="app"  v-loading="loading">
+     <div class="block">
+         <span class="demonstration">统计日期</span>
+         <el-date-picker
+                 v-model="end"
+                 type="date"
+                 format="yyyy-MM-dd"
+                 value-format="yyyy-MM-dd"
+                 placeholder="选择日期">
+         </el-date-picker>
+     </div>
+     <div style="display: flex;justify-content: center;">
+         <el-button type="primary" v-on:click="search">搜索</el-button>
+     </div>
+     <div>
+         <el-table
+                 :data="tableData"
+                 border
+                 :style="'width:'+wd+'px'">
+<!--             <el-table-column-->
+<!--                     prop="index"-->
+<!--                     label="#"-->
+<!--                     type="index"-->
+<!--                     width="70">-->
+<!--             </el-table-column>-->
+             <el-table-column
+                     prop="店铺数量"
+                     label="店铺数量"
+                     width="110">
+             </el-table-column>
+             <el-table-column
+                     prop="当前金额"
+                     label="当前金额"
+                     width="110">
+             </el-table-column>
+             <el-table-column
+                     prop="日销售金额"
+                     label="日销售金额"
+                     width="110">
+             </el-table-column>
+             <el-table-column
+                     prop="当月天数"
+                     label="当月天数"
+                     width="110">
+             </el-table-column>
+
+         </el-table>
+     </div>
+ </div>
+
+ <script>
+     window.onload = function() {
+         // 阻止双击放大
+         var lastTouchEnd = 0;
+         document.addEventListener('touchstart', function(event) {
+             if (event.touches.length > 1) {
+                 event.preventDefault();
+             }
+         });
+         document.addEventListener('touchend', function(event) {
+             var now = (new Date()).getTime();
+             if (now - lastTouchEnd <= 300) {
+                 event.preventDefault();
+             }
+             lastTouchEnd = now;
+         }, false);
+
+         // 阻止双指放大
+         document.addEventListener('gesturestart', function(event) {
+             event.preventDefault();
+         });
+     }
+
+     new Vue({
+         el: '#app',
+         data: function() {
+             return {
+                 start: '',
+                 tableData:[],
+                 wd:800,
+                 loading:false,
+             }
+         },
+         mounted: function(){
+             const t = this;
+             t.search()
+
+         },
+         created: function () {
+             const t = this;
+
+             t.getNowDate();
+
+         },
+         methods: {
+             search(){
+                 const _vm = this;
+                 if (_vm.end===""){
+                     alert("请选择统计时间")
+                     return
+                 }
+                 _vm.loading = true;
+                 let  param = 'start='+_vm.start+'&end='+_vm.end+'&pageIndex='+_vm.pageIndex+'&pageSize='+_vm.pageSize;
+                 if (_vm.defaultShop){
+                     param+='&shopCode='+_vm.defaultShopCode
+                 }
+                 axios.get('http://192.168.0.11:9090/api/findDaySaleAvgData?'+param)
+                     .then(function (response) {
+                         _vm.tableData=response.data
+                         _vm.loading = false;
+                         console.log(_vm.tableData);
+                     })
+                     .catch(function (error) {
+                         console.log(error);
+                     });
+             },
+             getNowDate() {
+                 const  t =this;
+                 const nowDate = new Date();
+                 let date = {
+                     year: nowDate.getFullYear(),
+                     month: (nowDate.getMonth() + 1)>10?(nowDate.getMonth()+1):"0"+(nowDate.getMonth()+1),
+                     date: nowDate.getDate()>10?nowDate.getDate():"0"+nowDate.getDate(),
+                 }
+                 const  end = date.year + '-'+ date.month + '-'+ date.date;
+                 t.end = end;
+             }
+         }
+     })
+ </script>
+</body>
+</html>

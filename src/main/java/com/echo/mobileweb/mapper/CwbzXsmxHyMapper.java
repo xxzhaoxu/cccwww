@@ -5,6 +5,7 @@ import com.echo.mobileweb.result.CwbzXsmxHyResult;
 import org.apache.ibatis.annotations.Param;
 import tk.mybatis.mapper.common.Mapper;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +36,11 @@ public interface CwbzXsmxHyMapper extends Mapper<CwbzXsmxHy> {
     List<Map<String,String>> selectSaleDayAve(  @Param("start")String start,
                                                 @Param("end")String end
                                                 );
+
+    Long selectShopTotalNum(@Param("start")String start,
+                                  @Param("end")String end);
+    Float selectShopSaleMoney(@Param("start")String start,
+                                  @Param("end")String end);
 
 
 }
