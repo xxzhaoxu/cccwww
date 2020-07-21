@@ -231,26 +231,16 @@
 			cast('${end}' as datetime)
 	</select>
 	<select id="selectMonthReport" resultType="java.util.Map">
-		select
-		    t1.小类名称,
-		    sum(累计消费) as 销售金额,
-		    sum(t2.数量) as 商品数量
-	    from
-     		(select cwbz_xsmx_hy.* from cwbz_xsmx_hy where cwbz_xsmx_hy.小类名称 in (#{stype})) as t1
-		left join
-         	(select cwbz_spkcb.*  from cwbz_spkcb where cwbz_spkcb.小类名称 in (#{stype})) as t2
-		on
-         	t1.小类名称 = t2.小类名称
-        where
-        	t1.日期
-        between
-			cast('${start}' as datetime)
-		and
-			cast('${end}' as datetime)
-		group by t1.小类名称;
+		 select
+		 	 sum(cwbz_xsmx_hy.数量) as 数量,
+			 cwbz_xsmx_hy.小类名称,
+			 sum(cwbz_xsmx_hy.金额) as 金额
+		 from cwbz_xsmx_hy
+		group by cwbz_xsmx_hy.小类名称,cwbz_xsmx_hy.金额,cwbz_xsmx_hy.数量
+
 	</select>
 
-	<select id="selectSmallTypeList" resultType="java.lang.String">
-		select cwbz_spkcb.小类名称 from cwbz_spkcb group by cwbz_spkcb.小类名称;
-	</select>
+  <select id="selectNum" resultType="java.lang.Long">
+	  select sum(数量) from cwbz_spkcb where 小类名称=#{sType};
+  </select>
 </mapper>

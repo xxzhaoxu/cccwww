@@ -48,9 +48,9 @@ public interface CwbzXsmxHyMapper extends Mapper<CwbzXsmxHy> {
      * @param end
      * @return
      */
-    List<Map<String,String>> selectMonthReport(@Param("start")String start, @Param("end")String end,@Param("stype") String stype);
+    List<Map<String,String>> selectMonthReport(@Param("start")String start, @Param("end")String end);
 
-    List<String> selectSmallTypeList();
+    Long selectNum(@Param("sType")String stype);
 
 
 }

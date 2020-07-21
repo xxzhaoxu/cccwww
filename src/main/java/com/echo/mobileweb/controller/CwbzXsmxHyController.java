@@ -252,14 +252,27 @@ public class CwbzXsmxHyController {
         String firstDay = Utils.getFirstDay(end);
         Long dayNum = Utils.DaySubtractNum(firstDay,end);
         PageHelper.startPage(pageIndex,pageSize);
-//        List<Map<String,String>> list = cwbzXsmxHyMapper.selectMonthReport(firstDay,end);
-        List<String> list = cwbzXsmxHyMapper.selectSmallTypeList();
-//        PageInfo<Map<String,String>> pageInfo = new PageInfo<Map<String, String>>(list);
-        PageInfo<String> pageInfo = new PageInfo<String>(list);
-        List<String> typeList = pageInfo.getList();
-        String typeString = String.join(",",typeList);
-        List<Map<String,String>> reList = cwbzXsmxHyMapper.selectMonthReport(firstDay,end,typeString);
-//        System.out.println(pageInfo.toString());
-        return reList;
+        List<Map<String,String>> list = cwbzXsmxHyMapper.selectMonthReport(firstDay,end);
+
+
+        PageInfo<Map<String,String>> pageInfo = new PageInfo<Map<String,String>>(list);
+        List<Map<String,String>> typeList = pageInfo.getList();
+        Long shopNum = cwbzXsmxHyMapper.selectShopTotalNum(firstDay,end);
+        for (Map<String,String> map:typeList){
+           String type =  map.get("小类名称");
+           Long goodsNum = cwbzXsmxHyMapper.selectNum(type);
+            System.out.println(goodsNum);
+            map.put("库存数量",String.valueOf(goodsNum));
+            map.put("当前店铺数量",String.valueOf(shopNum));
+            map.put("当前天数",String.valueOf(dayNum));
+
+            map.put("店均销售量",String.valueOf(new BigDecimal(String.valueOf(map.get("金额"))).divide(new BigDecimal(String.valueOf(shopNum)),2, BigDecimal.ROUND_HALF_UP)));
+            String dayAvg = String.valueOf(new BigDecimal(String.valueOf(map.get("金额"))).divide(new BigDecimal(String.valueOf(shopNum)),2, BigDecimal.ROUND_HALF_UP).divide(new BigDecimal(dayNum),2,BigDecimal.ROUND_HALF_UP));
+            map.put("店均日销售",dayAvg);
+            map.put("店均库存",String.valueOf(new BigDecimal(goodsNum).divide(new BigDecimal(shopNum),2,BigDecimal.ROUND_HALF_UP)));
+        }
+
+
+        return pageInfo;
     }
 }
