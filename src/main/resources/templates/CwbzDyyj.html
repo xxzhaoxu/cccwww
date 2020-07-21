@@ -186,7 +186,7 @@
         methods:{
             allShop(){
                 const _vm = this;
-                axios.get('http://192.168.0.11:9090/api/findAllShopName')
+                axios.get('http://192.168.3.2:9090/api/findAllShopName')
                     .then(function (response) {
                         console.log(response)
                         _vm.options=response.data
@@ -220,7 +220,7 @@
                 if (_vm.value){
                     param+='&shopName='+_vm.value
                 }
-                axios.get('http://192.168.0.11:9090/api/findSaleRank?'+param)
+                axios.get('http://192.168.3.2:9090/api/findSaleRank?'+param)
                     .then(function (response) {
                         console.log(response)
                         _vm.tableData3=response.data.list

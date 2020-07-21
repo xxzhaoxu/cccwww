@@ -42,5 +42,15 @@ public interface CwbzXsmxHyMapper extends Mapper<CwbzXsmxHy> {
     Float selectShopSaleMoney(@Param("start")String start,
                                   @Param("end")String end);
 
+    /**
+     * <h1>小类月报</h1>
+     * @param start
+     * @param end
+     * @return
+     */
+    List<Map<String,String>> selectMonthReport(@Param("start")String start, @Param("end")String end,@Param("stype") String stype);
+
+    List<String> selectSmallTypeList();
+
 
 }

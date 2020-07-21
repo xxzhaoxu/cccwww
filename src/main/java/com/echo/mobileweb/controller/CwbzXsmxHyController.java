@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,11 @@ public class CwbzXsmxHyController {
     @GetMapping("dayAvg")
     public String dayAvg(){
         return "saleAvg";
+    }
+
+    @GetMapping("monthReport")
+    public String monthReport(){
+        return "monthReport";
     }
     @ResponseBody
     @GetMapping("api/findCwbzXsmxHy")
@@ -235,5 +241,25 @@ public class CwbzXsmxHyController {
           reList.add(reMap);
           return reList;
     }
+    @ResponseBody
+    @GetMapping("/api/findMonthReportData")
+    public Object findMonthReportData(
+            @RequestParam("end")String end,
+            @RequestParam(defaultValue = "1")Integer pageIndex,
+            @RequestParam(defaultValue = "10")Integer pageSize
 
+    ) throws Exception {
+        String firstDay = Utils.getFirstDay(end);
+        Long dayNum = Utils.DaySubtractNum(firstDay,end);
+        PageHelper.startPage(pageIndex,pageSize);
+//        List<Map<String,String>> list = cwbzXsmxHyMapper.selectMonthReport(firstDay,end);
+        List<String> list = cwbzXsmxHyMapper.selectSmallTypeList();
+//        PageInfo<Map<String,String>> pageInfo = new PageInfo<Map<String, String>>(list);
+        PageInfo<String> pageInfo = new PageInfo<String>(list);
+        List<String> typeList = pageInfo.getList();
+        String typeString = String.join(",",typeList);
+        List<Map<String,String>> reList = cwbzXsmxHyMapper.selectMonthReport(firstDay,end,typeString);
+//        System.out.println(pageInfo.toString());
+        return reList;
+    }
 }
