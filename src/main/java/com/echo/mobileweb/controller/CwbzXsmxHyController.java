@@ -265,11 +265,27 @@ public class CwbzXsmxHyController {
             map.put("库存数量",String.valueOf(goodsNum));
             map.put("当前店铺数量",String.valueOf(shopNum));
             map.put("当前天数",String.valueOf(dayNum));
-
-            map.put("店均销售量",String.valueOf(new BigDecimal(String.valueOf(map.get("金额"))).divide(new BigDecimal(String.valueOf(shopNum)),2, BigDecimal.ROUND_HALF_UP)));
-            String dayAvg = String.valueOf(new BigDecimal(String.valueOf(map.get("金额"))).divide(new BigDecimal(String.valueOf(shopNum)),2, BigDecimal.ROUND_HALF_UP).divide(new BigDecimal(dayNum),2,BigDecimal.ROUND_HALF_UP));
+            String shopSaleAvg = "0";
+            try {
+                shopSaleAvg = String.valueOf(new BigDecimal(String.valueOf(map.get("金额"))).divide(new BigDecimal(String.valueOf(shopNum)),2, BigDecimal.ROUND_HALF_UP));
+            }catch (ArithmeticException e){
+//                e.printStackTrace();
+            }
+            map.put("店均销售量",shopSaleAvg);
+            String dayAvg = "0";
+            try {
+                dayAvg = String.valueOf(new BigDecimal(String.valueOf(map.get("金额"))).divide(new BigDecimal(String.valueOf(shopNum)),2, BigDecimal.ROUND_HALF_UP).divide(new BigDecimal(dayNum),2,BigDecimal.ROUND_HALF_UP));
+            }catch (ArithmeticException e){
+//                e.printStackTrace();
+            }
             map.put("店均日销售",dayAvg);
-            map.put("店均库存",String.valueOf(new BigDecimal(goodsNum).divide(new BigDecimal(shopNum),2,BigDecimal.ROUND_HALF_UP)));
+            String shopAvg = "0";
+            try {
+              shopAvg =  String.valueOf(new BigDecimal(goodsNum).divide(new BigDecimal(shopNum),2,BigDecimal.ROUND_HALF_UP));
+            }catch (ArithmeticException e){
+
+            }
+            map.put("店均库存",shopAvg);
         }
 
 
