@@ -35,7 +35,12 @@
         </div>
         <div>
             <span class="demonstration">终端</span>
-            <el-select v-model="value" clearable placeholder="请选择">
+            <el-select v-model="value"
+                       clearable
+                       filterable
+                       remote
+                       :remote-method="getOptions"
+                       placeholder="请选择">
                 <el-option
                         v-for="item in options"
                         :key="item.shopName"
@@ -174,7 +179,7 @@
             }
         },
         created: function () {
-            this.allShop()
+            this.allShop('')
 
         },
         mounted: function(){
@@ -184,9 +189,13 @@
 
         },
         methods:{
-            allShop(){
+            allShop(q){
                 const _vm = this;
-                axios.get('http://192.168.3.2:9090/api/findAllShopName')
+                let url = "http://192.168.0.11:9090/api/findAllShopName";
+                if (q!=''){
+                    url=url+"?shopName="+q;
+                }
+                axios.get(url)
                     .then(function (response) {
                         console.log(response)
                         _vm.options=response.data
@@ -220,7 +229,7 @@
                 if (_vm.value){
                     param+='&shopName='+_vm.value
                 }
-                axios.get('http://192.168.3.2:9090/api/findSaleRank?'+param)
+                axios.get('http://192.168.0.11:9090/api/findSaleRank?'+param)
                     .then(function (response) {
                         console.log(response)
                         _vm.tableData3=response.data.list

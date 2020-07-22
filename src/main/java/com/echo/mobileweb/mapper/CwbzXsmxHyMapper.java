@@ -21,7 +21,7 @@ public interface CwbzXsmxHyMapper extends Mapper<CwbzXsmxHy> {
 
     List<CwbzXsmxHy> selectAll();
 
-    List<String> selectAllArea();
+    List<String> selectAllArea(@Param("area")String area);
 
     List<Map<String,String>> selectareaTypeData(  @Param("start")String start,
                                                   @Param("end")String end,
@@ -37,10 +37,8 @@ public interface CwbzXsmxHyMapper extends Mapper<CwbzXsmxHy> {
                                                 @Param("end")String end
                                                 );
 
-    Long selectShopTotalNum(@Param("start")String start,
-                                  @Param("end")String end);
-    Float selectShopSaleMoney(@Param("start")String start,
-                                  @Param("end")String end);
+    Long selectShopTotalNum(@Param("start")String start, @Param("end")String end);
+    Float selectShopSaleMoney(@Param("start")String start, @Param("end")String end);
 
     /**
      * <h1>小类月报</h1>
@@ -52,5 +50,25 @@ public interface CwbzXsmxHyMapper extends Mapper<CwbzXsmxHy> {
 
     Long selectNum(@Param("sType")String stype);
 
+    List<Map<String,String>> selectBigYearReportData(@Param("year")String year);
+
+
+    /**
+     * <h1>库存数量</h1>
+     * @param year 年
+     * @param month 月
+     * @return
+     */
+    Long selectStockNum(@Param("year")String year,@Param("month")String month);
+
+    Long selectStockNumByShopCode(@Param("shopCode")String shopCode);
+
+    /**
+     *  <h1>小类月周期</h1>
+     * @param start 开始时间
+     * @param end 结束时间
+     * @return
+     */
+    List<Map<String,String>> selectSmallTypeYearMonthData(@Param("start")String start, @Param("end")String end);
 
 }

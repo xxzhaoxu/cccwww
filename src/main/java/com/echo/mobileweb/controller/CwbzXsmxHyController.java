@@ -51,6 +51,15 @@ public class CwbzXsmxHyController {
     public String monthReport(){
         return "monthReport";
     }
+
+    @GetMapping("bigyearreport")
+    public String BIgYearReport(){
+        return "bigYearReport";
+    }
+    @GetMapping("smallTypeMonth")
+    public String smallTypeMonth(){
+        return "smallTypeMonth";
+    }
     @ResponseBody
     @GetMapping("api/findCwbzXsmxHy")
     public Object findCwbzXsmxHy(
@@ -180,8 +189,8 @@ public class CwbzXsmxHyController {
 
     @ResponseBody
     @GetMapping("api/findAllarea")
-    public Object findAllarea(){
-        return cwbzXsmxHyMapper.selectAllArea();
+    public Object findAllarea(@RequestParam(required = false)String area){
+        return cwbzXsmxHyMapper.selectAllArea(area);
     }
 
     @ResponseBody
@@ -247,7 +256,6 @@ public class CwbzXsmxHyController {
             @RequestParam("end")String end,
             @RequestParam(defaultValue = "1")Integer pageIndex,
             @RequestParam(defaultValue = "10")Integer pageSize
-
     ) throws Exception {
         String firstDay = Utils.getFirstDay(end);
         Long dayNum = Utils.DaySubtractNum(firstDay,end);
@@ -269,26 +277,136 @@ public class CwbzXsmxHyController {
             try {
                 shopSaleAvg = String.valueOf(new BigDecimal(String.valueOf(map.get("金额"))).divide(new BigDecimal(String.valueOf(shopNum)),2, BigDecimal.ROUND_HALF_UP));
             }catch (ArithmeticException e){
-//                e.printStackTrace();
             }
             map.put("店均销售量",shopSaleAvg);
             String dayAvg = "0";
             try {
                 dayAvg = String.valueOf(new BigDecimal(String.valueOf(map.get("金额"))).divide(new BigDecimal(String.valueOf(shopNum)),2, BigDecimal.ROUND_HALF_UP).divide(new BigDecimal(dayNum),2,BigDecimal.ROUND_HALF_UP));
             }catch (ArithmeticException e){
-//                e.printStackTrace();
             }
             map.put("店均日销售",dayAvg);
             String shopAvg = "0";
             try {
               shopAvg =  String.valueOf(new BigDecimal(goodsNum).divide(new BigDecimal(shopNum),2,BigDecimal.ROUND_HALF_UP));
             }catch (ArithmeticException e){
-
             }
             map.put("店均库存",shopAvg);
         }
-
-
         return pageInfo;
+    }
+
+    @ResponseBody
+    @GetMapping("api/BIgYearReportData")
+    public Object BIgYearReportData(
+            @RequestParam("year")String year,
+            @RequestParam(defaultValue = "1")Integer pageIndex,
+            @RequestParam(defaultValue = "10")Integer pageSize
+    ){
+        List<String> monthList = new ArrayList<String>(){
+            {
+                add("1");
+                add("2");
+                add("3");
+                add("4");
+                add("5");
+                add("6");
+                add("7");
+                add("8");
+                add("9");
+                add("10");
+                add("11");
+                add("12");
+            }
+        };
+        List reList = new ArrayList();
+        Map<String,String> reMap;
+        List<Map<String,String>> List = cwbzXsmxHyMapper.selectBigYearReportData(year);
+        String shopNum="0";
+        String saleNum ="0";
+        String salePrice = "0";
+        String shopKcAvg = "0";
+        String avgSaleNum = "0";
+        String avgSalePrice = "0";
+        for (String m:monthList){
+            Boolean h =false;
+            reMap = new HashMap<>();
+
+            Long kc = cwbzXsmxHyMapper.selectStockNum(year,m);
+            kc = kc==null?0L:kc;
+            System.out.println("库存："+kc);
+            for (Map<String,String> map:List){
+               String month = String.valueOf(map.get("月份"));
+               if (m.equals(month)){
+                   System.out.println("月份:"+month);
+                   shopNum = String.valueOf(map.get("店铺数量"));
+                   saleNum = String.valueOf(map.get("总销数量"));
+                   salePrice = String.valueOf(map.get("金额"));
+                   break;
+               }
+            }
+            reMap.put("月份",year+"-"+formartMonth(m));
+            reMap.put("店铺数量",shopNum);
+            reMap.put("总销数量",saleNum);
+            reMap.put("总销金额",salePrice);
+            reMap.put("库存总量",String.valueOf(kc));
+
+            try {
+                shopKcAvg = String.valueOf( new BigDecimal(kc).divide(new BigDecimal(shopNum),2,BigDecimal.ROUND_HALF_UP));
+            }catch (ArithmeticException e){
+
+            }
+
+            try {
+                avgSaleNum = String.valueOf(new BigDecimal(saleNum).divide(new BigDecimal(shopNum),2,BigDecimal.ROUND_HALF_UP));
+            }catch (ArithmeticException e){
+
+            }
+
+            try {
+                avgSalePrice = String.valueOf(new BigDecimal(salePrice).divide(new BigDecimal(shopNum),2,BigDecimal.ROUND_HALF_UP));
+            }catch (ArithmeticException e){
+
+            }
+
+            reMap.put("店均库存",shopKcAvg);
+            reMap.put("店均销售数量",avgSaleNum);
+            reMap.put("店均销售金额",avgSalePrice);
+
+            shopNum = "0";
+            saleNum = "0";
+            salePrice = "0";
+            shopKcAvg = "";
+            avgSaleNum = "";
+            avgSalePrice = "";
+            reList.add(reMap);
+        }
+        return reList;
+    }
+
+    @ResponseBody
+    @GetMapping("api/smallTypeMonthData")
+    public Object smallTypeMonthData(
+            @RequestParam("start")String start,
+            @RequestParam("end")String end,
+            @RequestParam(defaultValue = "1")Integer pageIndex,
+            @RequestParam(defaultValue = "10")Integer pageSize
+    ){
+        PageHelper.startPage(pageIndex,pageSize);
+        List<Map<String,String>> list = cwbzXsmxHyMapper.selectSmallTypeYearMonthData(start, end);
+        PageInfo<Map<String,String>> pageInfo = new PageInfo<>(list);
+        List<Map<String,String>> pageList = pageInfo.getList();
+        for (Map<String,String> map:pageList){
+            String goodsCode = map.get("商品代码");
+            Long num = cwbzXsmxHyMapper.selectStockNumByShopCode(goodsCode);
+            num = num==null?0L:num;
+            map.put("库存数量",String.valueOf(num));
+        }
+        return pageInfo;
+    }
+    private String formartMonth(String month){
+        if (month.length()<2){
+            return "0"+month;
+        }
+        return month;
     }
 }

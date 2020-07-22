@@ -38,7 +38,13 @@
   </select>
 
     <select id="selectAllShopName" resultType="java.util.Map">
-        select  店铺代码,店铺名称 as shopName from cwbz_xiaoshou group by 店铺名称,店铺代码;
+        select  店铺代码,店铺名称 as shopName from cwbz_xiaoshou
+         where
+         1 = 1
+         <if test="shopName!=null">
+            and  店铺名称 like '%${shopName}%'
+         </if>
+         group by 店铺名称,店铺代码;
     </select>
 
     <select id="selectLastYearCharge" resultType="java.lang.String">

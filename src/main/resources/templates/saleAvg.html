@@ -125,7 +125,7 @@
                  if (_vm.defaultShop){
                      param+='&shopCode='+_vm.defaultShopCode
                  }
-                 axios.get('http://192.168.3.2:9090/api/findDaySaleAvgData?'+param)
+                 axios.get('http://192.168.0.11:9090/api/findDaySaleAvgData?'+param)
                      .then(function (response) {
                          _vm.tableData=response.data
                          _vm.loading = false;

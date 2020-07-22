@@ -44,7 +44,11 @@
         </div>
         <div>
             <span class="demonstration">终端名称</span>
-            <el-select v-model="defaultShop" @change="optionChange" clearable placeholder="请选择">
+            <el-select v-model="defaultShop" @change="optionChange"
+                       filterable
+                       remote
+                       :remote-method="allShop"
+                       clearable placeholder="请选择">
                 <el-option
                         v-for="item in shopList"
                         :key="item.店铺代码"
@@ -155,14 +159,18 @@
         },
         created: function () {
             const t = this;
-            t.allShop();
+            t.allShop('');
             t.getNowDate();
 
         },
         methods: {
-            allShop(){
+            allShop(q){
                 const _vm = this;
-                axios.get('http://192.168.3.2:9090/api/findAllShopName')
+                let url = "http://192.168.0.11:9090/api/findAllShopName";
+                if (q!=''){
+                    url=url+"?shopName="+q;
+                }
+                axios.get(url)
                     .then(function (response) {
                         console.log(response.data)
                         _vm.shopList=response.data
@@ -186,7 +194,7 @@
                 if (_vm.defaultShop){
                     param+='&shopCode='+_vm.defaultShopCode
                 }
-                axios.get('http://192.168.3.2:9090/api/findSalerangeData?'+param)
+                axios.get('http://192.168.0.11:9090/api/findSalerangeData?'+param)
                     .then(function (response) {
                         _vm.tableData=response.data.list
                         _vm.total = response.data.total

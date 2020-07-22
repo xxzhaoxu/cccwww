@@ -1,7 +1,6 @@
 package com.echo.mobileweb.controller;
 
 import com.echo.mobileweb.common.Utils;
-import com.echo.mobileweb.entity.CwbzXiaoshou;
 import com.echo.mobileweb.mapper.CwbzXiaoshouMapper;
 import com.echo.mobileweb.model.HbModel;
 import org.springframework.stereotype.Controller;
@@ -91,7 +90,7 @@ public class CompareXsController {
 
     @ResponseBody
     @GetMapping("/api/findAllShopName")
-    public List<Map<String,String>> findAllShop(){
-        return cwbzXiaoshouMapper.selectAllShopName();
+    public List<Map<String,String>> findAllShop(@RequestParam(required = false)String shopName){
+        return cwbzXiaoshouMapper.selectAllShopName(shopName);
     }
 }

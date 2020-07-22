@@ -28,7 +28,7 @@ public interface CwbzXiaoshouMapper extends Mapper<CwbzXiaoshou> {
     Map<String,Object> selectCwbzXiaoshouByName(@Param("shopName")String shopName, @Param("start")String start,
                                                 @Param("end")String end);
 
-    List<Map<String,String>> selectAllShopName();
+    List<Map<String,String>> selectAllShopName(@Param("shopName")String shopName);
 
     String selectLastYearCharge(@Param("shopName")String shopName,@Param("start")String start,@Param("end")String end);
 }

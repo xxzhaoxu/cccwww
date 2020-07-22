@@ -46,7 +46,12 @@
     </div>
     <div>
          <span class="demonstration">终端名称</span>
-        <el-select v-model="defaultShop" clearable placeholder="请选择">
+        <el-select v-model="defaultShop"
+                   clearable
+                   filterable
+                   remote
+                   :remote-method="allShop"
+                   placeholder="请选择">
             <el-option
                     v-for="item in shopList"
                     :key="item.shopName"
@@ -190,7 +195,7 @@
         },
         created: function () {
             const t = this;
-            t.allShop();
+            t.allShop('');
             t.getNowDate();
 
         },
@@ -201,9 +206,13 @@
             endTime(date){
                 console.log(date)
             },
-            allShop(){
+            allShop(q){
                 const _vm = this;
-                axios.get('http://192.168.3.2:9090/api/findAllShopName')
+                let url = "http://192.168.0.11:9090/api/findAllShopName";
+                if (q!=''){
+                    url=url+"?shopName="+q;
+                }
+                axios.get(url)
                     .then(function (response) {
                         console.log(response.data)
                         _vm.shopList=response.data
@@ -232,7 +241,7 @@
                 if (_vm.order!=null&&_vm.order!=''){
                     param+='&order='+_vm.order+'&prop='+_vm.prop
                 }
-                axios.get('http://192.168.3.2:9090/api/findCwbzXsmxHy?'+param)
+                axios.get('http://192.168.0.11:9090/api/findCwbzXsmxHy?'+param)
                     .then(function (response) {
                         _vm.tableData=response.data.list
                         _vm.total = response.data.total
@@ -251,15 +260,13 @@
                     month: (nowDate.getMonth() + 1)>10?(nowDate.getMonth()+1):"0"+(nowDate.getMonth()+1),
                     date: nowDate.getDate()>10?nowDate.getDate():"0"+nowDate.getDate(),
                 }
-                const  start = date.year + '-'+ date.month + '-'+ (date.date-1);
-                const  end = date.year + '-'+ date.month + '-'+ date.date;
+                const  start = date.year + '-'+ date.month + '-'+ date.date;
+                const  end = date.year + '-'+ date.month + '-'+ (1+date.date);
                 t.start = start;
                 t.end = end;
             } ,
             handleSizeChange(val) {
-
                 const t = this
-
                 t.pageSize = val
                 t.search()
             },

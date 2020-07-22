@@ -117,7 +117,12 @@
   </select>
 
 	<select id="selectAllArea" resultType="java.lang.String">
-		select 地区名称 from cwbz_xsmx_hy  group by 地区名称
+		select 地区名称 from cwbz_xsmx_hy
+		where 1 = 1
+		<if test="area!=null">
+			and 地区名称 like '%${area}%'
+		</if>
+		group by 地区名称
 	</select>
 	<select id="selectareaTypeData" resultType="java.util.Map">
 	select
@@ -243,4 +248,41 @@
   <select id="selectNum" resultType="java.lang.Long">
 	  select sum(数量) from cwbz_spkcb where 小类名称=#{sType};
   </select>
+
+	<select id="selectBigYearReportData" resultType="java.util.Map">
+		select
+			sum(金额) as 金额,
+       		month(日期) as 月份,
+       		count(店铺名称) as 店铺数量,
+       		sum(数量) as 总销数量
+		from
+			cwbz_xsmx_hy
+		where
+			year(日期)=${year}
+		group by month(日期)
+	</select>
+	<select id="selectStockNum" resultType="java.lang.Long">
+		select nullif(sum(数量) ,0)from cwbz_mrkc where year(日期)=${year } and month(日期)=${month};
+	</select>
+	<select id="selectStockNumByShopCode" resultType="java.lang.Long">
+	 select sum(数量) from cwbz_spkcb where 商品代码 = #{shopCode}
+	</select>
+	<select id="selectSmallTypeYearMonthData" resultType="java.util.Map">
+		select
+    		cwbz_xsmx_hy.小类名称 as 小类名称,
+    		cwbz_xsmx_hy.厂家 as 厂家,
+			cwbz_xsmx_hy.商品代码 as 商品代码,
+    		cwbz_xsmx_hy.吊牌价 as 吊牌价,
+    		sum(cwbz_xsmx_hy.数量) as 销售数量
+		from
+        	cwbz_xsmx_hy
+        where
+        	日期
+        between
+			cast('${start}' as datetime)
+		and
+			cast('${end}' as datetime)
+		group by cwbz_xsmx_hy.小类名称,cwbz_xsmx_hy.厂家,cwbz_xsmx_hy.商品代码,cwbz_xsmx_hy.吊牌价
+		order by cwbz_xsmx_hy.小类名称
+	</select>
 </mapper>

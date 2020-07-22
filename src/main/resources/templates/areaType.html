@@ -43,8 +43,13 @@
         </el-date-picker>
     </div>
     <div>
-        <span class="demonstration">终端名称</span>
-        <el-select v-model="defaultArea" clearable placeholder="请选择">
+        <span class="demonstration">地区</span>
+        <el-select v-model="defaultArea"
+                   clearable
+                   filterable
+                   remote
+                   :remote-method="allArea"
+                   placeholder="请选择">
             <el-option
                     v-for="item in shopList"
                     :key="item"
@@ -141,7 +146,7 @@
         },
         created: function () {
             const t = this;
-            t.allArea();
+            t.allArea('');
             t.getNowDate();
 
         },
@@ -152,9 +157,13 @@
             endTime(date){
                 console.log(date)
             },
-            allArea(){
+            allArea(q){
                 const _vm = this;
-                axios.get('http://192.168.3.2:9090/api/findAllarea')
+                let url = "http://192.168.0.11:9090/api/findAllarea"
+                if (""!=q){
+                    url = url+'?area='+q;
+                }
+                axios.get(url)
                     .then(function (response) {
                         console.log(response.data)
                         _vm.shopList=response.data
@@ -181,7 +190,7 @@
                 // if (_vm.order!=null&&_vm.order!=''){
                 //     param+='&order='+_vm.order+'&prop='+_vm.prop
                 // }
-                axios.get('http://192.168.3.2:9090/api/findareaTypeData?'+param)
+                axios.get('http://192.168.0.11:9090/api/findareaTypeData?'+param)
                     .then(function (response) {
                         _vm.tableData=response.data.list
                         _vm.total = response.data.total
