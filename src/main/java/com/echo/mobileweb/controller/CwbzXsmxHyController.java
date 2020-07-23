@@ -1,5 +1,6 @@
 package com.echo.mobileweb.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.echo.mobileweb.common.Common;
 import com.echo.mobileweb.common.Utils;
 import com.echo.mobileweb.mapper.CwbzXsmxHyMapper;
@@ -59,6 +60,11 @@ public class CwbzXsmxHyController {
     @GetMapping("smallTypeMonth")
     public String smallTypeMonth(){
         return "smallTypeMonth";
+    }
+
+    @GetMapping("inData")
+    public String inData(){
+        return "inData";
     }
     @ResponseBody
     @GetMapping("api/findCwbzXsmxHy")
@@ -403,6 +409,22 @@ public class CwbzXsmxHyController {
         }
         return pageInfo;
     }
+
+    @ResponseBody
+    @GetMapping("api/getInData")
+    public Object getInData( @RequestParam("start")String start,
+                             @RequestParam("end")String end,
+                             @RequestParam(defaultValue = "1")Integer pageIndex,
+                             @RequestParam(defaultValue = "10")Integer pageSize
+    ){
+        Integer pageStart = (pageIndex-1)*pageSize;
+
+        JSONObject reJson = new JSONObject();
+        reJson.put("list",cwbzXsmxHyMapper.inData(start, end,pageSize,pageStart));
+        reJson.put("total",cwbzXsmxHyMapper.inDataCount(start, end));
+       return reJson;
+    }
+
     private String formartMonth(String month){
         if (month.length()<2){
             return "0"+month;

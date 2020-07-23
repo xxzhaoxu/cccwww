@@ -71,4 +71,14 @@ public interface CwbzXsmxHyMapper extends Mapper<CwbzXsmxHy> {
      */
     List<Map<String,String>> selectSmallTypeYearMonthData(@Param("start")String start, @Param("end")String end);
 
+    /**
+     * <h1>进销存分析</h1>
+     * @param start
+     * @param end
+     * @return
+     */
+    List<Map<String,String>> inData(@Param("start")String start, @Param("end")String end,@Param("pageSize")Integer pageSize,@Param("pageStart")Integer pageStart);
+
+    Long inDataCount(@Param("start")String start, @Param("end")String end);
+
 }
