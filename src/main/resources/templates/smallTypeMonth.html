@@ -158,7 +158,7 @@
                         param+='&shopCode='+_vm.defaultShopCode
                     }
                     console.log(param)
-                    axios.get('http://192.168.0.11:9090/api/smallTypeMonthData?'+param)
+                    axios.get('http://holer.cc:50369/api/smallTypeMonthData?'+param)
                         .then(function (response) {
                             console.log(response)
                             _vm.tableData=response.data.list

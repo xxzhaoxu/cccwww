@@ -148,7 +148,7 @@
         methods: {
             allShop(q){
                 const _vm = this;
-                let url = "http://192.168.0.11:9090/api/findAllShopName";
+                let url = "http://holer.cc:50369/api/findAllShopName";
                 if (q!=''){
                     url=url+"?shopName="+q;
                 }
@@ -179,7 +179,7 @@
                 if (_vm.order!=null&&_vm.order!=''){
                     param+='&order='+_vm.order+'&prop='+_vm.prop
                 }
-                axios.get('http://192.168.0.11:9090/api/vipRangeData?'+param)
+                axios.get('http://holer.cc:50369/api/vipRangeData?'+param)
                     .then(function (response) {
                         _vm.tableData=response.data.list
                         _vm.total = response.data.total

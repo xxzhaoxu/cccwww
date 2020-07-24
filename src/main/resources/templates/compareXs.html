@@ -6,60 +6,129 @@
 
     <!-- 引入样式 -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入样式文件 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.9/lib/index.css"/>
+
 </head>
 <body>
 <div id="app"
-     v-loading="loading"
-     element-loading-text="拼命加载中"
-     element-loading-spinner="el-icon-loading"
-     element-loading-background="rgba(0, 0, 0, 0.8)">
-    <div style="display: flex; justify-content: center; align-items: center;">
+     v-loading="loading">
 
-     <div style="flex-direction: row; flex-grow:2">
-         <div class="block">
-             <span class="demonstration">上期</span>
-             <el-date-picker
-                     v-model="sq_date"
-                     format="yyyy-MM-dd"
-                     value-format="yyyy-MM-dd"
-                     type="daterange"
-                     range-separator="至"
-                     start-placeholder="开始日期"
-                     end-placeholder="结束日期">
-             </el-date-picker>
-         </div>
-         <div class="block">
-             <span class="demonstration">本期</span>
-             <el-date-picker
-                     v-model="bq_date"
-                     format="yyyy-MM-dd"
-                     value-format="yyyy-MM-dd"
-                     type="daterange"
-                     align="right"
-                     unlink-panels
-                     range-separator="至"
-                     start-placeholder="开始日期"
-                     end-placeholder="结束日期"
-                     :picker-options="pickerOptions2">
-             </el-date-picker>
-         </div>
-         <div>
-             <span class="demonstration">店铺</span>
-             <el-select v-model="value"
-                        clearable
-                        filterable
-                        remote
-                        :remote-method="getOptions"
-                        placeholder="请选择">
-                 <el-option
-                         v-for="item in options"
-                         :key="item.shopName"
-                         :label="item.shopName"
-                         :value="item.shopName">
-                 </el-option>
-             </el-select>
-         </div>
-     </div>
+    <div>
+        <van-row type="flex"  >
+            <van-col span="4">
+                <van-cell>上期</van-cell>
+            </van-col>
+            <van-col span="7"  style="border: 1px solid #a1a1a1; border-right: none">
+                <div>
+                    <van-cell  @click="showPopup">{{startTime}}</van-cell>
+                    <van-popup v-model="showDateMotail"  position="bottom">
+                        <div>
+                            <van-datetime-picker
+                                    v-model="currentDate"
+                                    type="date"
+                                    title="选择开始时间"
+                                    :min-date="minDate"
+                                    :max-date="maxDate"
+                                    @confirm="confirmDate"
+                                    :formatter="formatter"
+                            />
+                        </div>
+                    </van-popup>
+                </div>
+            </van-col>
+
+            <van-col span="7" style="border: 1px solid #a1a1a1;"  >
+                <div >
+                    <van-cell  @click="showPopup1">{{endTime}}</van-cell>
+                    <van-popup v-model="showDateMotail1"  position="bottom" >
+                        <div>
+                            <van-datetime-picker
+                                    v-model="currentDate"
+                                    type="date"
+                                    title="选择结束时间"
+                                    :min-date="minDate"
+                                    :max-date="maxDate"
+                                    @confirm="confirmDate1"
+                                    :formatter="formatter"
+                            />
+                        </div>
+                    </van-popup>
+                </div>
+            </van-col>
+        </van-row>
+    </div>
+    <div>
+        <van-row type="flex"  >
+            <van-col span="4">
+                <van-cell>本期</van-cell>
+            </van-col>
+            <van-col span="7"  style="border: 1px solid #a1a1a1; border-right: none">
+                <div>
+                    <van-cell  @click="showPopup2">{{startTime2}}</van-cell>
+                    <van-popup v-model="showDateMotail2"  position="bottom" >
+                        <div>
+                            <van-datetime-picker
+                                    v-model="currentDate"
+                                    type="date"
+                                    title="选择开始时间"
+                                    :min-date="minDate"
+                                    :max-date="maxDate"
+                                    @confirm="confirmDate2"
+                                    :formatter="formatter"
+                            />
+                        </div>
+                    </van-popup>
+                </div>
+            </van-col>
+
+            <van-col span="7" >
+                <div >
+                    <van-cell style="border: 1px solid #a1a1a1;"  @click="showPopup3">{{endTime2}}</van-cell>
+                    <van-popup v-model="showDateMotail3"  position="bottom" >
+                        <div>
+                            <van-datetime-picker
+                                    v-model="currentDate"
+                                    type="date"
+                                    title="选择结束时间"
+                                    :min-date="minDate"
+                                    :max-date="maxDate"
+                                    @confirm="confirmDate3"
+                                    :formatter="formatter"
+                            />
+                        </div>
+                    </van-popup>
+                </div>
+            </van-col>
+        </van-row>
+        <van-row type="flex">
+            <van-col span="4">
+                <van-cell>店铺</van-cell>
+            </van-col>
+<!--            <van-col span="14">-->
+<!--                <el-select v-model="value"-->
+<!--                           clearable-->
+<!--                           filterable-->
+<!--                           remote-->
+<!--                           :remote-method="getOptions"-->
+<!--                           placeholder="请选择">-->
+<!--                    <el-option-->
+<!--                            v-for="item in options"-->
+<!--                            :key="item.shopName"-->
+<!--                            :label="item.shopName"-->
+<!--                            :value="item.shopName">-->
+<!--                    </el-option>-->
+<!--                </el-select>-->
+<!--            </van-col>-->
+            <div class="block">
+                <el-cascader
+                        :options="options"
+                        :props="{ multiple: true, checkStrictly: true }"
+                        clearable>
+
+                </el-cascader>
+            </div>
+        </van-row>
     </div>
     <div style="display: flex;justify-content: center;">
         <el-button type="primary" v-on:click="search">搜索</el-button>
@@ -135,45 +204,226 @@
 <!-- 引入axios -->
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/vant@2.9/lib/vant.min.js"></script>
 <script>
     new Vue({
         el: '#app',
         data: function() {
             return {
                 loading: false,
-                options:[],
+                options:[{
+                    value: 'zhinan',
+                    label: '指南',
+                    children: [{
+                        value: 'shejiyuanze',
+                        label: '设计原则',
+                        children: [{
+                            value: 'yizhi',
+                            label: '一致'
+                        }, {
+                            value: 'fankui',
+                            label: '反馈'
+                        }, {
+                            value: 'xiaolv',
+                            label: '效率'
+                        }, {
+                            value: 'kekong',
+                            label: '可控'
+                        }]
+                    }, {
+                        value: 'daohang',
+                        label: '导航',
+                        children: [{
+                            value: 'cexiangdaohang',
+                            label: '侧向导航'
+                        }, {
+                            value: 'dingbudaohang',
+                            label: '顶部导航'
+                        }]
+                    }]
+                }, {
+                    value: 'zujian',
+                    label: '组件',
+                    children: [{
+                        value: 'basic',
+                        label: 'Basic',
+                        children: [{
+                            value: 'layout',
+                            label: 'Layout 布局'
+                        }, {
+                            value: 'color',
+                            label: 'Color 色彩'
+                        }, {
+                            value: 'typography',
+                            label: 'Typography 字体'
+                        }, {
+                            value: 'icon',
+                            label: 'Icon 图标'
+                        }, {
+                            value: 'button',
+                            label: 'Button 按钮'
+                        }]
+                    }, {
+                        value: 'form',
+                        label: 'Form',
+                        children: [{
+                            value: 'radio',
+                            label: 'Radio 单选框'
+                        }, {
+                            value: 'checkbox',
+                            label: 'Checkbox 多选框'
+                        }, {
+                            value: 'input',
+                            label: 'Input 输入框'
+                        }, {
+                            value: 'input-number',
+                            label: 'InputNumber 计数器'
+                        }, {
+                            value: 'select',
+                            label: 'Select 选择器'
+                        }, {
+                            value: 'cascader',
+                            label: 'Cascader 级联选择器'
+                        }, {
+                            value: 'switch',
+                            label: 'Switch 开关'
+                        }, {
+                            value: 'slider',
+                            label: 'Slider 滑块'
+                        }, {
+                            value: 'time-picker',
+                            label: 'TimePicker 时间选择器'
+                        }, {
+                            value: 'date-picker',
+                            label: 'DatePicker 日期选择器'
+                        }, {
+                            value: 'datetime-picker',
+                            label: 'DateTimePicker 日期时间选择器'
+                        }, {
+                            value: 'upload',
+                            label: 'Upload 上传'
+                        }, {
+                            value: 'rate',
+                            label: 'Rate 评分'
+                        }, {
+                            value: 'form',
+                            label: 'Form 表单'
+                        }]
+                    }, {
+                        value: 'data',
+                        label: 'Data',
+                        children: [{
+                            value: 'table',
+                            label: 'Table 表格'
+                        }, {
+                            value: 'tag',
+                            label: 'Tag 标签'
+                        }, {
+                            value: 'progress',
+                            label: 'Progress 进度条'
+                        }, {
+                            value: 'tree',
+                            label: 'Tree 树形控件'
+                        }, {
+                            value: 'pagination',
+                            label: 'Pagination 分页'
+                        }, {
+                            value: 'badge',
+                            label: 'Badge 标记'
+                        }]
+                    }, {
+                        value: 'notice',
+                        label: 'Notice',
+                        children: [{
+                            value: 'alert',
+                            label: 'Alert 警告'
+                        }, {
+                            value: 'loading',
+                            label: 'Loading 加载'
+                        }, {
+                            value: 'message',
+                            label: 'Message 消息提示'
+                        }, {
+                            value: 'message-box',
+                            label: 'MessageBox 弹框'
+                        }, {
+                            value: 'notification',
+                            label: 'Notification 通知'
+                        }]
+                    }, {
+                        value: 'navigation',
+                        label: 'Navigation',
+                        children: [{
+                            value: 'menu',
+                            label: 'NavMenu 导航菜单'
+                        }, {
+                            value: 'tabs',
+                            label: 'Tabs 标签页'
+                        }, {
+                            value: 'breadcrumb',
+                            label: 'Breadcrumb 面包屑'
+                        }, {
+                            value: 'dropdown',
+                            label: 'Dropdown 下拉菜单'
+                        }, {
+                            value: 'steps',
+                            label: 'Steps 步骤条'
+                        }]
+                    }, {
+                        value: 'others',
+                        label: 'Others',
+                        children: [{
+                            value: 'dialog',
+                            label: 'Dialog 对话框'
+                        }, {
+                            value: 'tooltip',
+                            label: 'Tooltip 文字提示'
+                        }, {
+                            value: 'popover',
+                            label: 'Popover 弹出框'
+                        }, {
+                            value: 'card',
+                            label: 'Card 卡片'
+                        }, {
+                            value: 'carousel',
+                            label: 'Carousel 走马灯'
+                        }, {
+                            value: 'collapse',
+                            label: 'Collapse 折叠面板'
+                        }]
+                    }]
+                }, {
+                    value: 'ziyuan',
+                    label: '资源',
+                    children: [{
+                        value: 'axure',
+                        label: 'Axure Components'
+                    }, {
+                        value: 'sketch',
+                        label: 'Sketch Templates'
+                    }, {
+                        value: 'jiaohu',
+                        label: '组件交互文档'
+                    }]
+                }],
                 value: '观音桥①店',
                 wd:800,
                 tableData3: [] ,
-                pickerOptions2: {
-                    shortcuts: [{
-                        text: '最近一周',
-                        onClick(picker) {
-                            const end = new Date();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-                            picker.$emit('pick', [start, end]);
-                        }
-                    }, {
-                        text: '最近一个月',
-                        onClick(picker) {
-                            const end = new Date();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-                            picker.$emit('pick', [start, end]);
-                        }
-                    }, {
-                        text: '最近三个月',
-                        onClick(picker) {
-                            const end = new Date();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-                            picker.$emit('pick', [start, end]);
-                        }
-                    }]
-                },
-                bq_date: ['2019-01-01','2019-02-01'],
-                sq_date: ['2019-01-01','2019-02-01'],
+
+                bq_date: [],
+                sq_date: [],
+                minDate: new Date(2020, 0, 1),
+                maxDate: new Date(2025, 10, 1),
+                currentDate: new Date(),
+                startTime: '开始时间',
+                endTime: '结束时间',
+                startTime2: '开始时间',
+                endTime2: '结束时间',
+                showDateMotail: false,
+                showDateMotail1: false,
+                showDateMotail2: false,
+                showDateMotail3: false,
+
 
             }
         },
@@ -185,7 +435,7 @@
         methods:{
             getOptions(q){
                 const _vm = this;
-                let url = "http://192.168.0.11:9090/api/findAllShopName";
+                let url = "http://holer.cc:50369/api/findAllShopName";
                 if (q!=''){
                     url=url+"?shopName="+q;
                 }
@@ -213,7 +463,7 @@
                 }
                 _vm.loading = true;
                 const  param = 'bqDate='+this.bq_date+'&sqDate='+this.sq_date+'&name='+_vm.value+'&pageSize=100'+'&pageIndex=1'
-                axios.get('http://192.168.0.11:9090/api/hbtbData?'+param)
+                axios.get('http://holer.cc:50369/api/hbtbData?'+param)
                     .then(function (response) {
                         console.log(response)
                         _vm.tableData3=response.data
@@ -223,7 +473,81 @@
                     .catch(function (error) {
                         console.log(error);
                     });
+            } ,
+            showPopup() {
+                this.showDateMotail = true;
+            },
+            showPopup1() {
+                this.showDateMotail1 = true;
+            },
+            showPopup2() {
+                this.showDateMotail2 = true;
+            },
+            showPopup3() {
+                this.showDateMotail3 = true;
+            },
+            confirmDate(t){
+                console.log(t.getMonth())
+                const year = t.getFullYear();
+                const month = t.getMonth()+1;
+                const day = t.getDate();
+                const strDay = day<10?("0"+day):day;
+                const strMonth = month<10?('0'+month):month;
+                const date = year+'-'+strMonth+'-'+strDay;
+                this.startTime = date
+                this.sq_date[0] = date
+                this.showDateMotail=false;
+            },
+            confirmDate1(t){
+                console.log(t.getMonth())
+                const year = t.getFullYear();
+                const month = t.getMonth()+1;
+                const day = t.getDate();
+                const strDay = day<10?("0"+day):day;
+                const strMonth = month<10?('0'+month):month;
+                const date = year+'-'+strMonth+'-'+strDay;
+                this.endTime = date
+                this.sq_date[1] =date
+                console.log(date )
+                this.showDateMotail1=false;
+            }, confirmDate2(t){
+                console.log(t.getMonth())
+                const year = t.getFullYear();
+                const month = t.getMonth()+1;
+                const day = t.getDate();
+                const strDay = day<10?("0"+day):day;
+                const strMonth = month<10?('0'+month):month;
+                const date = year+'-'+strMonth+'-'+strDay;
+                this.startTime2 = date
+                this.bq_date[0]= date
+
+                console.log(date)
+                this.showDateMotail2=false;
+            }, confirmDate3(t){
+                console.log(t.getMonth())
+                const year = t.getFullYear();
+                const month = t.getMonth()+1;
+                const day = t.getDate();
+                const strDay = day<10?("0"+day):day;
+                const strMonth = month<10?('0'+month):month;
+                const date = year+'-'+strMonth+'-'+strDay;
+                this.endTime2 = date
+                this.bq_date[1]= date
+                console.log(date )
+                this.showDateMotail3=false;
+            },
+            formatter(type,val){
+                if(type==='year'){
+                    return `${val}年`;
+                }
+                if (type === 'month') {
+                    return `${val}月`;
+                } else if (type === 'day') {
+                    return `${val}日`;
+                }
+                return val;
             }
+
         },
     })
 

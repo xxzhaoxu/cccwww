@@ -113,7 +113,7 @@
     </select>
 
   <select id="selectAll" resultMap="BaseResultMap">
-    select * from   cwbz_xsmx_hy;
+    select * from cwbz_xsmx_hy;
   </select>
 
 	<select id="selectAllArea" resultType="java.lang.String">
@@ -123,6 +123,27 @@
 			and 地区名称 like '%${area}%'
 		</if>
 		group by 地区名称
+	</select>
+	<select id="selectAllZj" resultType="java.lang.String">
+		select 总监名称 from cwbz_xsmx_hy where 1 = 1
+		<if test="name!=null">
+			and 总监名称 = #{name}
+		</if>
+		group by 总监名称
+	</select>
+	<select id="selectAllJl" resultType="java.lang.String">
+		select 经理名称 from cwbz_xsmx_hy where 1 = 1
+		<if test="name!=null">
+			and 经理名称 = #{name}
+		</if>
+		group by 经理名称
+	</select>
+	<select id="selectAllSalesMan" resultType="java.lang.String">
+		select 督导名称 from cwbz_xsmx_hy where 1 = 1
+		<if test="name!=null">
+			and 督导名称 = #{name}
+		</if>
+		group by 督导名称
 	</select>
 	<select id="selectareaTypeData" resultType="java.util.Map">
 	select
@@ -309,9 +330,6 @@ from
 			cast('${end}' as datetime)
 group by
          cwbz_xsmx_hy.地区名称,cwbz_xsmx_hy.督导名称,cwbz_xsmx_hy.店铺名称,cwbz_xsmx_hy.小类名称,cwbz_xsmx_hy.吊牌价,cwbz_xsmx_hy.数量,cwbz_xsmx_hy.小票号,cwbz_xsmx_hy.店铺代码,cwbz_xsmx_hy.商品代码
-order by
-    cwbz_xsmx_hy.小票号
-offset #{pageStart} rows fetch next #{pageSize} rows only
     )   t1 left join   cwbz_spkcb   on t1.店铺代码 = cwbz_spkcb.店铺代码 and    t1.商品代码 = cwbz_spkcb.商品代码)
 order by t1.小票号 asc
 </select>
@@ -327,5 +345,58 @@ order by t1.小票号 asc
 			cast('${start}' as datetime)
 		and
 			cast('${end}' as datetime)
+	</select>
+
+	<select id="selectAreaHz" resultType="java.util.Map">
+		select 地区名称,
+				sum(金额) as 金额,
+				sum(数量) as 数量 from cwbz_xsmx_hy
+		 where 1 =1
+		 and
+			日期
+		between
+		cast('${start}' as datetime)
+		and
+		cast('${end}' as datetime)
+		 <if test="area!=null">
+			 and 地区名称 = #{area}
+		 </if>
+		 group by 地区名称
+	</select>
+
+	<select id="selectSalesmanHz" resultType="java.util.Map">
+		select 督导名称,
+		sum(金额) as 金额,
+				sum(数量) as 数量
+				from cwbz_xsmx_hy
+		where 1 = 1
+		and
+		日期
+		between
+		cast('${start}' as datetime)
+		and
+		cast('${end}' as datetime)
+		<if test="area!=null">
+			and 地区名称 = #{area}
+		</if>
+		group by 督导名称
+	</select>
+
+	<select id="selectShopNameHz" resultType="java.util.Map">
+		select 店铺名称,
+		sum(金额) as 金额,
+		sum(数量) as 数量
+		from cwbz_xsmx_hy
+		where 1 = 1
+		and
+		日期
+		between
+		cast('${start}' as datetime)
+		and
+		cast('${end}' as datetime)
+		<if test="area!=null">
+			and 地区名称 = #{area}
+		</if>
+		group by 店铺名称
 	</select>
 </mapper>

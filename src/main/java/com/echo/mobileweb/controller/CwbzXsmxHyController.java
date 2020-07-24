@@ -7,6 +7,7 @@ import com.echo.mobileweb.mapper.CwbzXsmxHyMapper;
 import com.echo.mobileweb.result.CwbzXsmxHyResult;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.gson.JsonObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -418,13 +419,131 @@ public class CwbzXsmxHyController {
                              @RequestParam(defaultValue = "10")Integer pageSize
     ){
         Integer pageStart = (pageIndex-1)*pageSize;
-
-        JSONObject reJson = new JSONObject();
-        reJson.put("list",cwbzXsmxHyMapper.inData(start, end,pageSize,pageStart));
-        reJson.put("total",cwbzXsmxHyMapper.inDataCount(start, end));
-       return reJson;
+        PageHelper.startPage(pageIndex,pageSize);
+        List<Map<String,String>> list =cwbzXsmxHyMapper.inData(start, end,pageSize,pageStart);
+//
+        PageInfo<Map<String,String>> pageInfo = new PageInfo<>(list);
+       return pageInfo;
     }
 
+    @ResponseBody
+    @GetMapping("api/areaHz")
+    public Object areaHz(
+            @RequestParam("start")String start,
+            @RequestParam("end")String end,
+            @RequestParam(defaultValue = "1")Integer pageIndex,
+            @RequestParam(defaultValue = "10")Integer pageSize,
+            @RequestParam(required = false)String area
+    ){
+
+//        PageHelper.startPage(pageIndex,pageSize);
+//        List<Map<String,String>> list =cwbzXsmxHyMapper.selectAreaHz(start,end,area);
+//        PageInfo<Map<String,String>> pageInfo = new PageInfo<>(list);
+        return cwbzXsmxHyMapper.selectAreaHz(start,end,area);
+    }
+
+    @ResponseBody
+    @GetMapping("api/salesManHz")
+    public Object salesManHz(  @RequestParam("start")String start,
+                               @RequestParam("end")String end,
+                               @RequestParam(defaultValue = "1")Integer pageIndex,
+                               @RequestParam(defaultValue = "10")Integer pageSize,
+                               @RequestParam(required = false)String area){
+//        PageHelper.startPage(pageIndex,pageSize);
+//        List<Map<String,String>> list =cwbzXsmxHyMapper.selectSalesmanHz(start, end, area);
+//        PageInfo<Map<String,String>> pageInfo = new PageInfo<>(list);
+        return cwbzXsmxHyMapper.selectSalesmanHz(start, end, area);
+    }
+    @ResponseBody
+    @GetMapping("api/shopNameHz")
+    public Object shopNameHz(  @RequestParam("start")String start,
+                               @RequestParam("end")String end,
+                               @RequestParam(defaultValue = "1")Integer pageIndex,
+                               @RequestParam(defaultValue = "10")Integer pageSize,
+                               @RequestParam(required = false)String area){
+//        PageHelper.startPage(pageIndex,pageSize);
+//        List<Map<String,String>> list =cwbzXsmxHyMapper.selectShopNameHz(start, end, area);
+//        PageInfo<Map<String,String>> pageInfo = new PageInfo<>(list);
+        return cwbzXsmxHyMapper.selectShopNameHz(start, end, area);
+    }
+
+    @ResponseBody
+    @GetMapping("api/findZdOpention")
+    public Object findZdOpention(){
+        List<String> areaList = cwbzXsmxHyMapper.selectAllArea(null);
+
+        List<String> zjList = cwbzXsmxHyMapper.selectAllZj(null);
+
+        List<String> jlList = cwbzXsmxHyMapper.selectAllJl(null);
+
+        List<String> salesManList  =  cwbzXsmxHyMapper.selectAllSalesMan(null);
+
+        List<JSONObject> areaChildrenList = new ArrayList<>();
+        List<JSONObject> zjChildrenList = new ArrayList<>();
+        List<JSONObject> jlChildrenList = new ArrayList<>();
+        List<JSONObject> salesManChildrenList = new ArrayList<>();
+        JSONObject areaJson;
+        JSONObject zjJson;
+        JSONObject jlJson;
+        JSONObject salesManJson;
+        for (String area:areaList){
+            areaJson = new JSONObject();
+            areaJson.put("value",area);
+            areaJson.put("label",area);
+            areaChildrenList.add(areaJson);
+        }
+
+        for (String zj:zjList){
+            zjJson = new JSONObject();
+            zjJson.put("value",zj);
+            zjJson.put("label",zj);
+            zjChildrenList.add(zjJson);
+        }
+
+        for (String jl:jlList){
+            jlJson = new JSONObject();
+            jlJson.put("value",jl);
+            jlJson.put("label",jl);
+            jlChildrenList.add(jlJson);
+        }
+
+        for (String salesMan:salesManList){
+            salesManJson = new JSONObject();
+            salesManJson.put("value",salesMan);
+            salesManJson.put("label",salesMan);
+            salesManChildrenList.add(salesManJson);
+        }
+
+        JSONObject area = new JSONObject();
+        area.put("value","quyu");
+        area.put("label","区域");
+        area.put("children",areaChildrenList);
+
+        JSONObject zj = new JSONObject();
+        zj.put("value","quyu");
+        zj.put("label","区域");
+        zj.put("children",zjChildrenList);
+
+        JSONObject jl = new JSONObject();
+        jl.put("value","quyu");
+        jl.put("label","区域");
+        jl.put("children",jlChildrenList);
+
+        JSONObject salesMan = new JSONObject();
+        salesMan.put("value","quyu");
+        salesMan.put("label","区域");
+        salesMan.put("children",salesManChildrenList);
+
+
+        List<JSONObject> reList = new ArrayList<>();
+        reList.add(area);
+        reList.add(zj);
+        reList.add(salesMan);
+        reList.add(jl);
+
+
+        return reList;
+    }
     private String formartMonth(String month){
         if (month.length()<2){
             return "0"+month;

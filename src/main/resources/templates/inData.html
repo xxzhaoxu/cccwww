@@ -44,18 +44,18 @@
     </div>
 
     <div>
-        <span class="demonstration">终端名称</span>
-        <el-select v-model="defaultShop"
+        <span class="demonstration">区域名称</span>
+        <el-select v-model="defaultArea"
                    clearable
                    filterable
                    remote
-                   :remote-method="allShop"
+                   :remote-method="allArea"
                    placeholder="请选择">
             <el-option
-                    v-for="item in shopList"
-                    :key="item.shopName"
-                    :label="item.shopName"
-                    :value="item.shopName">
+                    v-for="item in AreaList"
+                    :key="item"
+                    :label="item"
+                    :value="item">
             </el-option>
         </el-select>
     </div>
@@ -132,6 +132,55 @@
         >
         </el-pagination>
     </div>
+
+    <div>
+        <el-collapse v-model="activeName" @change="handleChange"  accordion>
+            <el-collapse-item title="区域汇总"  v-loading="loadhz1"   name="1">
+                <van-list>
+                   <div style="display: flex; flex-directio:row;justify-content:space-between;">
+                       <div   style="width: 120px;height: 60px;line-height: 60px;">地区名称</div>
+                       <div  style="width: 80px;height: 60px;line-height: 60px;">数量</div>
+                       <div  style="width: 100px;height: 60px;line-height: 60px;">金额</div>
+                   </div>
+                    <div   v-for='(item, index) in hzList' :key="index" style="display: flex; flex-directio:row;justify-content:space-between;">
+                        <div   style="width: 120px;height: 60px;line-height: 60px;">{{item.地区名称}}</div>
+                        <div   style="width: 80px;height: 60px;line-height: 60px;">{{item.数量}}</div>
+                        <div   style="width: 100px;height: 60px;line-height: 60px;">{{item.金额}}</div>
+                    </div>
+                </van-list>
+            </el-collapse-item>
+            <el-collapse-item title="业务员汇总" v-loading="loadhz2"   name="2">
+                <van-list>
+                    <div style="display: flex; flex-directio:row;justify-content:space-between;">
+                        <div   style="width: 120px;height: 60px;line-height: 60px;">地区名称</div>
+                        <div  style="width: 80px;height: 60px;line-height: 60px;">数量</div>
+                        <div  style="width: 100px;height: 60px;line-height: 60px;">金额</div>
+                    </div>
+                    <div   v-for='(item, index) in hzList' :key="index" style="display: flex; flex-directio:row;justify-content:space-between;">
+                        <div  style="width: 120px;height: 60px;line-height: 60px;">{{item.督导名称}}</div>
+                        <div   style="width: 80px;height: 60px;line-height: 60px;">{{item.数量}}</div>
+                        <div   style="width: 100px;height: 60px;line-height: 60px;">{{item.金额}}</div>
+                    </div>
+
+                </van-list>
+            </el-collapse-item>
+            <el-collapse-item title="仓库汇总" v-loading="loadhz3"   name="3">
+                <van-list>
+                    <div style="display: flex; flex-directio:row;justify-content:space-between;">
+                        <div   style="width: 120px;height: 60px;line-height: 60px;">地区名称</div>
+                        <div  style="width: 80px;height: 60px;line-height: 60px;">数量</div>
+                        <div  style="width: 100px;height: 60px;line-height: 60px;">金额</div>
+                    </div>
+                    <div   v-for='(item, index) in hzList' :key="index" style="display: flex; flex-directio:row;justify-content:space-between;">
+                        <div  style="width: 120px;height: 60px;line-height: 60px;">{{item.店铺名称}}</div>
+                        <div  style="width: 80px;height: 60px;line-height: 60px;">{{item.数量}}</div>
+                        <div  style="width: 100px;height: 60px;line-height: 60px;">{{item.金额}}</div>
+                    </div>
+                </van-list>
+            </el-collapse-item>
+
+        </el-collapse>
+    </div>
 </div>
 
 <script>
@@ -141,17 +190,30 @@
             return {
                 start: '',
                 end: '',
-                shopList:[],
-                defaultShop:'观音桥①店',
+                AreaList:[],
+                defaultArea:'重庆区域',
                 tableData:[],
+                tableDataHz:[],
+                salesManhzList:[],
                 wd:800,
                 pageSize:10,
                 pageIndex:1,
                 currentPage3:1,
                 loading:false,
+                loadhz1:false,
+                loadhz2:false,
+                loadhz3:false,
+                listLoad:false,
                 total:0,
                 order:'',
-                prop:''
+                prop:'',
+                activeName: '1',
+                error: false,
+                hzList:[],
+                finished: true,
+                refreshing: false,
+                hzPageSize:10,
+                hzPageIndex:1
             }
         },
         mounted: function(){
@@ -161,21 +223,21 @@
         },
         created: function () {
             const t = this;
-            t.allShop('');
+            t.allArea('');
             t.getNowDate();
 
         },
         methods: {
-            allShop(q){
+            allArea(q){
                 const _vm = this;
-                let url = "http://192.168.0.11:9090/api/findAllShopName";
+                let url = "http://holer.cc:50369/api/findAllarea";
                 if (q!=''){
-                    url=url+"?shopName="+q;
+                    url=url+"?area="+q;
                 }
                 axios.get(url)
                     .then(function (response) {
                         console.log(response.data)
-                        _vm.shopList=response.data
+                        _vm.AreaList=response.data
                     })
                     .catch(function (error) {
                         console.log(error);
@@ -197,7 +259,7 @@
                     param+='&shopName='+_vm.defaultShop
                 }
 
-                axios.get('http://192.168.0.11:9090/api/getInData?'+param)
+                axios.get('http://holer.cc:50369/api/getInData?'+param)
                     .then(function (response) {
                         console.log(response)
                         _vm.tableData=response.data.list
@@ -251,7 +313,90 @@
             endTime(date){
                 console.log(date)
             },
-        }
+            handleChange(v){
+                if (''!=v){
+
+                    const t = this;
+
+                    if (v==='1'){
+                        t.loadhz1 =true;
+                        console.log("区域汇总");
+                        t.hzData(v)
+                        t.loadhz1 =false;
+                    }
+                     if (v==='2'){
+                         t.loadhz2 =true;
+                        console.log("业务员汇总");
+                         t.hzData(v)
+
+                         t.loadhz2 =false;
+                    }
+                     if (v==='3'){
+                         t.loadhz3 =true;
+                        console.log("店铺汇总");
+                         t.hzData(v)
+                         t.loadhz3 =false;
+                    }
+
+
+                }
+            },
+            hzData(t){
+                let _vm = this;
+                let url = "";
+                switch (t) {
+                    case '1':
+                        console.log("1")
+                        url = "http://holer.cc:50369/api/areaHz?";
+                        break;
+                    case '2':
+                        console.log("2")
+                        url = "http://holer.cc:50369/api/salesManHz?";
+                        break;
+                    case '3':
+                        console.log("3")
+                        url = "http://holer.cc:50369/api/shopNameHz?";
+                        break;
+                    default:
+                        return;
+
+                }
+                let  param = 'start='+_vm.start+'&end='+_vm.end+'&pageIndex='+_vm.hzPageIndex+'&pageSize='+_vm.hzPageSize;
+                if (_vm.defaultArea!=''){
+                    param = param + '&area='+_vm.defaultArea
+                }
+                console.log(param)
+                url+=param;
+                axios.get(url)
+                    .then(function (response) {
+                        console.log(response);
+                        _vm.hzList=response.data;
+                        console.log(_vm.hzList);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            },
+            hzOnLoad(tag) {
+                const t = this;
+                console.log('load'+ tag)
+                t.hzPageSize=10;
+                t.hzPageIndex=2;
+                t.hzData('3')
+                t.listLoad = false;
+            },
+            onRefresh(){
+                const t = this;
+                t.finished = false;
+
+                // 重新加载数据
+                // 将 loading 设置为 true，表示处于加载状态
+                this.listLoad = true;
+                this.hzOnLoad();
+            }
+
+
+        },
     })
 </script>
 </body>

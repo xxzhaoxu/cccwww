@@ -145,7 +145,7 @@
                     let  param = 'year='+_vm.end;
 
                     console.log(param)
-                    axios.get('http://192.168.0.11:9090/api/BIgYearReportData?'+param)
+                    axios.get('http://holer.cc:50369/api/BIgYearReportData?'+param)
                         .then(function (response) {
                             console.log(response.data)
                             _vm.tableData=response.data

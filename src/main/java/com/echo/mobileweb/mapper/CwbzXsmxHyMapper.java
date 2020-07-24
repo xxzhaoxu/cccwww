@@ -3,6 +3,7 @@ package com.echo.mobileweb.mapper;
 import com.echo.mobileweb.entity.CwbzXsmxHy;
 import com.echo.mobileweb.result.CwbzXsmxHyResult;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.web.bind.annotation.RequestParam;
 import tk.mybatis.mapper.common.Mapper;
 
 import java.math.BigDecimal;
@@ -22,6 +23,17 @@ public interface CwbzXsmxHyMapper extends Mapper<CwbzXsmxHy> {
     List<CwbzXsmxHy> selectAll();
 
     List<String> selectAllArea(@Param("area")String area);
+
+    /**
+     * 查询所有总监
+     * @param name
+     * @return
+     */
+    List<String> selectAllZj(@Param("name")String name);
+
+    List<String> selectAllJl(@Param("name")String name);
+
+    List<String> selectAllSalesMan(@Param("name")String name);
 
     List<Map<String,String>> selectareaTypeData(  @Param("start")String start,
                                                   @Param("end")String end,
@@ -81,4 +93,29 @@ public interface CwbzXsmxHyMapper extends Mapper<CwbzXsmxHy> {
 
     Long inDataCount(@Param("start")String start, @Param("end")String end);
 
+    /**
+     * <h1>区域汇总</h1>
+     * @param start
+     * @param end
+     * @param area
+     * @return
+     */
+    List<Map<String,String>> selectAreaHz(@Param("start")String start, @Param("end")String end, @Param("area")String area);
+
+    /**
+     * <h1>业务员汇总</h1>
+     * @param start
+     * @param end
+     * @param area
+     * @return
+     */
+    List<Map<String,String>> selectSalesmanHz(@Param("start")String start, @Param("end")String end, @Param("area")String area);
+    /**
+     * <h1>店铺汇总</h1>
+     * @param start
+     * @param end
+     * @param area
+     * @return
+     */
+    List<Map<String,String>> selectShopNameHz(@Param("start")String start, @Param("end")String end, @Param("area")String area);
 }
