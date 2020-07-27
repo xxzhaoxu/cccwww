@@ -105,27 +105,15 @@
             <van-col span="4">
                 <van-cell>店铺</van-cell>
             </van-col>
-<!--            <van-col span="14">-->
-<!--                <el-select v-model="value"-->
-<!--                           clearable-->
-<!--                           filterable-->
-<!--                           remote-->
-<!--                           :remote-method="getOptions"-->
-<!--                           placeholder="请选择">-->
-<!--                    <el-option-->
-<!--                            v-for="item in options"-->
-<!--                            :key="item.shopName"-->
-<!--                            :label="item.shopName"-->
-<!--                            :value="item.shopName">-->
-<!--                    </el-option>-->
-<!--                </el-select>-->
-<!--            </van-col>-->
             <div class="block">
                 <el-cascader
+                        v-model="shop"
                         :options="options"
                         :props="{ multiple: true, checkStrictly: true }"
-                        clearable>
-
+                        clearable
+                        @visible-change="findShopNameOption"
+                        @getCheckedNodes="getCheckedNodes"
+                >
                 </el-cascader>
             </div>
         </van-row>
@@ -211,205 +199,10 @@
         data: function() {
             return {
                 loading: false,
-                options:[{
-                    value: 'zhinan',
-                    label: '指南',
-                    children: [{
-                        value: 'shejiyuanze',
-                        label: '设计原则',
-                        children: [{
-                            value: 'yizhi',
-                            label: '一致'
-                        }, {
-                            value: 'fankui',
-                            label: '反馈'
-                        }, {
-                            value: 'xiaolv',
-                            label: '效率'
-                        }, {
-                            value: 'kekong',
-                            label: '可控'
-                        }]
-                    }, {
-                        value: 'daohang',
-                        label: '导航',
-                        children: [{
-                            value: 'cexiangdaohang',
-                            label: '侧向导航'
-                        }, {
-                            value: 'dingbudaohang',
-                            label: '顶部导航'
-                        }]
-                    }]
-                }, {
-                    value: 'zujian',
-                    label: '组件',
-                    children: [{
-                        value: 'basic',
-                        label: 'Basic',
-                        children: [{
-                            value: 'layout',
-                            label: 'Layout 布局'
-                        }, {
-                            value: 'color',
-                            label: 'Color 色彩'
-                        }, {
-                            value: 'typography',
-                            label: 'Typography 字体'
-                        }, {
-                            value: 'icon',
-                            label: 'Icon 图标'
-                        }, {
-                            value: 'button',
-                            label: 'Button 按钮'
-                        }]
-                    }, {
-                        value: 'form',
-                        label: 'Form',
-                        children: [{
-                            value: 'radio',
-                            label: 'Radio 单选框'
-                        }, {
-                            value: 'checkbox',
-                            label: 'Checkbox 多选框'
-                        }, {
-                            value: 'input',
-                            label: 'Input 输入框'
-                        }, {
-                            value: 'input-number',
-                            label: 'InputNumber 计数器'
-                        }, {
-                            value: 'select',
-                            label: 'Select 选择器'
-                        }, {
-                            value: 'cascader',
-                            label: 'Cascader 级联选择器'
-                        }, {
-                            value: 'switch',
-                            label: 'Switch 开关'
-                        }, {
-                            value: 'slider',
-                            label: 'Slider 滑块'
-                        }, {
-                            value: 'time-picker',
-                            label: 'TimePicker 时间选择器'
-                        }, {
-                            value: 'date-picker',
-                            label: 'DatePicker 日期选择器'
-                        }, {
-                            value: 'datetime-picker',
-                            label: 'DateTimePicker 日期时间选择器'
-                        }, {
-                            value: 'upload',
-                            label: 'Upload 上传'
-                        }, {
-                            value: 'rate',
-                            label: 'Rate 评分'
-                        }, {
-                            value: 'form',
-                            label: 'Form 表单'
-                        }]
-                    }, {
-                        value: 'data',
-                        label: 'Data',
-                        children: [{
-                            value: 'table',
-                            label: 'Table 表格'
-                        }, {
-                            value: 'tag',
-                            label: 'Tag 标签'
-                        }, {
-                            value: 'progress',
-                            label: 'Progress 进度条'
-                        }, {
-                            value: 'tree',
-                            label: 'Tree 树形控件'
-                        }, {
-                            value: 'pagination',
-                            label: 'Pagination 分页'
-                        }, {
-                            value: 'badge',
-                            label: 'Badge 标记'
-                        }]
-                    }, {
-                        value: 'notice',
-                        label: 'Notice',
-                        children: [{
-                            value: 'alert',
-                            label: 'Alert 警告'
-                        }, {
-                            value: 'loading',
-                            label: 'Loading 加载'
-                        }, {
-                            value: 'message',
-                            label: 'Message 消息提示'
-                        }, {
-                            value: 'message-box',
-                            label: 'MessageBox 弹框'
-                        }, {
-                            value: 'notification',
-                            label: 'Notification 通知'
-                        }]
-                    }, {
-                        value: 'navigation',
-                        label: 'Navigation',
-                        children: [{
-                            value: 'menu',
-                            label: 'NavMenu 导航菜单'
-                        }, {
-                            value: 'tabs',
-                            label: 'Tabs 标签页'
-                        }, {
-                            value: 'breadcrumb',
-                            label: 'Breadcrumb 面包屑'
-                        }, {
-                            value: 'dropdown',
-                            label: 'Dropdown 下拉菜单'
-                        }, {
-                            value: 'steps',
-                            label: 'Steps 步骤条'
-                        }]
-                    }, {
-                        value: 'others',
-                        label: 'Others',
-                        children: [{
-                            value: 'dialog',
-                            label: 'Dialog 对话框'
-                        }, {
-                            value: 'tooltip',
-                            label: 'Tooltip 文字提示'
-                        }, {
-                            value: 'popover',
-                            label: 'Popover 弹出框'
-                        }, {
-                            value: 'card',
-                            label: 'Card 卡片'
-                        }, {
-                            value: 'carousel',
-                            label: 'Carousel 走马灯'
-                        }, {
-                            value: 'collapse',
-                            label: 'Collapse 折叠面板'
-                        }]
-                    }]
-                }, {
-                    value: 'ziyuan',
-                    label: '资源',
-                    children: [{
-                        value: 'axure',
-                        label: 'Axure Components'
-                    }, {
-                        value: 'sketch',
-                        label: 'Sketch Templates'
-                    }, {
-                        value: 'jiaohu',
-                        label: '组件交互文档'
-                    }]
-                }],
+                options:[],
                 value: '观音桥①店',
                 wd:800,
-                tableData3: [] ,
-
+                tableData3: [],
                 bq_date: [],
                 sq_date: [],
                 minDate: new Date(2020, 0, 1),
@@ -423,7 +216,13 @@
                 showDateMotail1: false,
                 showDateMotail2: false,
                 showDateMotail3: false,
-
+                shop:'',
+                shopParam:'',
+                areaParam:'',
+                zjParam:'',
+                jlParam:'',
+                salesManParam:'',
+                shopNames:''
 
             }
         },
@@ -435,7 +234,7 @@
         methods:{
             getOptions(q){
                 const _vm = this;
-                let url = "http://holer.cc:50369/api/findAllShopName";
+                let url = "http://192.168.1.9:9090/api/findZdOpention";
                 if (q!=''){
                     url=url+"?shopName="+q;
                 }
@@ -449,9 +248,96 @@
                         console.log(error);
                     });
             },
+            findShopNameOption(v){
+                const  t = this;
+                console.log(v)
+                console.log(t.shop)
+                const  shopArr=[];
+                const areaArr=[];
+                const zjArr=[];
+                const jlArr=[];
+                const salesManArr=[];
+                if (!v){
+                 t.shop.forEach(function(value,index){
+                     console.log(value)
+                     console.log(index)
+                     const type = value[0];
+                     const va = value[1];
+                     if (type==='zhongduan'){
+                         if (value[1]){
+                             shopArr.push(value[1])
+                         }
+                     }
+                    if (type==='quyu'){
+                        if (va){
+                            areaArr.push(va);
+                        }
+                    }
+                    if (type==='zongjian'){
+                        if (va){
+                            zjArr.push(va);
+                        }
+                    }
+                    if (type==='jingli'){
+                        if (va){
+                            jlArr.push(va)
+                        }
+                    }
+                    if (type==='dudao'){
+                        if (va){
+                            salesManArr.push(va)
+                        }
+                    }
+                 })
+                    if (shopArr.length>0){
+                        t.shopParam = shopArr.join(",");
+                        return
+                    }
+                    if (areaArr.length>0){
+                        t.areaParam=areaArr.join(",");
+                    }
+                    if (zjArr.length>0){
+                        t.zjParam=zjArr.join(",");
+                    }
+                    if (jlArr.length>0){
+                        t.jlParam=jlArr.join(",");
+                    }
+                    if (salesManArr.length>0){
+                        t.salesManParam=salesManArr.join(",");
+                    }
+                }
+            },
+            getCheckedNodes(v){
+                console.log(v)
+            },
             getwidth(){
                 this.wd =  document.body.clientWidth;
                 console.log(this.wd)
+            },
+            findShopName(){
+                const _vm = this;
+                let  param = '?a=a';
+                if (_vm.areaParam!=''){
+                    param=param+'&area='_vm.areaParam;
+                }
+                if (_vm.zjParam!=''){
+                    param=param+'&zj='_vm.zjParam;
+                }
+                if (_vm.jlParam!=''){
+                    param=param+'&jl='_vm.jlParam;
+                }
+                if (_vm.salesManParam!=''){
+                    param=param+'&salesMan='_vm.salesManParam;
+                }
+                axios.get('http://192.168.1.9:9090/api/findShop?'+param)
+                    .then(function (response) {
+                        console.log(response)
+                        _vm.shopNames=response.data
+                        console.log(_vm.shopNames);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
             },
             search:function () {
                console.log(this.sq_date)
@@ -462,8 +348,11 @@
                     return
                 }
                 _vm.loading = true;
-                const  param = 'bqDate='+this.bq_date+'&sqDate='+this.sq_date+'&name='+_vm.value+'&pageSize=100'+'&pageIndex=1'
-                axios.get('http://holer.cc:50369/api/hbtbData?'+param)
+                let  param = 'bqDate='+this.bq_date+'&sqDate='+this.sq_date+'&name='+_vm.value+'&pageSize=100'+'&pageIndex=1';
+                if(_vm.shopNames!=''){
+                    param=param+'&name='+_vm.shopNames;
+                }
+                axios.get('http://192.168.1.9:9090/api/hbtbData?'+param)
                     .then(function (response) {
                         console.log(response)
                         _vm.tableData3=response.data

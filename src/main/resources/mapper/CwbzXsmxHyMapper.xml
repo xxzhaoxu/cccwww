@@ -145,6 +145,29 @@
 		</if>
 		group by 督导名称
 	</select>
+	<select id="selectAllShop" resultType="java.lang.String">
+		select   商店名称 from kehu where 1 = 1
+		<if test="name!=null">
+			and 商店名称 = #{name}
+		</if>
+		group by 商店名称
+	</select>
+	<select id="selectShop" resultType="java.lang.String">
+		select 商店名称 from kehu where 1 = 1
+		<if test="area!=null">
+			and 地区名称 = #{area}
+		</if>
+		<if test="zj!=null">
+			and 总监名称 = #{zj}
+		</if>
+		<if test="zj!=null">
+			and 经理名称 = #{jl}
+		</if>
+		<if test="salesMan!=null">
+			and 督导名称 = #{salesMan}
+		</if>
+		group by 商店名称
+	</select>
 	<select id="selectareaTypeData" resultType="java.util.Map">
 	select
 	   t1.地区名称 as 地区名称,

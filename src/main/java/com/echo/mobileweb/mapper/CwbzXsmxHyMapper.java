@@ -35,6 +35,10 @@ public interface CwbzXsmxHyMapper extends Mapper<CwbzXsmxHy> {
 
     List<String> selectAllSalesMan(@Param("name")String name);
 
+    List<String> selectAllShop(@Param("name")String name);
+
+    List<String> selectShop(@Param("area")String area,@Param("zj")String zj,@Param("jl")String jl,@Param("salesMan")String salesman);
+
     List<Map<String,String>> selectareaTypeData(  @Param("start")String start,
                                                   @Param("end")String end,
                                                   @Param("area")String area);

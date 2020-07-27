@@ -191,7 +191,7 @@
         methods:{
             allShop(q){
                 const _vm = this;
-                let url = "http://holer.cc:50369/api/findAllShopName";
+                let url = "http://192.168.1.9:9090/api/findAllShopName";
                 if (q!=''){
                     url=url+"?shopName="+q;
                 }
@@ -229,7 +229,7 @@
                 if (_vm.value){
                     param+='&shopName='+_vm.value
                 }
-                axios.get('http://holer.cc:50369/api/findSaleRank?'+param)
+                axios.get('http://192.168.1.9:9090/api/findSaleRank?'+param)
                     .then(function (response) {
                         console.log(response)
                         _vm.tableData3=response.data.list

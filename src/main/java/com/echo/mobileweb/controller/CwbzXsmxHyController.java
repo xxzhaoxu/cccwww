@@ -10,6 +10,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.gson.JsonObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -478,14 +479,25 @@ public class CwbzXsmxHyController {
 
         List<String> salesManList  =  cwbzXsmxHyMapper.selectAllSalesMan(null);
 
+        List<String> shopList = cwbzXsmxHyMapper.selectAllShop(null);
+
         List<JSONObject> areaChildrenList = new ArrayList<>();
         List<JSONObject> zjChildrenList = new ArrayList<>();
         List<JSONObject> jlChildrenList = new ArrayList<>();
         List<JSONObject> salesManChildrenList = new ArrayList<>();
+        List<JSONObject> shopChildrenList = new ArrayList<>();
         JSONObject areaJson;
         JSONObject zjJson;
         JSONObject jlJson;
         JSONObject salesManJson;
+        JSONObject shopJson;
+
+        for(String shop:shopList){
+            shopJson = new JSONObject();
+            shopJson.put("value",shop);
+            shopJson.put("label",shop);
+            shopChildrenList.add(shopJson);
+        }
         for (String area:areaList){
             areaJson = new JSONObject();
             areaJson.put("value",area);
@@ -520,29 +532,45 @@ public class CwbzXsmxHyController {
         area.put("children",areaChildrenList);
 
         JSONObject zj = new JSONObject();
-        zj.put("value","quyu");
-        zj.put("label","区域");
+        zj.put("value","zongjian");
+        zj.put("label","总监");
         zj.put("children",zjChildrenList);
 
         JSONObject jl = new JSONObject();
-        jl.put("value","quyu");
-        jl.put("label","区域");
+        jl.put("value","jingli");
+        jl.put("label","经理");
         jl.put("children",jlChildrenList);
 
         JSONObject salesMan = new JSONObject();
-        salesMan.put("value","quyu");
-        salesMan.put("label","区域");
+        salesMan.put("value","dudao");
+        salesMan.put("label","督导");
         salesMan.put("children",salesManChildrenList);
 
-
+        JSONObject shop = new JSONObject();
+        shop.put("value","zhongduan");
+        shop.put("label","终端");
+        shop.put("children",shopChildrenList);
         List<JSONObject> reList = new ArrayList<>();
+
+        reList.add(shop);
         reList.add(area);
         reList.add(zj);
-        reList.add(salesMan);
         reList.add(jl);
+        reList.add(salesMan);
 
 
         return reList;
+    }
+
+    @ResponseBody
+    @RequestMapping("api/findShop")
+    public Object findShop(
+            @RequestParam(required = false)String area,
+            @RequestParam(required = false)String zj,
+            @RequestParam(required = false)String jl,
+            @RequestParam(required = false)String salesMan
+    ){
+        return cwbzXsmxHyMapper.selectShop(area, zj, jl, salesMan);
     }
     private String formartMonth(String month){
         if (month.length()<2){
