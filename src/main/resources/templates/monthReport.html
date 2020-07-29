@@ -163,7 +163,7 @@
                     param+='&shopCode='+_vm.defaultShopCode
                 }
                 console.log(param)
-                axios.get('http://192.168.1.9:9090/api/findMonthReportData?'+param)
+                axios.get('http://192.168.0.7:9090/api/findMonthReportData?'+param)
                     .then(function (response) {
                         console.log(response)
                         _vm.tableData=response.data.list

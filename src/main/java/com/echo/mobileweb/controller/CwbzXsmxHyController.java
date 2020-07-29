@@ -570,7 +570,13 @@ public class CwbzXsmxHyController {
             @RequestParam(required = false)String jl,
             @RequestParam(required = false)String salesMan
     ){
-        return cwbzXsmxHyMapper.selectShop(area, zj, jl, salesMan);
+        List<String> list = cwbzXsmxHyMapper.selectShop(area, zj, jl, salesMan);
+        List<String> reList = new ArrayList<>();
+        for (String str: list ){
+            str = "'"+str+"'";
+            reList.add(str);
+        }
+        return reList;
     }
     private String formartMonth(String month){
         if (month.length()<2){

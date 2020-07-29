@@ -160,7 +160,7 @@
 		<if test="zj!=null">
 			and 总监名称 = #{zj}
 		</if>
-		<if test="zj!=null">
+		<if test="jl!=null">
 			and 经理名称 = #{jl}
 		</if>
 		<if test="salesMan!=null">
