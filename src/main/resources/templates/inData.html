@@ -230,7 +230,7 @@
         methods: {
             allArea(q){
                 const _vm = this;
-                let url = "http://192.168.0.7:9090/api/findAllarea";
+                let url = "http://holer.cc:50369/api/findAllarea";
                 if (q!=''){
                     url=url+"?area="+q;
                 }
@@ -259,7 +259,7 @@
                     param+='&shopName='+_vm.defaultShop
                 }
 
-                axios.get('http://192.168.0.7:9090/api/getInData?'+param)
+                axios.get('http://holer.cc:50369/api/getInData?'+param)
                     .then(function (response) {
                         console.log(response)
                         _vm.tableData=response.data.list
@@ -347,15 +347,15 @@
                 switch (t) {
                     case '1':
                         console.log("1")
-                        url = "http://192.168.0.7:9090/api/areaHz?";
+                        url = "http://holer.cc:50369/api/areaHz?";
                         break;
                     case '2':
                         console.log("2")
-                        url = "http://192.168.0.7:9090/api/salesManHz?";
+                        url = "http://holer.cc:50369/api/salesManHz?";
                         break;
                     case '3':
                         console.log("3")
-                        url = "http://192.168.0.7:9090/api/shopNameHz?";
+                        url = "http://holer.cc:50369/api/shopNameHz?";
                         break;
                     default:
                         return;

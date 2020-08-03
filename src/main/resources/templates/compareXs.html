@@ -14,92 +14,99 @@
 <div id="app"
      v-loading="loading">
 
-    <div>
         <van-row type="flex"  >
             <van-col span="4">
                 <van-cell>上期</van-cell>
             </van-col>
-            <van-col span="7"  style="border: 1px solid #a1a1a1; border-right: none">
-                <div>
-                    <van-cell  @click="showPopup">{{startTime}}</van-cell>
-                    <van-popup v-model="showDateMotail"  position="bottom">
+            <van-col span ="20">
+                <van-row type="flex" justify="space-between">
+                    <van-col span="12" class="van-hairline--surround"  >
                         <div>
-                            <van-datetime-picker
-                                    v-model="currentDate"
-                                    type="date"
-                                    title="选择开始时间"
-                                    :min-date="minDate"
-                                    :max-date="maxDate"
-                                    @confirm="confirmDate"
-                                    :formatter="formatter"
-                            />
+                            <van-cell  @click="showPopup">{{startTime}}</van-cell>
+                            <van-popup v-model="showDateMotail"  position="bottom">
+                                <div>
+                                    <van-datetime-picker
+                                            v-model="currentDate"
+                                            type="date"
+                                            title="选择开始时间"
+                                            :min-date="minDate"
+                                            :max-date="maxDate"
+                                            @confirm="confirmDate"
+                                            :formatter="formatter"
+                                    />
+                                </div>
+                            </van-popup>
                         </div>
-                    </van-popup>
-                </div>
+                    </van-col>
+
+                    <van-col span="12" class="van-hairline--surround">
+                        <div >
+                            <van-cell  @click="showPopup1">{{endTime}}</van-cell>
+                            <van-popup v-model="showDateMotail1"  position="bottom" >
+                                <div>
+                                    <van-datetime-picker
+                                            v-model="currentDate"
+                                            type="date"
+                                            title="选择结束时间"
+                                            :min-date="minDate"
+                                            :max-date="maxDate"
+                                            @confirm="confirmDate1"
+                                            :formatter="formatter"
+                                    />
+                                </div>
+                            </van-popup>
+                        </div>
+                    </van-col>
+                </van-row>
             </van-col>
 
-            <van-col span="7" style="border: 1px solid #a1a1a1;"  >
-                <div >
-                    <van-cell  @click="showPopup1">{{endTime}}</van-cell>
-                    <van-popup v-model="showDateMotail1"  position="bottom" >
-                        <div>
-                            <van-datetime-picker
-                                    v-model="currentDate"
-                                    type="date"
-                                    title="选择结束时间"
-                                    :min-date="minDate"
-                                    :max-date="maxDate"
-                                    @confirm="confirmDate1"
-                                    :formatter="formatter"
-                            />
-                        </div>
-                    </van-popup>
-                </div>
-            </van-col>
         </van-row>
-    </div>
-    <div>
+
+
         <van-row type="flex"  >
             <van-col span="4">
                 <van-cell>本期</van-cell>
             </van-col>
-            <van-col span="7"  style="border: 1px solid #a1a1a1; border-right: none">
-                <div>
-                    <van-cell  @click="showPopup2">{{startTime2}}</van-cell>
-                    <van-popup v-model="showDateMotail2"  position="bottom" >
+            <van-col span ="20">
+                <van-row type="flex" justify="space-between">
+                    <van-col span="12" class="van-hairline--surround">
                         <div>
-                            <van-datetime-picker
-                                    v-model="currentDate"
-                                    type="date"
-                                    title="选择开始时间"
-                                    :min-date="minDate"
-                                    :max-date="maxDate"
-                                    @confirm="confirmDate2"
-                                    :formatter="formatter"
-                            />
+                            <van-cell  @click="showPopup2">{{startTime2}}</van-cell>
+                            <van-popup v-model="showDateMotail2"  position="bottom" >
+                                <div>
+                                    <van-datetime-picker
+                                            v-model="currentDate"
+                                            type="date"
+                                            title="选择开始时间"
+                                            :min-date="minDate"
+                                            :max-date="maxDate"
+                                            @confirm="confirmDate2"
+                                            :formatter="formatter"
+                                    />
+                                </div>
+                            </van-popup>
                         </div>
-                    </van-popup>
-                </div>
+                    </van-col>
+
+                    <van-col span="12"  class="van-hairline--surround" >
+                            <van-cell   @click="showPopup3">{{endTime2}}</van-cell>
+                            <van-popup  v-model="showDateMotail3"  position="bottom" >
+                                <div>
+                                    <van-datetime-picker
+                                            v-model="currentDate"
+                                            type="date"
+                                            title="选择结束时间"
+                                            :min-date="minDate"
+                                            :max-date="maxDate"
+                                            @confirm="confirmDate3"
+                                            :formatter="formatter"
+                                    />
+                                </div>
+                            </van-popup>
+                    </van-col>
+                </van-row>
             </van-col>
 
-            <van-col span="7" >
-                <div >
-                    <van-cell style="border: 1px solid #a1a1a1;"  @click="showPopup3">{{endTime2}}</van-cell>
-                    <van-popup v-model="showDateMotail3"  position="bottom" >
-                        <div>
-                            <van-datetime-picker
-                                    v-model="currentDate"
-                                    type="date"
-                                    title="选择结束时间"
-                                    :min-date="minDate"
-                                    :max-date="maxDate"
-                                    @confirm="confirmDate3"
-                                    :formatter="formatter"
-                            />
-                        </div>
-                    </van-popup>
-                </div>
-            </van-col>
         </van-row>
         <van-row type="flex">
             <van-col span="4">
@@ -117,7 +124,7 @@
                 </el-cascader>
             </div>
         </van-row>
-    </div>
+
     <div style="display: flex;justify-content: center;">
         <el-button type="primary" v-on:click="search">搜索</el-button>
     </div>
@@ -129,7 +136,7 @@
                     prop="index"
                     label="#"
                     type="index"
-                    width="150">
+                    width="50">
             </el-table-column>
                 <el-table-column
                         fixed
@@ -150,7 +157,7 @@
                     <el-table-column
                             prop="sqtqxsj"
                             label="上年同期销售额"
-                            width="300">
+                            width="120">
                     </el-table-column>
                     <el-table-column
                             prop="hb"
@@ -234,7 +241,7 @@
         methods:{
             getOptions(q){
                 const _vm = this;
-                let url = "http://192.168.0.7:9090/api/findZdOpention";
+                let url = "http://holer.cc:50369/api/findZdOpention";
                 if (q!=''){
                     url=url+"?shopName="+q;
                 }
@@ -305,8 +312,7 @@
                     if (salesManArr.length>0){
                         t.salesManParam=salesManArr.join(",");
                     }
-
-                    t.findShopName()
+                    t.findShopName();
                 }
             },
             getCheckedNodes(v){
@@ -332,7 +338,7 @@
                 if (_vm.salesManParam!=''){
                     param=param+'&salesMan='+_vm.salesManParam;
                 }
-                axios.get('http://192.168.0.7:9090/api/findShop?'+param)
+                axios.get('http://holer.cc:50369/api/findShop?'+param)
                     .then(function (response) {
                         console.log(response)
                         _vm.shopNames=response.data
@@ -346,17 +352,17 @@
                console.log(this.sq_date)
                console.log(this.bq_date)
                 const _vm = this;
-                if (this.sq_date===''||this.sq_date===''){
+                if (_vm.sq_date.length<2||_vm.bq_date.length<2){
                     alert("请选择时间")
                     return
                 }
                 _vm.loading = true;
-                let  param = 'bqDate='+this.bq_date+'&sqDate='+_vm.sq_date+'&pageSize=100'+'&pageIndex=1';
+                let  param = 'bqDate='+this.bq_date+'&sqDate='+_vm.sq_date+'&pageSize=10000'+'&pageIndex=1';
                 console.log(_vm.shopNames+"---------")
                 if(_vm.shopNames!=''){
                     param=param+'&name='+_vm.shopNames;
                 }
-                axios.get('http://192.168.0.7:9090/api/hbtbData?'+param)
+                axios.get('http://holer.cc:50369/api/hbtbData?'+param)
                     .then(function (response) {
                         console.log(response)
                         _vm.tableData3=response.data

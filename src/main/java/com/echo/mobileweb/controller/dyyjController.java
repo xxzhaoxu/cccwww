@@ -41,7 +41,6 @@ public class dyyjController {
         PageHelper.startPage(pageIndex,pageSize,orderBy);
 
         List<Map<String,String>> list = cwbzDyyjMapper.selectSaleRank(start,end,lastStart,lastEnd,name);
-        System.out.println("----"+list.toString());
         PageInfo<Map<String,String>> pageInfo = new PageInfo<>(list);
         return pageInfo;
     }
