@@ -37,12 +37,12 @@ public class dyyjController {
         String lastStart = Utils.getNowOfLastMonth(start);
         String lastEnd = Utils.getNowOfLastMonth(end);
 
-        String orderBy = "t1.销售金额 desc";
-        PageHelper.startPage(pageIndex,pageSize,orderBy);
+//        String orderBy = "t1.销售金额 desc";
+//        PageHelper.startPage(pageIndex,pageSize,orderBy);
 
         List<Map<String,String>> list = cwbzDyyjMapper.selectSaleRank(start,end,lastStart,lastEnd,name);
-        PageInfo<Map<String,String>> pageInfo = new PageInfo<>(list);
-        return pageInfo;
+//        PageInfo<Map<String,String>> pageInfo = new PageInfo<>(list);
+        return list;
     }
 
     @GetMapping("CwbzDyyj")

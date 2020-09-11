@@ -39,10 +39,10 @@ public class ComparisonController {
         }
 
 
-        String shangqi_start = LocalDate.now().plusDays(-2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
-        String shangqi_end = LocalDate.now().plusDays(-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
-        String benqi_start = LocalDate.now().plusDays(-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
-        String benqi_end = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
+        String shangqi_start = LocalDate.now().plusDays(-2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd   22:00:00"));
+        String shangqi_end = LocalDate.now().plusDays(-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd   22:00:00"));
+        String benqi_start = LocalDate.now().plusDays(-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd   22:00:00"));
+        String benqi_end = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd   22:00:00"));
         String shangqi_input = LocalDate.now().plusDays(-2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String benqi_input = LocalDate.now().plusDays(-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         //List<ComparisonModel> list = ddinputMapper.getComparison(null,shangqi_start,shangqi_end,benqi_start,benqi_end,shangqi_input,benqi_input);
@@ -68,10 +68,10 @@ public class ComparisonController {
 //        if (shopname.equals("")) {
 //            shopname = null;
 //        }
-//        String shangqi_start = LocalDate.now().plusDays(-2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
-//        String shangqi_end = LocalDate.now().plusDays(-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
-//        String benqi_start = LocalDate.now().plusDays(-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
-//        String benqi_end = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
+//        String shangqi_start = LocalDate.now().plusDays(-2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd   22:00:00"));
+//        String shangqi_end = LocalDate.now().plusDays(-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd   22:00:00"));
+//        String benqi_start = LocalDate.now().plusDays(-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd   22:00:00"));
+//        String benqi_end = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd   22:00:00"));
 //        String shangqi_input = LocalDate.now().plusDays(-2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 //        String benqi_input = LocalDate.now().plusDays(-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 //        List<ComparisonModel> list = ddinputMapper.getComparison(shopname, shangqi_start, shangqi_end, benqi_start, benqi_end, shangqi_input, benqi_input);

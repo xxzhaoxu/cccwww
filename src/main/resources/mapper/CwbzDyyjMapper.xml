@@ -39,7 +39,6 @@ from  ((
 				cast('${start}' as datetime)
 			and  cast('${end}' as datetime)
 	  		<if test="shopName!=null">
-
 				and 店铺名称 in (${shopName})
 			</if>
 	group by 店员名称,店铺名称
@@ -60,5 +59,6 @@ from  ((
 			and 店铺名称 in (${shopName})
 		</if>
 	group by 店铺名称,店员名称 ) as t2 on  t1.店员名称 = t2.店员名称 and t1.店铺名称 = t2.店铺名称)
+	order by  t1.销售金额 desc
   </select>
 </mapper>

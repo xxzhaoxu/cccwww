@@ -41,8 +41,6 @@
                                 <h1 class="glyphicon glyphicon-tasks" aria-hidden="true"></h1>
                                 <h4>每日报账 </h4>
                             </div>
-
-
                         </div>
                     </a>
                 </div>
@@ -75,17 +73,20 @@
                     </a>
                 </div>
             </div>
-            <div class="col-xs-6" style="padding-left: 3px;padding-right: 3px; margin-bottom: 10px;">
-                <a href="/compareXs">
-                    <div style="height:20%;background-color:#FFC107;text-align:center;border-radius:10px">
-                        <div style="position:absolute;top:40%;left:50%;transform: translate(-50%, -50%); ">
-                            <h1 class="glyphicon glyphicon-road" aria-hidden="true"></h1>
-                            <h4>月 环比 同比 </h4>
+            <div>
+                <div class="col-xs-6" style="padding-left: 3px;padding-right: 3px; margin-bottom: 10px;">
+                    <a href="./achievementCompare">
+                        <div style="height:20%;background-color:#FFC107;text-align:center;border-radius:10px">
+                            <div style="position:absolute;top:40%;left:50%;transform: translate(-50%, -50%);">
+                                <h1 class="glyphicon glyphicon-calendar" aria-hidden="true"></h1>
+                                <h4>业绩对比</h4>
+                            </div>
                         </div>
-                    </div>
-                </a>
+                    </a>
+                </div>
             </div>
         </div>
+
         <div class="row">
             <div>
                 <div class="col-xs-6" style="padding-left: 3px;padding-right: 3px; margin-bottom: 10px;">
@@ -103,7 +104,7 @@
                 <a href="./cwbzXsmxHy">
                     <div style="height:20%;background-color:#FFC107;text-align:center;border-radius:10px">
                         <div style="position:absolute;top:40%;left:50%;transform: translate(-50%, -50%); ">
-                            <h1 class="glyphicon glyphicon-road" aria-hidden="true"></h1>
+                            <h1 class="glyphicon glyphicon-indent-right" aria-hidden="true"></h1>
                             <h4>大类销售占比+会员占比</h4>
                         </div>
                     </div>
@@ -190,7 +191,7 @@
                         <div style="height:20%;background-color:#8BC34A;text-align:center;border-radius:10px">
                             <div style="position:absolute;top:40%;left:50%;transform: translate(-50%, -50%);">
                                 <h1 class="glyphicon glyphicon-calendar" aria-hidden="true"></h1>
-                                <h4>小类月周期</h4>
+                                <h4>小类月周报</h4>
                             </div>
                         </div>
                     </a>
@@ -201,12 +202,40 @@
                     <div style="height:20%;background-color:#FFC107;text-align:center;border-radius:10px">
                         <div style="position:absolute;top:40%;left:50%;transform: translate(-50%, -50%); ">
                             <h1 class="glyphicon glyphicon-road" aria-hidden="true"></h1>
-                            <h4>进销存分析</h4>
+                            <h4>销存分析</h4>
                         </div>
                     </div>
                 </a>
             </div>
         </div>
+
+
+          <div class="row">
+            <div class="col-xs-6" style="padding-left: 3px;padding-right: 3px; margin-bottom: 10px;">
+                <a href="/compareXs">
+                    <div style="height:20%;background-color:#8BC34A;text-align:center;border-radius:10px">
+                        <div style="position:absolute;top:40%;left:50%;transform: translate(-50%, -50%); ">
+                            <h1 class="glyphicon glyphicon-road" aria-hidden="true"></h1>
+                            <h4>月 环比 同比 </h4>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-xs-6" style="padding-left: 3px;padding-right: 3px; margin-bottom: 10px;">
+                <a href="#">
+                    <div style="height:20%;background-color:#FFC107;text-align:center;border-radius:10px">
+                        <div style="position:absolute;top:40%;left:50%;transform: translate(-50%, -50%); ">
+                            <h1 class="glyphicon glyphicon-road" aria-hidden="true"></h1>
+                            <h4>开发中</h4>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+
+
         <div class="row">
             <div class="col-xs-6" style="padding-left: 3px;padding-right: 3px; margin-bottom: 10px;">
 
@@ -320,5 +349,7 @@
 </body>
 </html>
 <script>
-
+    let sessionParam = '[[${session.userName}]]';
+    console.log(sessionParam)
+    sessionStorage.setItem("userName", sessionParam);
 </script>

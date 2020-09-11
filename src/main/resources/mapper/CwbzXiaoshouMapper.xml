@@ -10,7 +10,7 @@
     <result column="销售金额" jdbcType="NUMERIC" property="销售金额" />
   </resultMap>
   <select id="selectCwbzXiaoshouById" resultMap="BaseResultMap">
-        select * from cccwww.dbo.cwbz_xiaoshou where 唯一码=#{id}
+        select * from cwbz_xiaoshou where 唯一码=#{id}
   </select>
   <select id="selectCwbzXiaoshouList" resultMap="BaseResultMap">
     SELECT top ${pageSize} *
@@ -23,13 +23,14 @@
   </select>
 
     <select id="selectCwbzXiaoshou" resultType="java.util.Map">
-        select top ${pageSize} 店铺名称 as shopName,sum(销售金额) as xsje ,sum(目标金额) as mbje
-        from cwbz_xiaoshou where 店铺名称 not in ( select   top ${pageStart} 店铺名称 from [cwbz_xiaoshou])
-        and 日期 between cast('${start}' as datetime) and cast('${end}' as datetime)
+        select   店铺名称 as shopName,sum(销售金额) as xsje ,sum(目标金额) as mbje
+        from cwbz_xiaoshou where
+        日期 between cast('${start}' as datetime) and cast('${end}' as datetime)
         <if test="shopName!=null">
             and 店铺名称 in (${shopName})
         </if>
  	 group by 店铺名称
+ 	 order by xsje desc
 
     </select>
   <select id="selectCwbzXiaoshouByName" resultType="java.util.Map">
@@ -48,6 +49,6 @@
     </select>
 
     <select id="selectLastYearCharge" resultType="java.lang.String">
-        select sum(销售金额) as xsje from cwbz_xiaoshou where 日期 between #{start} and #{end}
+        select CEILING(sum(销售金额)) as xsje from cwbz_xiaoshou where 日期 between #{start} and #{end} and 店铺名称 = #{shopName}
     </select>
 </mapper>

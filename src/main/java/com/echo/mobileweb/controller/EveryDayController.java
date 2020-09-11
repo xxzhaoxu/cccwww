@@ -78,12 +78,12 @@ public class EveryDayController {
             shopname=null;
         }
         LocalDate day=LocalDate.parse(date);
-        String starttime = day.plusDays(-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
-        String endtime = day.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
+        String starttime = day.plusDays(-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd   22:00:00"));
+        String endtime = day.format(DateTimeFormatter.ofPattern("yyyy-MM-dd   22:00:00"));
         String inputtime = day.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 //        if ((LocalDateTime.now().getHour() == 22 && LocalDateTime.now().getMinute() > 30) || LocalDateTime.now().getHour() > 22) {
-//            starttime = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
-//            endtime = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
+//            starttime = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd   22:00:00"));
+//            endtime = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd   22:00:00"));
 //            inputtime = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 //        }
         List<EveryAmountDto> list = ddinputMapper.getEveryDayAmount(starttime, endtime, inputtime, selectindex == 1, selectindex == 2,shopname);

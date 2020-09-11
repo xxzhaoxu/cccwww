@@ -36,7 +36,6 @@ public class HomeController {
 
     @RequestMapping("/login")
     public String login() {
-
         return "login";
     }
 
@@ -63,6 +62,10 @@ public class HomeController {
                 return "账号已被停用";
             }
             request.getSession().setAttribute("user", userinfo);
+
+            String username = yuangongMapper.selectOne(yuangong).get名称();
+
+            request.getSession().setAttribute("userName",username);
             return "ok";
         }
     }

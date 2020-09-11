@@ -2,9 +2,654 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>业绩对比</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
+
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+
+    <!-- 引入样式文件 -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.9/lib/index.css"/>
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <!-- 先引入 Vue -->
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <!-- 引入axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- 引入 Vue 和 Vant 的 JS 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/vant@2.9/lib/vant.min.js"></script>
 </head>
 <body>
+    <div id="app"  v-cloak    v-loading="loading">
+     <van-row>
+         <van-nav-bar
+                 title="业绩对比"
+                 left-arrow
+                 @click-left="onClickLeft"
+                 fixed
+                 placeholder
+                 z-index="999"
+         />
+     </van-row>
+        <van-row type="flex">
+            <van-col span="4">
+                <van-cell>日期</van-cell>
+            </van-col>
+                    <van-col span="10" class="van-hairline--surround">
+                        <van-cell style="text-align: center;"  @click="showPopup">{{startTime}}</van-cell>
+                        <van-popup v-model="showDateMotail"  position="bottom">
+                            <van-datetime-picker
+                                    v-model="currentDate"
+                                    type="date"
+                                    title="选择开始时间"
+                                    :min-date="minDate"
+                                    :max-date="maxDate"
+                                    @confirm="confirmDate"
+                                    @cancel="starCancel"
+                                    :formatter="formatter"
+                            />
+                        </van-popup>
+                    </van-col>
+                    <van-col span="10" class="van-hairline--surround">
+                        <van-cell   @click="showPopup2">{{endTime}}</van-cell>
+                        <van-popup v-model="showDateMotail2"  position="bottom">
+                            <van-datetime-picker
+                                    v-model="currentDate"
+                                    type="date"
+                                    title="选择年月日"
+                                    :min-date="minDate"
+                                    :max-date="maxDate"
+                                    @confirm="confirmDate112"
+                                    :formatter="formatter"
+                                    @cancel="starCancel2"
+                            />
+                        </van-popup>
+                    </van-col>
 
+
+        </van-row>
+        <van-row type="flex">
+            <van-col span="4">
+                <van-cell>店铺</van-cell>
+            </van-col>
+            <van-col span="10">
+                <el-cascader
+                        collapse-tags
+                        v-model="shop"
+                        :options="options"
+                        :props="{ multiple: true, checkStrictly: true }"
+                          @change="selectValue"
+                        @remove-tag="clearValue"
+                        filterable
+                >
+                </el-cascader>
+            </van-col>
+            <van-col span="10">
+                <el-button type="primary" v-on:click="search">搜索</el-button>
+            </van-col>
+        </van-row>
+             <el-table
+                :data="tableData3"
+                 :style="'width:'+wd+'px'"
+                align="center"
+                :default-sort = "{prop: '差异', order: 'descending'}"
+                border
+                show-summary
+             >
+            <el-table-column
+                    fixed
+                    prop="商店名称"
+                    label="终端"
+                    width="96"
+                    align="center"
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="金额"
+                    label="业绩"
+                    width="60"
+                    align="center"
+                    :formatter="numberFormart"
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="对比金额"
+                    label="对比"
+                    width="70"
+                    align="center"
+                    :formatter="numberFormart"
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="百分比"
+                    label="差异"
+                    sortable
+                    width="75"
+                    align="center"
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="对比店铺"
+                    label="对比店铺"
+                    width="80"
+                    align="center"
+            >
+            </el-table-column>
+        </el-table>
+
+    </div>
+
+    <script>
+        var local = window.location.host;
+        Object.defineProperty(Array.prototype, 'indexOf', {
+            value: function (val) {
+                for (var i = 0; i < this.length; i++) {
+                    if (this[i] == val) return i;
+                }
+                return -1;
+            }
+        })
+
+        Object.defineProperty(Array.prototype, 'remove', {
+            value: function (val) {
+                var index = this.indexOf(val);
+                if (index > -1) {
+                    this.splice(index, 1);
+                }
+            }
+        });
+    //      Vue.directive('watermark',(el,binding)=>{
+    //     function addWaterMarker(str,parentNode,font,textColor){// 水印文字，父元素，字体，文字颜色
+    //         var can = document.createElement('canvas');
+    //         parentNode.appendChild(can);
+    //         can.width = 200;
+    //         can.height = 120;
+    //         can.style.display = 'none';
+    //         var cans = can.getContext('2d');
+    //         cans.rotate(-20 * Math.PI / 180);
+    //         cans.font = font || "16px Microsoft JhengHei";
+    //         cans.fillStyle = textColor || "rgba(180, 180, 180, 0.3)";
+    //         cans.textAlign = 'left';
+    //         cans.textBaseline = 'Middle';
+    //         cans.fillText(str, can.width / 5, can.height / 2);
+    //         parentNode.style.backgroundImage = "url(" + can.toDataURL("image/png") + ")";
+    //     }
+    //     addWaterMarker(binding.value.text, el, binding.value.font, binding.value.textColor)
+    // })
+
+
+    new Vue({
+            el: '#app',
+            data: function() {
+                return {
+                    pageIndex: 1,
+                    pageSize:1000,
+                    total:0,
+                    date: '',
+                    show: false,
+                    loading: false,
+                    options:[],
+                    wd:800,
+                    tableData3: [],
+                    bq_date: ['2020-07-01','2020-07-02'],
+                    currentPage3: 1,
+                    minDate: new Date(2018, 0, 1),
+                    maxDate: new Date(2025, 10, 1),
+                    currentDate: new Date(),
+                    showDateMotail:false,
+                    showDateMotail2:false,
+                    startTime: '',
+                    endTime: '',
+                    shopParam:'',
+                    areaParam:'',
+                    zjParam:'',
+                    jlParam:'',
+                    salesManParam:'',
+                    shopNames:'',
+                    shop:'',
+                    waterMarkOpt: {}
+                }
+            },
+            created: function () {
+                this.getOptions('');
+                // this.watermark();
+
+            },
+            mounted: function(){
+
+                const t = this;
+                t.getNowDate();
+                // t.search();
+
+
+            },
+            methods:{
+                showPopup() {
+                    this.showDateMotail = true;
+                },
+                showPopup2() {
+                    this.showDateMotail2 = true;
+                },
+                getNowDate() {
+                    const  t =this;
+                    const nowDate = new Date();
+                    let date = {
+                        year: nowDate.getFullYear(),
+                        month: (nowDate.getMonth() + 1)>10?(nowDate.getMonth()+1):"0"+(nowDate.getMonth()+1),
+                        date: nowDate.getDate()>=10?nowDate.getDate():"0"+nowDate.getDate(),
+                    }
+                    const  dt = date.year + '-'+ date.month + '-'+ date.date;
+                    t.bq_date = [dt,dt];
+                    t.startTime=dt
+                    t.endTime=dt
+                },
+                getOptions(q){
+                    const _vm = this;
+                    let url = "http://"+local+"/api/findZdOpention";
+                    if (q!=''){
+                        url=url+"?shopName="+q;
+                    }
+                    axios.get(url)
+                        .then(function (response) {
+                            // console.log(response)
+                            _vm.options=response.data
+                            // console.log(_vm.tableData3);
+
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                },
+                findShopNameOption(v){
+                    const  t = this;
+                    const  shopArr=[];
+                    const areaArr=[];
+                    const zjArr=[];
+                    const jlArr=[];
+                    const salesManArr=[];
+                    // console.log(v)
+                    // console.log(t.shop)
+                    if (!v&&t.shop){
+                        t.shop.forEach(function(value,index){
+                            const type = value[0];
+                            const va = value[1];
+                            if (type==='zhongduan'){
+                                if (value[1]){
+                                    shopArr.push(value[1])
+                                }
+                            }
+                            if (type==='quyu'){
+                                if (va){
+                                    areaArr.push(va);
+                                }
+                            }
+                            if (type==='zongjian'){
+                                if (va){
+                                    zjArr.push(va);
+                                }
+                            }
+                            if (type==='jingli'){
+                                if (va){
+                                    jlArr.push(va)
+                                }
+                            }
+                            if (type==='dudao'){
+                                if (va){
+                                    salesManArr.push(va)
+                                }
+                            }
+                        });
+                        if (shopArr.length>0){
+                            t.shopParam = shopArr.join(",");
+                        }
+                        if (areaArr.length>0){
+                            t.areaParam=areaArr.join(",");
+                        }
+                        if (zjArr.length>0){
+                            t.zjParam=zjArr.join(",");
+                        }
+                        if (jlArr.length>0){
+                            t.jlParam=jlArr.join(",");
+                        }
+                        if (salesManArr.length>0){
+                            t.salesManParam=salesManArr.join(",");
+                        }
+                        t.findShopName();
+                    };
+                },
+                findShopName(){
+                    // console.log("findShopName")
+                    const _vm = this;
+                    let  param = '?a=a';
+                    if (_vm.shopParam != ''){
+                        param = param + '&shopName=' + _vm.shopParam;
+                    }
+                    if (_vm.areaParam!=''){
+                        param=param+'&area='+_vm.areaParam;
+                    }
+                    if (_vm.zjParam!=''){
+                        param=param+'&zj='+_vm.zjParam;
+                    }
+                    if (_vm.jlParam!=''){
+                        param=param+'&jl='+_vm.jlParam;
+                    }
+                    if (_vm.salesManParam!=''){
+                        param=param+'&salesMan='+_vm.salesManParam;
+                    }
+
+                    // console.log(param)
+                    axios.get('http://'+local+'/api/findShop?'+param)
+                        .then(function (response) {
+                            // console.log(response)
+                            _vm.shopNames=response.data
+                            _vm.$nextTick(()=>{
+                                _vm.watermark();
+                            })
+                            // console.log(_vm.shopNames);
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                },
+                confirmDate(t){
+                    const that = this;
+                    const year = t.getFullYear();
+                    const month = t.getMonth()+1;
+                    const day = t.getDate();
+                    const strDay = day<10?("0"+day):day;
+                    const strMonth = month<10?('0'+month):month;
+                    const date = year+'-'+strMonth+'-'+strDay;
+                    that.startTime = date;
+                    that.endTime = date;
+                    that.bq_date[0] = date;
+                    that.bq_date[1]=date;
+                    that.showDateMotail=false;
+                },
+                confirmDate112(t){
+                    const  that = this;
+                    const year = t.getFullYear();
+                    const month = t.getMonth()+1;
+                    const day = t.getDate();
+                    const strDay = day<10?("0"+day):day;
+                    const strMonth = month<10?('0'+month):month;
+                    const date = year+'-'+strMonth+'-'+strDay;
+                    that.endTime = date;
+                    that.bq_date[1] = date;
+                    that.showDateMotail2=false;
+                },
+                search:function () {
+                    const _vm = this;
+                    // console.log(_vm.bq_date)
+                    if (_vm.bq_date[0]===''){
+                        alert("请选择开始时间")
+                        return
+                    }
+                    if (_vm.bq_date[1]===''){
+                        alert("请选择结束时间")
+                        return
+                    }
+                    _vm.loading = true;
+                    let  param = 'start='+_vm.bq_date[0]+'&end='+_vm.bq_date[1]+'&pageIndex='+_vm.pageIndex+'&pageSize='+_vm.pageSize;
+
+                    if(_vm.shopNames!=''){
+                        param=param+'&area='+_vm.shopNames;
+                    }
+                    // console.log(param)
+                    axios.get('http://'+local+'/api/achievementCompareData?'+param)
+                        .then(function (response) {
+                            console.log(response)
+                            _vm.tableData3=response.data.list
+                            _vm.total = response.data.total
+                            _vm.$nextTick(()=>{
+                                _vm.watermark();
+                            })
+                            _vm.loading = false;
+                            // console.log(_vm.tableData3);
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                },
+                starCancel(){
+                    const that =this
+                    that.showDateMotail=false;
+
+                },
+                starCancel2(){
+                    const that =this
+                    that.showDateMotail2=false;
+                },
+                formatter(type,val){
+                    if(type==='year'){
+                        return `${val}年`;
+                    }
+                    if (type === 'month') {
+                        return `${val}月`;
+                    } else if (type === 'day') {
+                        return `${val}日`;
+                    }
+                    return val;
+                },
+                clearValue(v){
+                    const  t = this;
+                    if (t.shop) {
+                        const type = v[0]
+                        const va = v[1];
+                        if (type === 'zhongduan') {
+                            const arr = t.shopParam.split(",");
+                            // console.log(arr)
+                            t.shopParam = arr;
+                            arr.forEach(function (item,index) {
+                                if (item===va){
+                                    arr.splice(index,1)
+                                }
+                            });
+                            t.shopParam = arr.join(",");
+                            // t.shopParam = t.shopParam.replace(va+',','');
+                        }
+                        if (type === 'quyu') {
+                            const arr = t.areaParam.split(',');
+                            arr.forEach(function (item,index) {
+                                if (item===va){
+                                    arr.splice(index,1)
+                                }
+                            });
+                            t.areaParam = arr.join(',');
+                        }
+                        if (type === 'zongjian') {
+                            const arr =  t.zjParam.split(',');
+                            arr.forEach(function (item,index) {
+                                if (item===va){
+                                    arr.splice(index,1)
+                                }
+                            });
+                            t.zjParam = arr.join(',');
+                        }
+                        if (type === 'jingli') {
+                            const arr =  t.jlParam.split(',');
+                            arr.forEach(function (item,index) {
+                                if (item===va){
+                                    arr.splice(index,1)
+                                }
+                            });
+                            t.zjParam = arr.join(',');
+                        }
+                        if (type === 'dudao') {
+                            const arr =  t.salesManParam.split(',');
+                            arr.forEach(function (item,index) {
+                                if (item===va){
+                                    arr.splice(index,1)
+                                }
+                            });
+                            t.salesManParam = arr.join(',');
+                        }
+                        t.findShopName();
+                    };
+                },
+                onClickLeft(){
+                    window.history.back(-1);
+                }
+                ,
+                selectValue(v){
+                    const  t = this;
+                    // console.log(v)
+                    // console.log(t.shop)
+                    const  shopArr=[];
+                    const areaArr=[];
+                    const zjArr=[];
+                    const jlArr=[];
+                    const salesManArr=[];
+                    v.forEach(function(value,index){
+                        // console.log(value)
+                        // console.log(index)
+                        const type = value[0];
+                        const va = value[1];
+                        if (type==='zhongduan'){
+                            if (va){
+                                shopArr.push(value[1])
+                            }
+                        }
+                        if (type==='quyu'){
+                            if (va){
+                                areaArr.push(va);
+                            }
+                        }
+                        if (type==='zongjian'){
+                            if (va){
+                                zjArr.push(va);
+                            }
+                        }
+                        if (type==='jingli'){
+                            if (va){
+                                jlArr.push(va)
+                            }
+                        }
+                        if (type==='dudao'){
+                            if (va){
+                                salesManArr.push(va)
+                            }
+                        }
+                    })
+                    if (shopArr.length>0){
+                        t.shopParam = shopArr.join(",");
+                    }
+                    if (areaArr.length>0){
+                        t.areaParam=areaArr.join(",");
+                    }
+                    if (zjArr.length>0){
+                        t.zjParam=zjArr.join(",");
+                    }
+                    if (jlArr.length>0){
+                        t.jlParam=jlArr.join(",");
+                    }
+                    if (salesManArr.length>0){
+                        t.salesManParam=salesManArr.join(",");
+                    }
+                    t.findShopName();
+                },
+                dataFormat(row, column){
+                    const val = row[column.property];
+                    if (val===undefined){
+                        return 0;
+                    }
+                    return val.toFixed(2);
+
+                },
+                numberFormart(row, column){
+                    const val = row[column.property];
+                    if (val===undefined){
+                        return 0;
+                    }
+                    return val.toLocaleString();
+                },
+                 watermark() {
+                //默认设置
+                var defaultSettings = {
+                    watermark_txt: sessionStorage.getItem("userName"),
+                    watermark_x: 20,//水印起始位置x轴坐标
+                    watermark_y: 150,//水印起始位置Y轴坐标
+                    watermark_rows: 1000,//水印行数
+                    watermark_cols: 2000,//水印列数
+                    watermark_x_space: 20,//水印x轴间隔
+                    watermark_y_space: 20,//水印y轴间隔
+                    watermark_color: '#aaa',//水印字体颜色
+                    watermark_alpha: 0.4,//水印透明度
+                    watermark_fontsize: '15px',//水印字体大小
+                    watermark_font: '微软雅黑',//水印字体
+                    watermark_width: 100,//水印宽度
+                    watermark_height: 100,//水印长度
+                    watermark_angle: 15//水印倾斜度数
+                };
+                //采用配置项替换默认值，作用类似jquery.extend
+                if (arguments.length === 1 && typeof arguments[0] === "object") {
+                    var src = arguments[0] || {};
+                    for (key in src) {
+                        if (src[key] && defaultSettings[key] && src[key] === defaultSettings[key])
+                            continue;
+                        else if (src[key])
+                            defaultSettings[key] = src[key];
+                    }
+                }
+                var oTemp = document.createDocumentFragment();
+
+                //获取页面最大宽度
+                var page_width = Math.max(document.body.scrollWidth, document.body.clientWidth);
+                var cutWidth = page_width * 0.0150;
+                var page_width = page_width - cutWidth;
+                //获取页面最大高度
+                var page_height = Math.max(document.body.scrollHeight, document.body.clientHeight);
+                // var page_height = document.body.scrollHeight+document.body.scrollTop;
+                //如果将水印列数设置为0，或水印列数设置过大，超过页面最大宽度，则重新计算水印列数和水印x轴间隔
+                if (defaultSettings.watermark_cols == 0 || (parseInt(defaultSettings.watermark_x + defaultSettings.watermark_width * defaultSettings.watermark_cols + defaultSettings.watermark_x_space * (defaultSettings.watermark_cols - 1)) > page_width)) {
+                    defaultSettings.watermark_cols = parseInt((page_width - defaultSettings.watermark_x + defaultSettings.watermark_x_space) / (defaultSettings.watermark_width + defaultSettings.watermark_x_space));
+                    defaultSettings.watermark_x_space = parseInt((page_width - defaultSettings.watermark_x - defaultSettings.watermark_width * defaultSettings.watermark_cols) / (defaultSettings.watermark_cols - 1));
+                }
+                //如果将水印行数设置为0，或水印行数设置过大，超过页面最大长度，则重新计算水印行数和水印y轴间隔
+                if (defaultSettings.watermark_rows == 0 || (parseInt(defaultSettings.watermark_y + defaultSettings.watermark_height * defaultSettings.watermark_rows + defaultSettings.watermark_y_space * (defaultSettings.watermark_rows - 1)) > page_height)) {
+                    defaultSettings.watermark_rows = parseInt((defaultSettings.watermark_y_space + page_height - defaultSettings.watermark_y) / (defaultSettings.watermark_height + defaultSettings.watermark_y_space));
+                    defaultSettings.watermark_y_space = parseInt(((page_height - defaultSettings.watermark_y) - defaultSettings.watermark_height * defaultSettings.watermark_rows) / (defaultSettings.watermark_rows - 1));
+                }
+                var x;
+                var y;
+                for (var i = 0; i < defaultSettings.watermark_rows; i++) {
+                    y = defaultSettings.watermark_y + (defaultSettings.watermark_y_space + defaultSettings.watermark_height) * i;
+                    for (var j = 0; j < defaultSettings.watermark_cols; j++) {
+                        x = defaultSettings.watermark_x + (defaultSettings.watermark_width + defaultSettings.watermark_x_space) * j;
+
+                        var mask_div = document.createElement('div');
+                        mask_div.id = 'mask_div' + i + j;
+                        mask_div.className = 'mask_div';
+                        mask_div.appendChild(document.createTextNode(defaultSettings.watermark_txt));
+                        //设置水印div倾斜显示
+                        mask_div.style.webkitTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                        mask_div.style.MozTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                        mask_div.style.msTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                        mask_div.style.OTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                        mask_div.style.transform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                        mask_div.style.visibility = "";
+                        mask_div.style.position = "absolute";
+                        mask_div.style.left = x + 'px';
+                        mask_div.style.top = y + 'px';
+                        mask_div.style.overflow = "hidden";
+                        mask_div.style.zIndex = "9999999999999";
+                        mask_div.style.pointerEvents = 'none';//pointer-events:none  让水印不遮挡页面的点击事件
+                        //mask_div.style.border="solid #eee 1px";
+                        mask_div.style.opacity = defaultSettings.watermark_alpha;
+                        mask_div.style.fontSize = defaultSettings.watermark_fontsize;
+                        mask_div.style.fontFamily = defaultSettings.watermark_font;
+                        mask_div.style.color = defaultSettings.watermark_color;
+                        mask_div.style.textAlign = "center";
+                        mask_div.style.width = defaultSettings.watermark_width + 'px';
+                        mask_div.style.height = defaultSettings.watermark_height + 'px';
+                        mask_div.style.display = "block";
+                        oTemp.appendChild(mask_div);
+                    };
+                };
+                document.body.appendChild(oTemp);
+            }
+
+            },
+
+        })
+    </script>
 </body>
 </html>

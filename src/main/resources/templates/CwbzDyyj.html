@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 
     <!-- 引入样式文件 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.9/lib/index.css"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.9/lib/index.css"/>
+    <link rel="stylesheet" href="/css/reset.css"/>
     <!-- 先引入 Vue -->
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
 
@@ -19,121 +20,155 @@
     <script src="https://cdn.jsdelivr.net/npm/vant@2.9/lib/vant.min.js"></script>
 </head>
 <body>
-<div id="app" v-loading="loading">
-    <van-row type="flex" justify="space-between">
-        <van-col span="8">
-
-            <van-cell  @click="showPopup">{{startTime}}</van-cell>
-            <van-popup v-model="showDateMotail"  position="bottom">
-                    <van-datetime-picker
-                            v-model="currentDate"
-                            type="date"
-                            title="选择开始时间"
-                            :min-date="minDate"
-                            :max-date="maxDate"
-                            @confirm="confirmDate"
-                            @cancel="starCancel"
-                            :formatter="formatter"
-
-                    />
-            </van-popup>
-        </van-col>
-        <van-col span="8">
-            <van-cell  @click="showPopup2">{{endTime}}</van-cell>
-            <van-popup v-model="showDateMotail2"  position="bottom">
-                <van-datetime-picker
-                        v-model="currentDate"
-                        type="date"
-                        title="选择年月日"
-                        :min-date="minDate"
-                        :max-date="maxDate"
-                        @confirm="confirmDate112"
-                        :formatter="formatter"
-                        @cancel="starCancel2"
-                />
-            </van-popup>
-        </van-col>
+<div id="app"  v-cloak   v-loading="loading">
+    <van-row>
+        <van-nav-bar
+                title="导购排行"
+                left-arrow
+                @click-left="onClickLeft"
+                z-index="999"
+                fixed
+                placeholder
+        />
     </van-row>
-    <div style="flex-direction: column; flex-grow:2">
-<!--        <div>-->
-<!--            <span class="demonstration">终端</span>-->
-<!--            <el-select v-model="value"-->
-<!--                       clearable-->
-<!--                       filterable-->
-<!--                       remote-->
-<!--                       :remote-method="allShop"-->
-<!--                       placeholder="请选择">-->
-<!--                <el-option-->
-<!--                        v-for="item in options"-->
-<!--                        :key="item.shopName"-->
-<!--                        :label="item.shopName"-->
-<!--                        :value="item.shopName">-->
-<!--                </el-option>-->
-<!--            </el-select>-->
-<!--        </div>-->
-        <div class="block">
-            <el-cascader
-                    v-model="shop"
-                    :options="options"
-                    :props="{ multiple: true, checkStrictly: true }"
-                    clearable
-                    @visible-change="findShopNameOption"
+    <van-row type="flex" justify="space-between">
+        <van-col span="4">
+            <van-cell>日期</van-cell>
+        </van-col>
 
-            >
-            </el-cascader>
-        </div>
-    </div>
-    <div style="display: flex;justify-content: center;">
-        <el-button type="primary" v-on:click="search">搜索</el-button>
-    </div>
 
-    <div>
+                <van-col span="10" class="van-hairline--surround">
+                    <van-cell  @click="showPopup">{{startTime}}</van-cell>
+                    <van-popup v-model="showDateMotail"  position="bottom">
+                        <van-datetime-picker
+                                v-model="currentDate"
+                                type="date"
+                                title="选择开始时间"
+                                :min-date="minDate"
+                                :max-date="maxDate"
+                                @confirm="confirmDate"
+                                @cancel="starCancel"
+                                :formatter="formatter"
+                        />
+                    </van-popup>
+                </van-col>
+                <van-col span="10" class="van-hairline--surround">
+                    <van-cell  @click="showPopup2">{{endTime}}</van-cell>
+                    <van-popup v-model="showDateMotail2"  position="bottom">
+                        <van-datetime-picker
+                                v-model="currentDate"
+                                type="date"
+                                title="选择年月日"
+                                :min-date="minDate"
+                                :max-date="maxDate"
+                                @confirm="confirmDate112"
+                                :formatter="formatter"
+                                @cancel="starCancel2"
+                        />
+                    </van-popup>
+                </van-col>
+
+
+
+    </van-row>
+    <van-row type="flex">
+        <van-col span="4">
+            <van-cell>店铺</van-cell>
+        </van-col>
+
+
+                <van-col span="10">
+                    <el-cascader
+                            collapse-tags
+                            v-model="shop"
+                            size="large"
+                            :options="options"
+                            :props="{ multiple: true, checkStrictly: true }"
+                            @remove-tag="clearValue"
+                            @change="selectValue"
+                            filterable
+                    >
+                    </el-cascader>
+                </van-col>
+
+                <van-col span="10">
+                    <el-button type="primary" v-on:click="search">搜索</el-button>
+                </van-col>
+
+
+
+
+    </van-row>
+
+
+
         <el-table
                 :data="tableData3"
-                :style="'width:'+wd+'px'">
+                :style="'width:'+wd+'px'"
+                align="center"
+
+                show-summary
+        >
             <el-table-column
+                     align="center"
                     prop="index"
                     label="#"
                     type="index"
                     width="50">
             </el-table-column>
             <el-table-column
+                     align="center"
                     fixed
                     prop="店铺名称"
                     label="终端"
                     width="120">
             </el-table-column>
             <el-table-column
+                     align="center"
                     prop="店员名称"
                     label="店员名称"
                     width="100">
             </el-table-column>
             <el-table-column
+                     align="center"
                     prop="销售金额"
                     label="销售金额"
-                    width="100">
+                     :formatter="numberFormart"
+                     width="100">
             </el-table-column>
             <el-table-column
+                     align="center"
                     prop="上月金额"
                     label="上月金额"
-                    width="100">
+                     :formatter="numberFormart"
+                     width="100">
             </el-table-column>
             <el-table-column
+                     align="center"
                     prop="本月目标"
                     label="本月目标"
-                    width="100">
+                     :formatter="numberFormart"
+                     width="100">
             </el-table-column>
             <el-table-column
+                     align="center"
                     prop="上月目标"
                     label="上月目标"
-                    width="100">
+                     :formatter="numberFormart"
+                     width="100">
             </el-table-column>
             <el-table-column
-                    prop="本月完成率"
+                     align="center"
                     label="本月完成率"
                     width="100">
+                <template slot-scope="scope">
+                    <span>
+                        {{scope.row.本月完成率||'0.00'}}%
+                    </span>
+                </template>
             </el-table-column>
             <el-table-column
+                     align="center"
                     label="上月完成率"
                     value="100%"
                     width="100">
@@ -144,20 +179,19 @@
                 </template>
             </el-table-column>
         </el-table>
-    </div>
-    <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            @prev-click="prePage"
-            @next-click="nextPage"
-            :current-page.sync="currentPage3"
-            :page-size="100"
-            layout="prev, pager, next, jumper"
-            :total="total"
-            :page-sizes="[10, 20, 30, 40, 50, 100]"
-            background
-    >
-    </el-pagination>
+<!--    <el-pagination-->
+<!--            @size-change="handleSizeChange"-->
+<!--            @current-change="handleCurrentChange"-->
+<!--            @prev-click="prePage"-->
+<!--            @next-click="nextPage"-->
+<!--            :current-page.sync="currentPage3"-->
+<!--            :page-size="100"-->
+<!--            layout="prev, pager, next, jumper"-->
+<!--            :total="total"-->
+<!--            :page-sizes="[10, 20, 30, 40, 50, 100]"-->
+<!--            background-->
+<!--    >-->
+<!--    </el-pagination>-->
 
 
 </div>
@@ -166,6 +200,8 @@
 </body>
 
 <script>
+    var local = window.location.host;
+
     new Vue({
         el: '#app',
         data: function() {
@@ -177,12 +213,11 @@
                 show: false,
                 loading: false,
                 options:[],
-                value: '观音桥①店',
                 wd:800,
                 tableData3: [],
                 bq_date: ['2020-01-01','2020-05-01'],
                 currentPage3: 1,
-                minDate: new Date(2020, 0, 1),
+                minDate: new Date(2018, 0, 1),
                 maxDate: new Date(2025, 10, 1),
                 currentDate: new Date(),
                 showDateMotail:false,
@@ -195,7 +230,8 @@
                 jlParam:'',
                 salesManParam:'',
                 shopNames:'',
-                shop:''
+                shop:'',
+                waterMarkOpt: {}
 
 
             }
@@ -203,18 +239,20 @@
         created: function () {
             // this.allShop('');
             this.getOptions('');
+            // this.watermark();
 
         },
         mounted: function(){
             const t = this;
             t.getNowDate();
-            t.search();
+            // t.search();
+
 
         },
         methods:{
             allShop(q){
                 const _vm = this;
-                let url = "http://holer.cc:50369/api/findAllShopName";
+                let url = "http://"+local+"/api/findAllShopName";
                 if (q!=''){
                     url=url+"?shopName="+q;
                 }
@@ -223,6 +261,9 @@
                         console.log(response)
                         _vm.options=response.data
                         console.log(_vm.tableData3);
+                        _vm.$nextTick(()=>{
+                            _vm.watermark();
+                        })
                     })
                     .catch(function (error) {
                         console.log(error);
@@ -234,10 +275,12 @@
                 let date = {
                     year: nowDate.getFullYear(),
                     month: (nowDate.getMonth() + 1)>10?(nowDate.getMonth()+1):"0"+(nowDate.getMonth()+1),
-                    date: nowDate.getDate()>10?nowDate.getDate():"0"+nowDate.getDate(),
+                    date: nowDate.getDate()>=10?nowDate.getDate():"0"+nowDate.getDate(),
                 }
                 const  dt = date.year + '-'+ date.month + '-'+ date.date;
                 t.bq_date = [dt,dt];
+                t.startTime=dt;
+                t.endTime=dt;
 
             },
             search:function () {
@@ -257,13 +300,16 @@
                 if(_vm.shopNames!=''){
                     param=param+'&shopName='+_vm.shopNames;
                 }
-                axios.get('http://holer.cc:50369/api/findSaleRank?'+param)
+                axios.get('http://'+local+'/api/findSaleRank?'+param)
                     .then(function (response) {
                         console.log(response)
-                        _vm.tableData3=response.data.list
-                        _vm.total = response.data.total
+                        _vm.tableData3=response.data
+                        // _vm.total = response.data.total
                         _vm.loading = false;
                         console.log(_vm.tableData3);
+                        _vm.$nextTick(()=>{
+                            _vm.watermark();
+                        })
                     })
                     .catch(function (error) {
                         console.log(error);
@@ -307,7 +353,9 @@
                 const strMonth = month<10?('0'+month):month;
                 const date = year+'-'+strMonth+'-'+strDay;
                 that.startTime = date;
+                that.endTime = date;
                 that.bq_date[0] = date;
+                that.bq_date[1] = date;
                 that.showDateMotail=false;
             },
             confirmDate112(t){
@@ -344,7 +392,7 @@
             },
             getOptions(q){
                 const _vm = this;
-                let url = "http://holer.cc:50369/api/findZdOpention";
+                let url = "http://"+local+"/api/findZdOpention";
                 if (q!=''){
                     url=url+"?shopName="+q;
                 }
@@ -353,6 +401,7 @@
                         console.log(response)
                         _vm.options=response.data
                         console.log(_vm.tableData3);
+
                     })
                     .catch(function (error) {
                         console.log(error);
@@ -401,7 +450,6 @@
                     })
                     if (shopArr.length>0){
                         t.shopParam = shopArr.join(",");
-                        return
                     }
                     if (areaArr.length>0){
                         t.areaParam=areaArr.join(",");
@@ -422,6 +470,9 @@
                 console.log("findShopName")
                 const _vm = this;
                 let  param = '?a=a';
+                if (_vm.shopParam != ''){
+                    param = param + '&shopName=' + _vm.shopParam;
+                }
                 if (_vm.areaParam!=''){
                     param=param+'&area='+_vm.areaParam;
                 }
@@ -434,15 +485,234 @@
                 if (_vm.salesManParam!=''){
                     param=param+'&salesMan='+_vm.salesManParam;
                 }
-                axios.get('http://holer.cc:50369/api/findShop?'+param)
+                axios.get('http://'+local+'/api/findShop?'+param)
                     .then(function (response) {
                         console.log(response)
                         _vm.shopNames=response.data
                         console.log(_vm.shopNames);
+                        _vm.$nextTick(()=>{
+                            _vm.watermark();
+                        })
                     })
                     .catch(function (error) {
                         console.log(error);
                     });
+            },
+            clearValue(v){
+                const  t = this;
+                if (t.shop) {
+                    const type = v[0]
+                    const va = v[1];
+                    if (type === 'zhongduan') {
+                        const arr = t.shopParam.split(",");
+                        console.log(arr)
+                        t.shopParam = arr;
+                        arr.forEach(function (item,index) {
+                            if (item===va){
+                                arr.splice(index,1)
+                            }
+                        });
+                        t.shopParam = arr.join(",");
+                        // t.shopParam = t.shopParam.replace(va+',','');
+                    }
+                    if (type === 'quyu') {
+                        const arr = t.areaParam.split(',');
+                        arr.forEach(function (item,index) {
+                            if (item===va){
+                                arr.splice(index,1)
+                            }
+                        });
+                        t.areaParam = arr.join(',');
+                    }
+                    if (type === 'zongjian') {
+                        const arr =  t.zjParam.split(',');
+                        arr.forEach(function (item,index) {
+                            if (item===va){
+                                arr.splice(index,1)
+                            }
+                        });
+                        t.zjParam = arr.join(',');
+                    }
+                    if (type === 'jingli') {
+                        const arr =  t.jlParam.split(',');
+                        arr.forEach(function (item,index) {
+                            if (item===va){
+                                arr.splice(index,1)
+                            }
+                        });
+                        t.zjParam = arr.join(',');
+                    }
+                    if (type === 'dudao') {
+                        const arr =  t.salesManParam.split(',');
+                        arr.forEach(function (item,index) {
+                            if (item===va){
+                                arr.splice(index,1)
+                            }
+                        });
+                        t.salesManParam = arr.join(',');
+                    }
+                    t.findShopName();
+                };
+            },
+            onClickLeft(){
+                window.history.back(-1);
+            },
+            getUserName(){
+                const t = this;
+                const myName=JSON.parse(sessionStorage.getItem("userInfo"));
+                t.userName=myName;
+                console.log(myName)
+
+            },
+            selectValue(v){
+                const  t = this;
+                console.log(v)
+                console.log(t.shop)
+                const  shopArr=[];
+                const areaArr=[];
+                const zjArr=[];
+                const jlArr=[];
+                const salesManArr=[];
+                   v.forEach(function(value,index){
+                        console.log(value)
+                        console.log(index)
+                        const type = value[0];
+                        const va = value[1];
+                        if (type==='zhongduan'){
+                            if (va){
+                                shopArr.push(value[1])
+                            }
+                        }
+                        if (type==='quyu'){
+                            if (va){
+                                areaArr.push(va);
+                            }
+                        }
+                        if (type==='zongjian'){
+                            if (va){
+                                zjArr.push(va);
+                            }
+                        }
+                        if (type==='jingli'){
+                            if (va){
+                                jlArr.push(va)
+                            }
+                        }
+                        if (type==='dudao'){
+                            if (va){
+                                salesManArr.push(va)
+                            }
+                        }
+                    })
+                    if (shopArr.length>0){
+                        t.shopParam = shopArr.join(",");
+                    }
+                    if (areaArr.length>0){
+                        t.areaParam=areaArr.join(",");
+                    }
+                    if (zjArr.length>0){
+                        t.zjParam=zjArr.join(",");
+                    }
+                    if (jlArr.length>0){
+                        t.jlParam=jlArr.join(",");
+                    }
+                    if (salesManArr.length>0){
+                        t.salesManParam=salesManArr.join(",");
+                    }
+                    t.findShopName();
+            },
+            watermark() {
+                //默认设置
+                var defaultSettings = {
+                    watermark_txt: sessionStorage.getItem("userName"),
+                    watermark_x: 20,//水印起始位置x轴坐标
+                    watermark_y: 150,//水印起始位置Y轴坐标
+                    watermark_rows: 1000,//水印行数
+                    watermark_cols: 2000,//水印列数
+                    watermark_x_space: 20,//水印x轴间隔
+                    watermark_y_space: 20,//水印y轴间隔
+                    watermark_color: '#aaa',//水印字体颜色
+                    watermark_alpha: 0.4,//水印透明度
+                    watermark_fontsize: '15px',//水印字体大小
+                    watermark_font: '微软雅黑',//水印字体
+                    watermark_width: 100,//水印宽度
+                    watermark_height: 100,//水印长度
+                    watermark_angle: 15//水印倾斜度数
+                };
+                //采用配置项替换默认值，作用类似jquery.extend
+                if (arguments.length === 1 && typeof arguments[0] === "object") {
+                    var src = arguments[0] || {};
+                    for (key in src) {
+                        if (src[key] && defaultSettings[key] && src[key] === defaultSettings[key])
+                            continue;
+                        else if (src[key])
+                            defaultSettings[key] = src[key];
+                    }
+                }
+
+                var oTemp = document.createDocumentFragment();
+
+                //获取页面最大宽度
+                var page_width = Math.max(document.body.scrollWidth, document.body.clientWidth);
+                var cutWidth = page_width * 0.0150;
+                var page_width = page_width - cutWidth;
+                //获取页面最大高度
+                var page_height = Math.max(document.body.scrollHeight, document.body.clientHeight);
+                // var page_height = document.body.scrollHeight+document.body.scrollTop;
+                //如果将水印列数设置为0，或水印列数设置过大，超过页面最大宽度，则重新计算水印列数和水印x轴间隔
+                if (defaultSettings.watermark_cols == 0 || (parseInt(defaultSettings.watermark_x + defaultSettings.watermark_width * defaultSettings.watermark_cols + defaultSettings.watermark_x_space * (defaultSettings.watermark_cols - 1)) > page_width)) {
+                    defaultSettings.watermark_cols = parseInt((page_width - defaultSettings.watermark_x + defaultSettings.watermark_x_space) / (defaultSettings.watermark_width + defaultSettings.watermark_x_space));
+                    defaultSettings.watermark_x_space = parseInt((page_width - defaultSettings.watermark_x - defaultSettings.watermark_width * defaultSettings.watermark_cols) / (defaultSettings.watermark_cols - 1));
+                }
+                //如果将水印行数设置为0，或水印行数设置过大，超过页面最大长度，则重新计算水印行数和水印y轴间隔
+                if (defaultSettings.watermark_rows == 0 || (parseInt(defaultSettings.watermark_y + defaultSettings.watermark_height * defaultSettings.watermark_rows + defaultSettings.watermark_y_space * (defaultSettings.watermark_rows - 1)) > page_height)) {
+                    defaultSettings.watermark_rows = parseInt((defaultSettings.watermark_y_space + page_height - defaultSettings.watermark_y) / (defaultSettings.watermark_height + defaultSettings.watermark_y_space));
+                    defaultSettings.watermark_y_space = parseInt(((page_height - defaultSettings.watermark_y) - defaultSettings.watermark_height * defaultSettings.watermark_rows) / (defaultSettings.watermark_rows - 1));
+                }
+                var x;
+                var y;
+                for (var i = 0; i < defaultSettings.watermark_rows; i++) {
+                    y = defaultSettings.watermark_y + (defaultSettings.watermark_y_space + defaultSettings.watermark_height) * i;
+                    for (var j = 0; j < defaultSettings.watermark_cols; j++) {
+                        x = defaultSettings.watermark_x + (defaultSettings.watermark_width + defaultSettings.watermark_x_space) * j;
+
+                        var mask_div = document.createElement('div');
+                        mask_div.id = 'mask_div' + i + j;
+                        mask_div.className = 'mask_div';
+                        mask_div.appendChild(document.createTextNode(defaultSettings.watermark_txt));
+                        //设置水印div倾斜显示
+                        mask_div.style.webkitTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                        mask_div.style.MozTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                        mask_div.style.msTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                        mask_div.style.OTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                        mask_div.style.transform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                        mask_div.style.visibility = "";
+                        mask_div.style.position = "absolute";
+                        mask_div.style.left = x + 'px';
+                        mask_div.style.top = y + 'px';
+                        mask_div.style.overflow = "hidden";
+                        mask_div.style.zIndex = "9999999999999";
+                        mask_div.style.pointerEvents = 'none';//pointer-events:none  让水印不遮挡页面的点击事件
+                        //mask_div.style.border="solid #eee 1px";
+                        mask_div.style.opacity = defaultSettings.watermark_alpha;
+                        mask_div.style.fontSize = defaultSettings.watermark_fontsize;
+                        mask_div.style.fontFamily = defaultSettings.watermark_font;
+                        mask_div.style.color = defaultSettings.watermark_color;
+                        mask_div.style.textAlign = "center";
+                        mask_div.style.width = defaultSettings.watermark_width + 'px';
+                        mask_div.style.height = defaultSettings.watermark_height + 'px';
+                        mask_div.style.display = "block";
+                        oTemp.appendChild(mask_div);
+                    };
+                };
+                document.body.appendChild(oTemp);
+            },
+            numberFormart(row, column){
+                const val = row[column.property];
+                if (val===undefined){
+                    return 0;
+                }
+                return val.toLocaleString();
             },
         }
 

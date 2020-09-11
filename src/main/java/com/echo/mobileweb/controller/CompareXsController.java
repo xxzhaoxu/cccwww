@@ -36,7 +36,6 @@ public class CompareXsController {
             @RequestParam("pageSize")Integer pageSize,
             @RequestParam("pageIndex")Integer pageIndex
     ){
-        System.out.println(cwbzXiaoshouMapper.selectCwbzXiaoshouById("2019-01-01_1001"));
         Integer start = (pageIndex-1)*pageSize;
         String bqStart = "";
         String bqEnd =  "";
@@ -79,10 +78,7 @@ public class CompareXsController {
                             new BigDecimal(String.valueOf(map.get("mbje")==null?"0":map.get("mbje")))
                     );
                 }
-
                     reList.add(hbModel);
-
-
 
         }
         return reList;

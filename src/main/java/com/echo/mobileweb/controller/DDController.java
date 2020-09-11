@@ -56,12 +56,12 @@ public class DDController {
         kehu.set状态("启用");
         List<Kehu> kehuList = kehuMapper.select(kehu);
 
-        String starttime = LocalDate.now().plusDays(-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
-        String endtime = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
+        String starttime = LocalDate.now().plusDays(-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd   22:00:00"));
+        String endtime = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd   22:00:00"));
         String inputtime = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         if ((LocalDateTime.now().getHour() == 22 && LocalDateTime.now().getMinute() > 30) || LocalDateTime.now().getHour() > 22) {
-            starttime = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
-            endtime = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
+            starttime = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd   22:00:00"));
+            endtime = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd   22:00:00"));
             //inputtime = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         }
         String name = yuangong.get名称();
@@ -103,12 +103,12 @@ public class DDController {
             return "login";
         }
 
-        String starttime = LocalDate.now().plusDays(-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
-        String endtime = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
+        String starttime = LocalDate.now().plusDays(-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd   22:00:00"));
+        String endtime = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd   22:00:00"));
         String inputtime = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         if ((LocalDateTime.now().getHour() == 22 && LocalDateTime.now().getMinute() > 30) || LocalDateTime.now().getHour() > 22) {
-            starttime = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
-            endtime = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 22:30:00"));
+            starttime = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd   22:00:00"));
+            endtime = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd   22:00:00"));
             inputtime = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         }
 

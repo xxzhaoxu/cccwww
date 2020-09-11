@@ -35,61 +35,203 @@
 		<result column="单价" jdbcType="VARCHAR" property="singlePrice" />
 	</resultMap>
 
-  <select id="selectCwbzXsmxHy" resultMap="CwbzXsmxHyResultMap">
+	<select id="selectCwbzXsmxHySum" resultType="java.util.Map">
+		SELECT SUM (数量) as 数量 , SUM (金额) as 金额 FROM cwbz_xsmx_hy
+		where
+		日期
+		between
+		'${start}'
+		and
+		DATEADD(day,1,'${end}')
+		<if test="shopName!=null">
+			and 店铺名称 in (${shopName})
+		</if>
+		<if test="salesMan!=null">
+			and 督导名称 in (${salesMan})
+		</if>
+		<if test="qy!=null">
+			and 地区名称 in (${qy})
+		</if>
+		<if test="zj!=null">
+			and 总监名称 in (${zj})
+		</if>
+		<if test="jl!=null">
+			and 经理名称 in (${jl})
+		</if>
+		<if test="dl!=null">
+			and 大类名称 in (${dl})
+		</if>
+	</select>
+	<select id="selectCwbzXsmxHyTotal" resultMap="CwbzXsmxHyResultMap">
+		SELECT
+		t1.[店铺],
+		t1.[类别],
+		t1.[销售数量],
+		t1.销售金额,
+		t2.销售金额 as 会员消费金额
+		FROM
+		(
+		SELECT
+		'总计' AS 店铺,
+		DALEI.大类名称 as 类别,
+		t6.销售数量,
+		t6.销售金额
+		FROM
+		(
+		SELECT
+		cwbz_xsmx_hy.大类名称 AS 类别,
+		ISNULL( SUM ( cwbz_xsmx_hy.数量 ), 0 ) AS 销售数量,
+		ISNULL( SUM ( cwbz_xsmx_hy.金额 ), 0 ) AS 销售金额
+		FROM
+		cwbz_xsmx_hy
+		where
+		日期
+		between
+		'${start}'
+		and
+		DATEADD(day,1,'${end}')
+		<if test="shopName!=null">
+			and 店铺名称 in (${shopName})
+		</if>
+		<if test="salesMan!=null">
+			and 督导名称 in (${salesMan})
+		</if>
+		<if test="qy!=null">
+			and 地区名称 in (${qy})
+		</if>
+		<if test="zj!=null">
+			and 总监名称 in (${zj})
+		</if>
+		<if test="jl!=null">
+			and 经理名称 in (${jl})
+		</if>
+		<if test="dl!=null">
+			and 大类名称 in (${dl})
+		</if>
+		group by
+		cwbz_xsmx_hy.大类名称 ) as t6 RIGHT JOIN DALEI ON DALEI.[大类名称] = t6.类别) as t1
+		LEFT JOIN (
+		SELECT
+		大类名称 AS 类别 ,
+		SUM (数量) AS 销售数量,
+		SUM (金额) AS 销售金额
+		FROM
+		cwbz_xsmx_hy
+		WHERE
+		LEN( [VIP卡号] ) > 0
+		 and
+		日期
+		between
+		'${start}'
+		and
+		DATEADD(day,1,'${end}')
+		<if test="shopName!=null">
+			and 店铺名称 in (${shopName})
+		</if>
+		<if test="salesMan!=null">
+			and 督导名称 in (${salesMan})
+		</if>
+		<if test="qy!=null">
+			and 地区名称 in (${qy})
+		</if>
+		<if test="zj!=null">
+			and 总监名称 in (${zj})
+		</if>
+		<if test="jl!=null">
+			and 经理名称 in (${jl})
+		</if>
+		<if test="dl!=null">
+			and 大类名称 in (${dl})
+		</if>
+		GROUP BY 大类名称
 
+		) as t2 ON t1.类别 = t2.类别
+	</select>
+  <select id="selectCwbzXsmxHy" resultMap="CwbzXsmxHyResultMap">
  select
-	t1.店铺名称 as 店铺,
-	t1.大类名称 as 类别,
-	t1.数量 as 销售数量,
-	t1.金额 as 销售金额,
-	t3.会员总金额 as 会员消费金额,
-	NULLIF(Round((CONVERT(float,t1.数量)/CONVERT(float,NULLIF(t2.总数量,0)))*100,2),'0') as 数量占比,
-	NULLIF(Round((CONVERT(float,t1.金额)/CONVERT(float,NULLIF(t2.总金额,0)))*100,2),'0') as 金额占比,
-	NULLIF(Round((CONVERT(float,t3.会员总金额)/CONVERT(float,NULLIF(t2.总金额,0)))*100,2),'0') as 会员占比,
-	nullif (Round(t2.总金额/t2.总数量,2),0) as 单价
+	  t1.地区名称 as 店铺,
+	  t1.大类名称 as 类别,
+	  floor(t1.数量) as 销售数量,
+	  floor(t1.金额) as 销售金额,
+	  floor(t3.会员总金额) as 会员消费金额,
+	  NULLIF(Round((CONVERT(float,t1.数量)/CONVERT(float,NULLIF(t2.总数量,0)))*100,2),'0') as 数量占比,
+	  NULLIF(Round((CONVERT(float,t1.金额)/CONVERT(float,NULLIF(t2.总金额,0)))*100,2),'0') as 金额占比,
+	  NULLIF(Round((CONVERT(float,t3.会员总金额)/CONVERT(float,NULLIF(t1.金额,0)))*100,2),'0') as 会员占比,
+	  NULLIF (Round(t1.金额/t1.数量,2),0) as 单价
   from (
 	(
 		select
-			店铺名称,
 			大类名称,
-			SUM(数量) as 数量,
-			SUM(金额) as 金额
+			地区名称,
+	  		floor(SUM(数量)) as 数量,
+	  		floor(SUM(金额)) as 金额
 		from
 			cwbz_xsmx_hy
 		where
 			日期
 		between
-			cast('${start}' as datetime)
+			 '${start}'
 		and
-			cast('${end}' as datetime)
+	  		DATEADD(day,1,'${end}')
         <if test="shopName!=null">
-          and 店铺名称=#{shopName}
+          	and 店铺名称 in (${shopName})
         </if>
+        <if test="salesMan!=null">
+			and 督导名称 in (${salesMan})
+		</if>
+	  	<if test="qy!=null">
+			and 地区名称 in (${qy})
+		</if>
+	  	<if test="zj!=null">
+			and 总监名称 in (${zj})
+		</if>
+	  	<if test="jl!=null">
+			and 经理名称 in (${jl})
+		</if>
+	  <if test="dl!=null">
+			and 大类名称 in (${dl})
+		</if>
 		group by
-			店铺名称 ,大类名称) as t1
+		大类名称,地区名称) as t1
   left join
 	(
 		select
-			店铺名称,
+	  		地区名称,
 			SUM(数量) as 总数量,
 			SUM(金额) as 总金额
 		from
 			cwbz_xsmx_hy
-		where
-			日期
-		between
-			cast('${start}' as datetime)
-		and
-			cast('${end}' as datetime)
-        <if test="shopName!=null">
-          and 店铺名称=#{shopName}
-        </if>
+			where
+	  日期
+	  between
+	  '${start}'
+	  and
+	  DATEADD(day,1,'${end}')
+	  <if test="shopName!=null">
+		  and 店铺名称 in (${shopName})
+	  </if>
+	  <if test="salesMan!=null">
+		  and 督导名称 in (${salesMan})
+	  </if>
+	  <if test="qy!=null">
+		  and 地区名称 in (${qy})
+	  </if>
+	  <if test="zj!=null">
+		  and 总监名称 in (${zj})
+	  </if>
+	  <if test="jl!=null">
+		  and 经理名称 in (${jl})
+	  </if>
+	  <if test="dl!=null">
+		  and 大类名称 in (${dl})
+	  </if>
 		group by
-			店铺名称
-	)   as t2 on  t1.店铺名称 = t2.店铺名称
+			 地区名称
+	)   as t2 on t1.地区名称 = t2.地区名称
 	left join(
 	select
-			店铺名称,
+	  		大类名称,
+	  		地区名称,
 			SUM(数量) as 会员总数量,
 			SUM(金额) as 会员总金额
 		from
@@ -97,19 +239,34 @@
 		where
 			日期
 		between
-			cast('${start}' as datetime)
+			 '${start}'
 		and
-			cast('${end}' as datetime)
+	  		DATEADD(day,1,'${end}')
 		and
 		    len(VIP卡号)>0
-        <if test="shopName!=null">
-          and 店铺名称=#{shopName}
-        </if>
+	  <if test="shopName!=null">
+		  and 店铺名称 in (${shopName})
+	  </if>
+	  <if test="salesMan!=null">
+		  and 督导名称 in (${salesMan})
+	  </if>
+	  <if test="qy!=null">
+		  and 地区名称 in (${qy})
+	  </if>
+	  <if test="zj!=null">
+		  and 总监名称 in (${zj})
+	  </if>
+	  <if test="jl!=null">
+		  and 经理名称 in (${jl})
+	  </if>
+	  <if test="dl!=null">
+		  and 大类名称 in (${dl})
+	  </if>
 		group by
-			店铺名称
-	) as t3 on t1.店铺名称 =t3.店铺名称
+	  	大类名称,地区名称
+	) as t3 on t1.大类名称 = t3.大类名称 and t1.地区名称=t3.地区名称
 	)
-
+	order by t1.地区名称 , t1.大类名称
     </select>
 
   <select id="selectAll" resultMap="BaseResultMap">
@@ -117,7 +274,7 @@
   </select>
 
 	<select id="selectAllArea" resultType="java.lang.String">
-		select 地区名称 from cwbz_xsmx_hy
+		select 地区名称 as 区域名称 from kehu
 		where 1 = 1
 		<if test="area!=null">
 			and 地区名称 like '%${area}%'
@@ -125,21 +282,21 @@
 		group by 地区名称
 	</select>
 	<select id="selectAllZj" resultType="java.lang.String">
-		select 总监名称 from cwbz_xsmx_hy where 1 = 1
+		select 总监名称 from kehu where 1 = 1
 		<if test="name!=null">
 			and 总监名称 = #{name}
 		</if>
 		group by 总监名称
 	</select>
 	<select id="selectAllJl" resultType="java.lang.String">
-		select 经理名称 from cwbz_xsmx_hy where 1 = 1
+		select 经理名称 from kehu where 1 = 1
 		<if test="name!=null">
 			and 经理名称 = #{name}
 		</if>
 		group by 经理名称
 	</select>
 	<select id="selectAllSalesMan" resultType="java.lang.String">
-		select 督导名称 from cwbz_xsmx_hy where 1 = 1
+		select 督导名称 from kehu where 1 = 1
 		<if test="name!=null">
 			and 督导名称 = #{name}
 		</if>
@@ -152,78 +309,151 @@
 		</if>
 		group by 商店名称
 	</select>
+	<select id="selectAllBigType" resultType="java.lang.String">
+		 SELECT RTRIM([大类名称]) FROM DALEI where 1 = 1
+		 <if test="name!=null">
+			and 大类名称 = #{name}
+		 </if>
+	</select>
+	<select id="selectAllSmallType" resultType="java.lang.String">
+		select 小类名称 from xiaolei where 1 = 1
+		<if	test="name!=null">
+			and 小类名称 = #{name}
+		</if>
+	</select>
 	<select id="selectShop" resultType="java.lang.String">
 		select 商店名称 from kehu where 1 = 1
 		<if test="area!=null">
-			and 地区名称 = #{area}
+			and 地区名称 in (${area})
 		</if>
 		<if test="zj!=null">
-			and 总监名称 = #{zj}
+			and 总监名称 in (${zj})
 		</if>
 		<if test="jl!=null">
-			and 经理名称 = #{jl}
+			and 经理名称 in (${jl})
 		</if>
 		<if test="salesMan!=null">
-			and 督导名称 = #{salesMan}
+			and 督导名称 in (${salesMan})
+		</if>
+		<if test="shopName!=null">
+			and 商店名称 in (${shopName})
 		</if>
 		group by 商店名称
 	</select>
-	<select id="selectareaTypeData" resultType="java.util.Map">
-	select
-	   t1.地区名称 as 地区名称,
-	   t1.大类名称 as 大类名称,
-	   t1.金额 as 金额,
-	   t1.数量 as 数量,
-	NULLIF(Round((CONVERT(float,t1.数量)/CONVERT(float,NULLIF(t2.总数量,0)))*100,2),'0') as 数量占比,
-	NULLIF(Round((CONVERT(float,t1.金额)/CONVERT(float,NULLIF(t2.总金额,0)))*100,2),'0') as 金额占比,
-		t2.总数量 as 总数量,
-		t2.总金额 as 总金额
+	<select id="selectDaleiSum" resultType="java.util.Map">
+		SELECT '汇总' as 地区名称,SUM (数量) as 数量 , SUM (金额) as 金额 FROM cwbz_xsmx_hy
+		where
+		日期
+		between
+		'${start}'
+		and
+		DATEADD(DAY,1,'${end}' )
+		<if test="area!=null">
+			and 地区名称 in (${area})
+		</if>
+	</select>
+	<select id="selectDaleiTotal" resultType="java.util.Map">
 
-	from (
-  (select 地区名称, 大类名称, SUM(数量) as 数量,SUM(金额) as 金额 from cwbz_xsmx_hy
-   where
-   		日期
+
+		SELECT
+		'总计' AS 地区名称,
+		DALEI.大类名称,
+		ISNULL( t1.数量, 0 ) AS 数量,
+		ISNULL( t1.金额, 0 ) AS 金额
+		FROM
+		(
+		SELECT
+		cwbz_xsmx_hy.大类名称 AS 大类名称,
+		ISNULL( SUM ( cwbz_xsmx_hy.数量 ), 0 ) AS 数量,
+		ISNULL( SUM ( cwbz_xsmx_hy.金额 ), 0 ) AS 金额
+		FROM
+		cwbz_xsmx_hy
+		where
+		日期
 		between
-			cast('${start}' as datetime)
+		'${start}'
 		and
-			cast('${end}' as datetime)
+		DATEADD(DAY,1,'${end}' )
 		<if test="area!=null">
-			and 地区名称=#{area}
+			and 地区名称 in (${area})
 		</if>
-   group by 地区名称,大类名称 ) as t1
-  left join
-  (
-  	select 地区名称, SUM(金额) 总金额,SUM(数量) as 总数量 from cwbz_xsmx_hy where
-   日期
+		GROUP BY
+		cwbz_xsmx_hy.大类名称
+		) AS t1
+		RIGHT JOIN DALEI ON t1.大类名称 = DALEI.大类名称
+	</select>
+	<select id="selectareaTypeData" resultType="java.util.Map">
+		SELECT
+		t1.地区名称,
+		t1.大类名称,
+		t1.数量,
+		t1.金额,
+		t1.数量/t2.[数量] as 数量占比 ,
+		t1.金额/t2.[金额] as 金额占比 ,
+		t2.[数量] as 总数量,
+		t2.[金额] as 总金额
+		FROM
+		(SELECT
+		地区名称,大类名称,
+		SUM (数量) AS 数量,
+		SUM (金额) AS 金额
+		FROM
+		cwbz_xsmx_hy
+		where
+		日期
 		between
-			cast('${start}' as datetime)
+		'${start}'
 		and
-			cast('${end}' as datetime)
+		DATEADD(DAY,1,'${end}' )
 		<if test="area!=null">
-			and 地区名称=#{area}
+			and 地区名称 in (${area})
 		</if>
-   group by 地区名称) as t2 on t1.地区名称 = t2.地区名称
-  ) order by 地区名称
+		group by  大类名称 ,地区名称) as t1
+		LEFT JOIN
+		(select 地区名称,nullif(sum(金额),0) as 金额,nullif( sum(数量),0)as 数量 from cwbz_xsmx_hy
+		where
+		日期
+		between
+		'${start}'
+		and
+		DATEADD(DAY,1,'${end}' )
+		<if test="area!=null">
+			and 地区名称 in (${area})
+		</if> GROUP BY 地区名称) as t2
+		on t1.地区名称 = t2.地区名称
+		ORDER BY t1.[地区名称],t1.[大类名称]
+	</select>
+	<select id="selectareaTypeDataSum" resultType="java.util.Map">
+		select nullif(sum(金额),0) as 金额,nullif( sum(数量),0)as 数量 from cwbz_xsmx_hy
+		where
+		日期
+		between
+		 '${start}'
+		and
+		 DATEADD(DAY,1,'${end}')
+		<if test="area!=null">
+			and 地区名称 in (${area})
+		</if>
 	</select>
 
 	<select id="selectVIPrangeData" resultType="java.util.Map">
 		select
 			顾客名字,
 			顾客手机,
-			SUM(累计消费) as 金额,
+			SUM(金额) as 金额,
 			SUM(数量) as 数量
 		from
 			cwbz_xsmx_hy
 		where
 			日期
 		between
-		cast('${start}' as datetime)
+		 '${start}'
 		and
-		cast('${end}' as datetime)
+		 DATEADD(DAY,1,'${end}')
 		and
 		LEN(VIP卡号) >0
 		<if test="shopName!=null">
-			and 店铺名称=#{shopName}
+			and 店铺名称 in (${shopName})
 		</if>
 		   group by 顾客名字,顾客手机 order by 金额 desc;
 	</select>
@@ -240,11 +470,11 @@
 		where
 		  日期
 		between
-		cast('${start}' as datetime)
+		'${start}'
 		and
-		cast('${end}' as datetime)
-		<if test="shopName!=null">
-			and 店铺代码=#{shopName}
+		DATEADD(DAY,1,'${end}')
+		<if test="shopName!=null and shopName!=''">
+			and 店铺名称 in (${shopName})
 		</if>
 		group by 商品代码
 		)  as t1
@@ -256,28 +486,30 @@
 			cwbz_spkcb
 		group by 商品代码  ) as t2
 		on t1.商品代码 = t2.库存商品代码 )
+		order by 数量 desc
 	</select>
 	
 	<select id="selectSaleDayAve" resultType="java.util.Map">
-		select SUM(金额) from cwbz_xsmx_hy where 日期 between
-		cast('${start}' as datetime)
+		select SUM(金额) from cwbz_xsmx_hy where 日期
+		between
+		 '${start}'
 		and
-		cast('${end}' as datetime)  店铺代码 in ( select   店铺代码 from cwbz_mrkc)
+		 DATEADD(DAY,1,'${end}')
+		 店铺代码 in ( select   店铺代码 from cwbz_mrkc)
 	</select>
 
 	<select id="selectShopTotalNum" resultType="java.lang.Long">
-		select count(0) from cwbz_mrkc
+		select COUNT(0) from cwbz_mrkc
 			where
-			 日期 between
-			cast('${start}' as datetime)
-			and
-			cast('${end}' as datetime)
+			 类型='店铺' and 日期 = #{end}
+
 	</select>
 	<select id="selectShopSaleMoney" resultType="java.lang.Float">
-		  select nullif (SUM(金额),0) from cwbz_xsmx_hy where 日期 between
-			cast('${start}' as datetime)
-			and
-			cast('${end}' as datetime)
+		  select nullif (SUM(金额),0) from cwbz_xsmx_hy where 日期
+		  between
+		 '${start}'
+		and
+		 DATEADD(DAY,1,'${end}')
 	</select>
 	<select id="selectMonthReport" resultType="java.util.Map">
 		 select
@@ -285,12 +517,36 @@
 			 cwbz_xsmx_hy.小类名称,
 			 sum(cwbz_xsmx_hy.金额) as 金额
 		 from cwbz_xsmx_hy
-		group by cwbz_xsmx_hy.小类名称,cwbz_xsmx_hy.金额,cwbz_xsmx_hy.数量
+		 where 1 = 1
+		 <if test="stype!=null">
+			 and 小类名称 in (${stype})
+		 </if>
+		 <if test="areaParam!=null">
+			 and 地区名称 in (${areaParam})
+		 </if>
+		  <if test="zjParam!=null">
+			 and 总监名称 in (${zjParam})
+		 </if>
+		 <if test="jlParam!=null">
+				and 经理名称 in (${jlParam})
+		 </if>
+		  <if test="salesManParam!=null">
+				and 督导名称 in (${salesManParam})
+		 </if>
+		<if test="shopName!=null">
+				and 店铺名称 in (${shopName})
+		 </if>
+		<if test="dalei!=null">
+				and 大类名称 in (${dalei})
+		 </if>
+		group by cwbz_xsmx_hy.小类名称
 
 	</select>
-
+	<select id="findAllSmallType" resultType="java.lang.String">
+		select 小类名称 from xiaolei
+	</select>
   <select id="selectNum" resultType="java.lang.Long">
-	  select sum(数量) from cwbz_spkcb where 小类名称=#{sType};
+	  select nullif(sum(数量),0) from cwbz_spkcb where 小类名称=#{sType};
   </select>
 
 	<select id="selectBigYearReportData" resultType="java.util.Map">
@@ -305,8 +561,30 @@
 			year(日期)=${year}
 		group by month(日期)
 	</select>
+
+	<select id="shopShopNum" resultType="java.lang.Long">
+			SELECT
+	COUNT(0)
+	FROM
+		cwbz_mrkc
+	WHERE
+		类型= '店铺'
+		AND YEAR (日期) = ${year}
+		AND MONTH (日期) = ${month}
+		AND DAY(日期) = (SELECT top 1 DAY(日期) FROM cwbz_mrkc WHERE 类型= '店铺' AND YEAR (日期) = ${year} AND MONTH (日期) =${month} ORDER BY DAY(日期) desc)
+	</select>
 	<select id="selectStockNum" resultType="java.lang.Long">
-		select nullif(sum(数量) ,0)from cwbz_mrkc where year(日期)=${year } and month(日期)=${month};
+		select
+			sum(数量)
+		 from
+		  	cwbz_mrkc
+		where
+			year(日期)=${year}
+		and
+			month(日期)=${month}
+		AND
+			DAY(日期) =
+				(SELECT top 1 DAY(日期) FROM cwbz_mrkc WHERE   YEAR (日期) = ${year} AND MONTH (日期) =${month} ORDER BY DAY(日期) desc)
 	</select>
 	<select id="selectStockNumByShopCode" resultType="java.lang.Long">
 	 select sum(数量) from cwbz_spkcb where 商品代码 = #{shopCode}
@@ -323,38 +601,83 @@
         where
         	日期
         between
-			cast('${start}' as datetime)
+			 '${start}'
 		and
-			cast('${end}' as datetime)
+		    DATEADD(DAY,1,'${end}')
+
+		<if test="stype!=null">
+			and 小类名称 in (${stype})
+		</if>
+		<if test="areaParam!=null">
+			and 地区名称 in (${areaParam})
+		</if>
+		<if test="zjParam!=null">
+			and 总监名称 in (${zjParam})
+		</if>
+		<if test="jlParam!=null">
+			and 经理名称 in (${jlParam})
+		</if>
+		<if test="salesManParam!=null">
+			and 督导名称 in (${salesManParam})
+		</if>
+		<if test="shopName!=null">
+			and 店铺名称 in (${shopName})
+		</if>
+		<if test="dalei!=null">
+			and 大类名称 in (${dalei})
+		</if>
 		group by cwbz_xsmx_hy.小类名称,cwbz_xsmx_hy.厂家,cwbz_xsmx_hy.商品代码,cwbz_xsmx_hy.吊牌价
 		order by cwbz_xsmx_hy.小类名称
 	</select>
 
 <select id="inData" resultType="java.util.Map">
-select
-		t1.地区名称 as 区域名称,
-		t1.督导名称 as 业务员名称,
-		t1.店铺名称 as 仓库名称,
-		t1.小类名称 as 小类名称,
-		t1.吊牌价 as 单价,
-		t1.数量 as 销售数量,
-		cwbz_spkcb.数量  as 库存数量
-		from ((
-select
-    cwbz_xsmx_hy.地区名称,cwbz_xsmx_hy.督导名称,cwbz_xsmx_hy.店铺名称,cwbz_xsmx_hy.小类名称,
-       cwbz_xsmx_hy.吊牌价,sum(cwbz_xsmx_hy.数量) as 数量,cwbz_xsmx_hy.小票号,cwbz_xsmx_hy.店铺代码,cwbz_xsmx_hy.商品代码
-from
-     cwbz_xsmx_hy
-     where
-     	日期
-        between
-			cast('${start}' as datetime)
-		and
-			cast('${end}' as datetime)
-group by
-         cwbz_xsmx_hy.地区名称,cwbz_xsmx_hy.督导名称,cwbz_xsmx_hy.店铺名称,cwbz_xsmx_hy.小类名称,cwbz_xsmx_hy.吊牌价,cwbz_xsmx_hy.数量,cwbz_xsmx_hy.小票号,cwbz_xsmx_hy.店铺代码,cwbz_xsmx_hy.商品代码
-    )   t1 left join   cwbz_spkcb   on t1.店铺代码 = cwbz_spkcb.店铺代码 and    t1.商品代码 = cwbz_spkcb.商品代码)
-order by t1.小票号 asc
+	select
+	t1.地区名称 as 区域名称,
+	t1.督导名称 as 业务员名称,
+	t1.店铺名称 as 仓库名称,
+	t1.小类名称 as 小类名称,
+	t1.数量 as 销售数量,
+	t2.数量  as 库存数量
+	from ((
+	select
+	cwbz_xsmx_hy.地区名称,
+	cwbz_xsmx_hy.督导名称,
+	cwbz_xsmx_hy.店铺名称,
+	cwbz_xsmx_hy.小类名称,
+	sum(cwbz_xsmx_hy.数量) as 数量,
+	cwbz_xsmx_hy.店铺代码
+	from
+	cwbz_xsmx_hy
+	where
+	日期
+	between
+	'${start}'
+	and
+	DATEADD(DAY,1,'${end}')
+	<if test="areaParam!=null">
+		and 地区名称 in (${areaParam})
+	</if>
+	<if test="zjParam!=null">
+		and 总监名称 in (${zjParam})
+	</if>
+	<if test="jlParam!=null">
+		and 经理名称 in (${jlParam})
+	</if>
+	<if test="salesManParam!=null">
+		and 督导名称 in (${salesManParam})
+	</if>
+	<if test="shopName!=null">
+		and 店铺名称 in (${shopName})
+	</if>
+	group by
+	cwbz_xsmx_hy.地区名称,
+	cwbz_xsmx_hy.督导名称,
+	cwbz_xsmx_hy.店铺名称,
+	cwbz_xsmx_hy.小类名称,
+	cwbz_xsmx_hy.店铺代码
+	)   t1 left join
+	(SELECT 店铺代码,小类名称,SUM(数量) as 数量 FROM  cwbz_spkcb   GROUP BY 店铺代码,小类名称) as t2
+	on t1.店铺代码 = t2.店铺代码 and t1.[小类名称] = t2.[小类名称])
 </select>
 
 	<select id="inDataCount" resultType="java.lang.Long">
@@ -363,28 +686,42 @@ order by t1.小票号 asc
 		from
        cwbz_xsmx_hy
      where
-     	日期
-        between
-			cast('${start}' as datetime)
+     	between
+		 '${start}'
 		and
-			cast('${end}' as datetime)
+		 DATEADD(DAY,1,'${end}')
 	</select>
 
 	<select id="selectAreaHz" resultType="java.util.Map">
-		select 地区名称,
-				sum(金额) as 金额,
-				sum(数量) as 数量 from cwbz_xsmx_hy
-		 where 1 =1
-		 and
-			日期
+		select
+			SUM(t1.数量) as 销售数量,
+			SUM(cwbz_spkcb.数量) as 库存数量
+		from ((
+		select
+		sum(cwbz_xsmx_hy.数量) as 数量,
+		cwbz_xsmx_hy.店铺代码,
+		cwbz_xsmx_hy.商品代码,
+		cwbz_xsmx_hy.店铺名称
+		from
+		cwbz_xsmx_hy
+		WHERE
+		日期
 		between
-		cast('${start}' as datetime)
+		'${start}'
 		and
-		cast('${end}' as datetime)
-		 <if test="area!=null">
-			 and 地区名称 = #{area}
-		 </if>
-		 group by 地区名称
+		DATEADD(DAY,1,'${end}')
+		<if test="area!=null">
+			and 店铺名称 in (${area})
+		</if>
+		group by
+		cwbz_xsmx_hy.数量,
+		cwbz_xsmx_hy.店铺代码,
+		cwbz_xsmx_hy.店铺名称,
+		cwbz_xsmx_hy.商品代码
+		)   t1 left join   cwbz_spkcb   on t1.店铺代码 = cwbz_spkcb.店铺代码 and t1.商品代码 = cwbz_spkcb.商品代码)
+
+
+
 	</select>
 
 	<select id="selectSalesmanHz" resultType="java.util.Map">
@@ -396,9 +733,9 @@ order by t1.小票号 asc
 		and
 		日期
 		between
-		cast('${start}' as datetime)
+		'${start}'
 		and
-		cast('${end}' as datetime)
+		DATEADD(DAY,1,'${end}')
 		<if test="area!=null">
 			and 地区名称 = #{area}
 		</if>
@@ -414,12 +751,62 @@ order by t1.小票号 asc
 		and
 		日期
 		between
-		cast('${start}' as datetime)
+		'${start}'
 		and
-		cast('${end}' as datetime)
+		DATEADD(DAY,1,'${end}')
 		<if test="area!=null">
 			and 地区名称 = #{area}
 		</if>
 		group by 店铺名称
+	</select>
+
+	<select id="selectAchievementCompareData" resultType="java.util.Map">
+		SELECT
+		b1.商店代码,
+		b1.商店名称,
+		b1.金额,
+		b3.金额 AS 对比金额,
+		b1.金额 - b3.金额 AS 百分比,
+		b3.商店名称 AS 对比店铺
+		FROM
+		(
+		SELECT
+		商店代码,
+		商店名称,
+		SUM (金额) AS 金额
+		FROM
+		dbo.qtlsdmx AS a1
+		WHERE
+		日期
+		between
+		'${start}'
+		and
+		DATEADD(DAY,1,'${end}')
+		<if test="area!=null">
+			and	商店名称 in (${area})
+		</if>
+		GROUP BY
+		商店代码,
+		商店名称
+		) AS b1
+		LEFT JOIN dbo.cwbz_db_khdm AS b2 ON b1.商店代码 = b2.khdm
+		LEFT JOIN (
+		SELECT
+		商店代码,
+		商店名称,
+		SUM (金额) AS 金额
+		FROM
+		dbo.db_qtlsdmx AS a1
+		WHERE
+		日期
+		between
+		'${start}'
+		and
+		DATEADD(DAY,1,'${end}')
+		GROUP BY
+		商店代码,
+		商店名称
+		) AS b3 ON b2.db_khdm = b3.商店代码
+		 ORDER BY b1.金额 DESC
 	</select>
 </mapper>

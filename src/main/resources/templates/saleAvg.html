@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 
     <!-- 引入样式文件 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.9/lib/index.css"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.9/lib/index.css"/>
+    <link rel="stylesheet" href="/css/reset.css"/>
     <!-- 先引入 Vue -->
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
 
@@ -19,47 +20,77 @@
     <script src="https://cdn.jsdelivr.net/npm/vant@2.9/lib/vant.min.js"></script>
 </head>
 <body>
- <div id="app"  v-loading="loading">
-     <div class="block">
-         <span class="demonstration">统计日期</span>
-         <el-date-picker
-                 v-model="end"
-                 type="date"
-                 format="yyyy-MM-dd"
-                 value-format="yyyy-MM-dd"
-                 placeholder="选择日期">
-         </el-date-picker>
-     </div>
-     <div style="display: flex;justify-content: center;">
-         <el-button type="primary" v-on:click="search">搜索</el-button>
-     </div>
+ <div id="app"  v-cloak    v-loading="loading">
+     <van-row>
+         <van-nav-bar
+                 title="月日均销售"
+                 left-arrow
+                 @click-left="onClickLeft"
+                 z-index="999"
+                 fixed
+                 placeholder
+         />
+     </van-row>
+     <van-row>
+         <van-col span="6">
+             <van-cell>日期</van-cell>
+         </van-col>
+         <van-col span="12" class="van-hairline--surround">
+             <van-cell  @click="showPopup">{{end}}</van-cell>
+             <van-popup v-model="showDateMotail"  position="bottom">
+                 <van-datetime-picker
+                         v-model="currentDate"
+                         type="date"
+                         title="选择年月日"
+                         :min-date="minDate"
+                         :max-date="maxDate"
+                         @confirm="confirmDate"
+                         :formatter="formatter"
+                         @cancel="starCancel"
+                 />
+             </van-popup>
+         </van-col>
+        <van-col span="6">
+            <el-button type="primary" v-on:click="search">搜索</el-button>
+        </van-col>
+     </van-row>
+
      <div>
          <el-table
                  :data="tableData"
                  border
-                 :style="'width:'+wd+'px'">
-<!--             <el-table-column-->
+                  :style="'width:'+wd+'px'"
+
+                 align="center">
+<!--             <el-table-column
+                     align="center"-->
 <!--                     prop="index"-->
 <!--                     label="#"-->
 <!--                     type="index"-->
 <!--                     width="70">-->
 <!--             </el-table-column>-->
              <el-table-column
+                     align="center"
                      prop="店铺数量"
                      label="店铺数量"
                      width="110">
              </el-table-column>
              <el-table-column
+                     align="center"
                      prop="当前金额"
                      label="当前金额"
+                     :formatter="dataFormat1"
                      width="110">
              </el-table-column>
              <el-table-column
+                     align="center"
                      prop="日销售金额"
                      label="日销售金额"
+                     :formatter="dataFormat1"
                      width="110">
              </el-table-column>
              <el-table-column
+                     align="center"
                      prop="当月天数"
                      label="当月天数"
                      width="110">
@@ -70,6 +101,7 @@
  </div>
 
  <script>
+     var local = window.location.host;
      window.onload = function() {
          // 阻止双击放大
          var lastTouchEnd = 0;
@@ -92,7 +124,8 @@
          });
      }
 
-     new Vue({
+
+    new Vue({
          el: '#app',
          data: function() {
              return {
@@ -100,24 +133,28 @@
                  tableData:[],
                  wd:800,
                  loading:false,
+                 showDateMotail:false,/**时间选择器开始*/
+                 minDate: new Date(2018, 0, 1),
+                 maxDate: new Date(2025, 10, 1),
+                 currentDate: new Date(),
+                 waterMarkOpt: {}
              }
          },
          mounted: function(){
              const t = this;
-             t.search()
+             // t.search()
 
          },
          created: function () {
              const t = this;
-
              t.getNowDate();
-
+             // t.watermark();
          },
          methods: {
              search(){
                  const _vm = this;
                  if (_vm.end===""){
-                     alert("请选择统计时间")
+                     alert("请选择统计时间");
                      return
                  }
                  _vm.loading = true;
@@ -125,11 +162,14 @@
                  if (_vm.defaultShop){
                      param+='&shopCode='+_vm.defaultShopCode
                  }
-                 axios.get('http://holer.cc:50369/api/findDaySaleAvgData?'+param)
+                 axios.get('http://'+local+'/api/findDaySaleAvgData?'+param)
                      .then(function (response) {
-                         _vm.tableData=response.data
+                         _vm.tableData=response.data;
                          _vm.loading = false;
                          console.log(_vm.tableData);
+                         _vm.$nextTick(()=>{
+                             _vm.watermark();
+                         })
                      })
                      .catch(function (error) {
                          console.log(error);
@@ -141,11 +181,203 @@
                  let date = {
                      year: nowDate.getFullYear(),
                      month: (nowDate.getMonth() + 1)>10?(nowDate.getMonth()+1):"0"+(nowDate.getMonth()+1),
-                     date: nowDate.getDate()>10?nowDate.getDate():"0"+nowDate.getDate(),
-                 }
+                     date: nowDate.getDate()>=10?nowDate.getDate():"0"+nowDate.getDate(),
+                 };
                  const  end = date.year + '-'+ date.month + '-'+ date.date;
                  t.end = end;
+             },
+             onClickLeft(){
+                 window.history.back(-1);
+             },
+             selectValue(v){
+                 const  t = this;
+                 console.log(v)
+                 console.log(t.shop)
+                 const  shopArr=[];
+                 const areaArr=[];
+                 const zjArr=[];
+                 const jlArr=[];
+                 const salesManArr=[];
+                 v.forEach(function(value,index){
+                     console.log(value)
+                     console.log(index)
+                     const type = value[0];
+                     const va = value[1];
+                     if (type==='zhongduan'){
+                         if (va){
+                             shopArr.push(value[1])
+                         }
+                     }
+                     if (type==='quyu'){
+                         if (va){
+                             areaArr.push(va);
+                         }
+                     }
+                     if (type==='zongjian'){
+                         if (va){
+                             zjArr.push(va);
+                         }
+                     }
+                     if (type==='jingli'){
+                         if (va){
+                             jlArr.push(va)
+                         }
+                     }
+                     if (type==='dudao'){
+                         if (va){
+                             salesManArr.push(va)
+                         }
+                     }
+                 })
+                 if (shopArr.length>0){
+                     t.shopParam = shopArr.join(",");
+                 }
+                 if (areaArr.length>0){
+                     t.areaParam=areaArr.join(",");
+                 }
+                 if (zjArr.length>0){
+                     t.zjParam=zjArr.join(",");
+                 }
+                 if (jlArr.length>0){
+                     t.jlParam=jlArr.join(",");
+                 }
+                 if (salesManArr.length>0){
+                     t.salesManParam=salesManArr.join(",");
+                 }
+                 t.findShopName();
+             },
+             /**时间选择器开始*/
+             showPopup() {
+                 this.showDateMotail = true;
+             },
+
+             confirmDate(t){
+                 const that = this;
+                 const year = t.getFullYear();
+                 const month = t.getMonth()+1;
+                 const day = t.getDate();
+                 const strDay = day<10?("0"+day):day;
+                 const strMonth = month<10?('0'+month):month;
+                 const date = year+'-'+strMonth+'-'+strDay;
+                 that.end = date;
+                 that.showDateMotail = false;
+             },
+
+             starCancel(){
+                 const that =this
+                 that.showDateMotail=false;
+
+             },
+
+             formatter(type,val){
+                 if(type==='year'){
+                     return `${val}年`;
+                 }
+                  if (type === 'month') {
+                     return `${val}月`;
+                 }
+                 else if (type === 'day') {
+                     return `${val}日`;
+                 }
+                 return val;
+             },  /**时间选择器结束*/
+             dataFormat1(row, column){
+                 // console.log(row)
+                 // console.log(column)
+                 // console.log(row[column.property])
+                 const val = row[column.property];
+                 if (val===undefined){
+                     return 0;
+                 }
+                 return Math.round(val).toLocaleString();
+             },
+             watermark() {
+                 //默认设置
+                 var defaultSettings = {
+                     watermark_txt: sessionStorage.getItem("userName"),
+                     watermark_x: 20,//水印起始位置x轴坐标
+                     watermark_y: 150,//水印起始位置Y轴坐标
+                     watermark_rows: 1000,//水印行数
+                     watermark_cols: 2000,//水印列数
+                     watermark_x_space: 20,//水印x轴间隔
+                     watermark_y_space: 20,//水印y轴间隔
+                     watermark_color: '#aaa',//水印字体颜色
+                     watermark_alpha: 0.4,//水印透明度
+                     watermark_fontsize: '15px',//水印字体大小
+                     watermark_font: '微软雅黑',//水印字体
+                     watermark_width: 100,//水印宽度
+                     watermark_height: 100,//水印长度
+                     watermark_angle: 15//水印倾斜度数
+                 };
+                 //采用配置项替换默认值，作用类似jquery.extend
+                 if (arguments.length === 1 && typeof arguments[0] === "object") {
+                     var src = arguments[0] || {};
+                     for (key in src) {
+                         if (src[key] && defaultSettings[key] && src[key] === defaultSettings[key])
+                             continue;
+                         else if (src[key])
+                             defaultSettings[key] = src[key];
+                     }
+                 }
+
+                 var oTemp = document.createDocumentFragment();
+
+                 //获取页面最大宽度
+                 var page_width = Math.max(document.body.scrollWidth, document.body.clientWidth);
+                 var cutWidth = page_width * 0.0150;
+                 var page_width = page_width - cutWidth;
+                 //获取页面最大高度
+                 var page_height = Math.max(document.body.scrollHeight, document.body.clientHeight);
+                 // var page_height = document.body.scrollHeight+document.body.scrollTop;
+                 //如果将水印列数设置为0，或水印列数设置过大，超过页面最大宽度，则重新计算水印列数和水印x轴间隔
+                 if (defaultSettings.watermark_cols == 0 || (parseInt(defaultSettings.watermark_x + defaultSettings.watermark_width * defaultSettings.watermark_cols + defaultSettings.watermark_x_space * (defaultSettings.watermark_cols - 1)) > page_width)) {
+                     defaultSettings.watermark_cols = parseInt((page_width - defaultSettings.watermark_x + defaultSettings.watermark_x_space) / (defaultSettings.watermark_width + defaultSettings.watermark_x_space));
+                     defaultSettings.watermark_x_space = parseInt((page_width - defaultSettings.watermark_x - defaultSettings.watermark_width * defaultSettings.watermark_cols) / (defaultSettings.watermark_cols - 1));
+                 }
+                 //如果将水印行数设置为0，或水印行数设置过大，超过页面最大长度，则重新计算水印行数和水印y轴间隔
+                 if (defaultSettings.watermark_rows == 0 || (parseInt(defaultSettings.watermark_y + defaultSettings.watermark_height * defaultSettings.watermark_rows + defaultSettings.watermark_y_space * (defaultSettings.watermark_rows - 1)) > page_height)) {
+                     defaultSettings.watermark_rows = parseInt((defaultSettings.watermark_y_space + page_height - defaultSettings.watermark_y) / (defaultSettings.watermark_height + defaultSettings.watermark_y_space));
+                     defaultSettings.watermark_y_space = parseInt(((page_height - defaultSettings.watermark_y) - defaultSettings.watermark_height * defaultSettings.watermark_rows) / (defaultSettings.watermark_rows - 1));
+                 }
+                 var x;
+                 var y;
+                 for (var i = 0; i < defaultSettings.watermark_rows; i++) {
+                     y = defaultSettings.watermark_y + (defaultSettings.watermark_y_space + defaultSettings.watermark_height) * i;
+                     for (var j = 0; j < defaultSettings.watermark_cols; j++) {
+                         x = defaultSettings.watermark_x + (defaultSettings.watermark_width + defaultSettings.watermark_x_space) * j;
+
+                         var mask_div = document.createElement('div');
+                         mask_div.id = 'mask_div' + i + j;
+                         mask_div.className = 'mask_div';
+                         mask_div.appendChild(document.createTextNode(defaultSettings.watermark_txt));
+                         //设置水印div倾斜显示
+                         mask_div.style.webkitTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                         mask_div.style.MozTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                         mask_div.style.msTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                         mask_div.style.OTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                         mask_div.style.transform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                         mask_div.style.visibility = "";
+                         mask_div.style.position = "absolute";
+                         mask_div.style.left = x + 'px';
+                         mask_div.style.top = y + 'px';
+                         mask_div.style.overflow = "hidden";
+                         mask_div.style.zIndex = "9999999999999";
+                         mask_div.style.pointerEvents = 'none';//pointer-events:none  让水印不遮挡页面的点击事件
+                         //mask_div.style.border="solid #eee 1px";
+                         mask_div.style.opacity = defaultSettings.watermark_alpha;
+                         mask_div.style.fontSize = defaultSettings.watermark_fontsize;
+                         mask_div.style.fontFamily = defaultSettings.watermark_font;
+                         mask_div.style.color = defaultSettings.watermark_color;
+                         mask_div.style.textAlign = "center";
+                         mask_div.style.width = defaultSettings.watermark_width + 'px';
+                         mask_div.style.height = defaultSettings.watermark_height + 'px';
+                         mask_div.style.display = "block";
+                         oTemp.appendChild(mask_div);
+                     };
+                 };
+                 document.body.appendChild(oTemp);
              }
+
          }
      })
  </script>

@@ -14,11 +14,48 @@ public interface CwbzXsmxHyMapper extends Mapper<CwbzXsmxHy> {
     List<CwbzXsmxHyResult> selectCwbzXsmxHy(
             @Param("start")String start,
             @Param("end")String end,
-            @Param("shopName")String shopName
-//            @Param("order")String order,
-//            @Param("prop")String prop
+            @Param("shopName")String shopName,
+            @Param("qy")String qy,
+            @Param("zj")String zj,
+            @Param("jl")String jl,
+            @Param("salesMan")String salesMan,
+            @Param("dl")String dl
     );
 
+    List<CwbzXsmxHyResult> selectCwbzXsmxHyTotal(
+                @Param("start")String start,
+                @Param("end")String end,
+                @Param("shopName")String shopName,
+                @Param("qy")String qy,
+                @Param("zj")String zj,
+                @Param("jl")String jl,
+                @Param("salesMan")String salesMan,
+                @Param("dl")String dl
+        );
+
+    /**
+     * 大类销售占比-会员占比
+     * 查询总金额，数量
+     * @param start
+     * @param end
+     * @param shopName
+     * @param qy
+     * @param zj
+     * @param jl
+     * @param salesMan
+     * @param dl
+     * @return
+     */
+    Map<String,String> selectCwbzXsmxHySum(
+                @Param("start")String start,
+                @Param("end")String end,
+                @Param("shopName")String shopName,
+                @Param("qy")String qy,
+                @Param("zj")String zj,
+                @Param("jl")String jl,
+                @Param("salesMan")String salesMan,
+                @Param("dl")String dl
+        );
 
     List<CwbzXsmxHy> selectAll();
 
@@ -37,11 +74,38 @@ public interface CwbzXsmxHyMapper extends Mapper<CwbzXsmxHy> {
 
     List<String> selectAllShop(@Param("name")String name);
 
-    List<String> selectShop(@Param("area")String area,@Param("zj")String zj,@Param("jl")String jl,@Param("salesMan")String salesman);
+    /**
+     * 查询所有大类
+     * @param name
+     * @return
+     */
+    List<String> selectAllBigType(@Param("name")String name);
+
+    List<String> selectAllSmallType(@Param("name")String name);
+
+    List<String> selectShop(@Param("area")String area,@Param("zj")String zj,@Param("jl")String jl,@Param("salesMan")String salesman,@Param("shopName")String shopName);
 
     List<Map<String,String>> selectareaTypeData(  @Param("start")String start,
                                                   @Param("end")String end,
                                                   @Param("area")String area);
+
+    /**
+     * 大类分组求和
+     * @return
+     */
+    List<Map<String,String>> selectDaleiTotal(
+                                            @Param("start")String start,
+                                            @Param("end")String end,
+                                            @Param("area")String area);
+
+    Map<String,String> selectDaleiSum( @Param("start")String start,
+                                       @Param("end")String end,
+                                       @Param("area")String area);
+
+    Map<String,String> selectareaTypeDataSum(
+                                                    @Param("start")String start,
+                                                    @Param("end")String end,
+                                                    @Param("area")String area);
     List<Map<String,String>> selectVIPrangeData(  @Param("start")String start,
                                                   @Param("end")String end,
                                                   @Param("shopName")String shopName);
@@ -54,6 +118,7 @@ public interface CwbzXsmxHyMapper extends Mapper<CwbzXsmxHy> {
                                                 );
 
     Long selectShopTotalNum(@Param("start")String start, @Param("end")String end);
+
     Float selectShopSaleMoney(@Param("start")String start, @Param("end")String end);
 
     /**
@@ -62,8 +127,18 @@ public interface CwbzXsmxHyMapper extends Mapper<CwbzXsmxHy> {
      * @param end
      * @return
      */
-    List<Map<String,String>> selectMonthReport(@Param("start")String start, @Param("end")String end);
-
+    List<Map<String,String>> selectMonthReport(
+                            @Param("start")String start,
+                            @Param("end")String end,
+                            @Param("stype")String stype,
+                            @Param("areaParam")String areaParam,
+                            @Param("zjParam")String zjParam,
+                            @Param("jlParam")String jlParam,
+                            @Param("salesManParam")String salesManParam,
+                            @Param("shopName")String shopName,
+                            @Param("dalei")String dalei
+                        );
+    List<String> findAllSmallType();
     Long selectNum(@Param("sType")String stype);
 
     List<Map<String,String>> selectBigYearReportData(@Param("year")String year);
@@ -77,6 +152,7 @@ public interface CwbzXsmxHyMapper extends Mapper<CwbzXsmxHy> {
      */
     Long selectStockNum(@Param("year")String year,@Param("month")String month);
 
+    Long shopShopNum(@Param("year")String year,@Param("month")String month);
     Long selectStockNumByShopCode(@Param("shopCode")String shopCode);
 
     /**
@@ -85,7 +161,18 @@ public interface CwbzXsmxHyMapper extends Mapper<CwbzXsmxHy> {
      * @param end 结束时间
      * @return
      */
-    List<Map<String,String>> selectSmallTypeYearMonthData(@Param("start")String start, @Param("end")String end);
+    List<Map<String,String>> selectSmallTypeYearMonthData(
+            @Param("start")String start,
+            @Param("end")String end,
+            @Param("stype")String stype,
+            @Param("areaParam")String areaParam,
+            @Param("zjParam")String zjParam,
+            @Param("jlParam")String jlParam,
+            @Param("salesManParam")String salesManParam,
+            @Param("shopName")String shopName,
+            @Param("dalei")String dalei
+
+    );
 
     /**
      * <h1>进销存分析</h1>
@@ -93,7 +180,15 @@ public interface CwbzXsmxHyMapper extends Mapper<CwbzXsmxHy> {
      * @param end
      * @return
      */
-    List<Map<String,String>> inData(@Param("start")String start, @Param("end")String end,@Param("pageSize")Integer pageSize,@Param("pageStart")Integer pageStart);
+    List<Map<String,String>> inData(
+                                @Param("start")String start,
+                                @Param("end")String end,
+                                @Param("areaParam")String areaParam,
+                                @Param("zjParam")String zjParam,
+                                @Param("jlParam")String jlParam,
+                                @Param("salesManParam")String salesManParam,
+                                @Param("shopName")String shopName
+                        );
 
     Long inDataCount(@Param("start")String start, @Param("end")String end);
 
@@ -122,4 +217,13 @@ public interface CwbzXsmxHyMapper extends Mapper<CwbzXsmxHy> {
      * @return
      */
     List<Map<String,String>> selectShopNameHz(@Param("start")String start, @Param("end")String end, @Param("area")String area);
+
+    /**
+     * 业绩对比
+     * @param start
+     * @param end
+     * @param area
+     * @return
+     */
+    List<Map<String,String>> selectAchievementCompareData(@Param("start")String start, @Param("end")String end, @Param("area")String area);
 }
