@@ -101,8 +101,8 @@
                 :data="tableData"
                 border
                 show-summary
+                :summary-method="getSummaries"
                  :style="'width:'+wd+'px'"
-
                 align="center">
             <el-table-column
                      align="center"
@@ -225,7 +225,7 @@
     new Vue({
         el: '#app',
         data: function() {
-            return {
+            return {  clickCount: 0,
                 start: '',
                 end: '',
                 AreaList:[],
@@ -357,7 +357,9 @@
                     });
             },
             search(){
+
                 const _vm = this;
+                _vm.clickCount++;
                 if (_vm.start===''){
                     alert("请选择开始时间")
                     return
@@ -391,9 +393,11 @@
                         console.log(response)
                         _vm.tableData=response.data.list
                         _vm.total = response.data.total
-                        _vm.$nextTick(()=>{
-                            _vm.watermark();
-                        })
+                         if (_vm.clickCount===1){
+                                _vm.$nextTick(()=>{
+                                    _vm.watermark();
+                                })
+                            }
                         _vm.loading = false;
                         console.log(_vm.tableData);
                     })
@@ -838,8 +842,31 @@
                     };
                 };
                 document.body.appendChild(oTemp);
-            }
+            },
+            getSummaries(param) {
+                const {columns, data} = param;
+                const sums = [];
+                columns.forEach((column, index) => {
+                    if (index === 0) {
+                        sums[index] = '合计';
+                        return;
+                    }
+                    const values = data.map(item => Number(item[column.property]));
+                    if (!values.every(value => isNaN(value))) {
+                        sums[index] = values.reduce((prev, curr) => {
+                            const value = Number(curr);
+                            if (!isNaN(value)) {
+                                return prev + curr;
+                            } else {
+                                return prev;
+                            }
+                        }, 0).toLocaleString();
+                    }
+                    sums[index];
 
+                });
+                return sums;
+            }
         },
     })
 </script>

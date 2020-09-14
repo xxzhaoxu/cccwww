@@ -224,7 +224,7 @@
     new Vue({
         el: '#app',
         data: function() {
-            return {
+            return {  clickCount: 0,
                 start: '',
                 end: '',
                 shopList:[],
@@ -346,6 +346,7 @@
             },
             search(){
                 const _vm = this;
+                _vm.clickCount++;
                 if (_vm.start===''){
                     alert("请选择开始时间")
                     return
@@ -384,9 +385,11 @@
                     .then(function (response) {
                         _vm.tableData=response.data
                         // _vm.total = response.data.total
-                        _vm.$nextTick(()=>{
-                            _vm.watermark();
-                        })
+                         if (_vm.clickCount===1){
+                                _vm.$nextTick(()=>{
+                                    _vm.watermark();
+                                })
+                            }
                         _vm.loading = false;
                     })
                     .catch(function (error) {

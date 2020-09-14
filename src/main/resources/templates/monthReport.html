@@ -201,7 +201,7 @@
     new Vue({
         el: '#app',
         data: function() {
-            return {
+            return {  clickCount: 0,
                 start: '',
                 tableData:[],
                 wd:800,
@@ -242,6 +242,7 @@
         methods: {
             search(){
                 const _vm = this;
+                _vm.clickCount++;
                 if (_vm.end===""){
                     alert("请选择统计时间")
                     return
@@ -278,9 +279,11 @@
                         // _vm.total = response.data.total;
                         _vm.pageCount = response.data.pages;
                         _vm.loading = false;
-                        _vm.$nextTick(()=>{
-                            _vm.watermark();
-                        })
+                         if (_vm.clickCount===1){
+                                _vm.$nextTick(()=>{
+                                    _vm.watermark();
+                                })
+                            }
                     })
                     .catch(function (error) {
                         console.log(error);

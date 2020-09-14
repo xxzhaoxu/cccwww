@@ -153,7 +153,7 @@
     new Vue({
             el: '#app',
             data: function() {
-                return {
+                return {  clickCount: 0,
                     end: '2020',
                     tableData:[],
                     wd:800,
@@ -183,6 +183,7 @@
             methods: {
                 search(){
                     const _vm = this;
+                    _vm.clickCount++;
                     if (_vm.end===""){
                         alert("请选择统计时间")
                         return
@@ -195,9 +196,11 @@
                             _vm.tableData=response.data
                             _vm.loading = false;
                             _vm.total = response.data.total;
-                            _vm.$nextTick(()=>{
-                                _vm.watermark();
-                            })
+                             if (_vm.clickCount===1){
+                                _vm.$nextTick(()=>{
+                                    _vm.watermark();
+                                })
+                            }
                             console.log(_vm.tableData);
                         })
                         .catch(function (error) {

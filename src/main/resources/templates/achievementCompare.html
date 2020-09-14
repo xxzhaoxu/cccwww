@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 
     <!-- 引入样式文件 -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.9/lib/index.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.9/lib/index.css"/>
     <link rel="stylesheet" href="/css/reset.css"/>
     <!-- 先引入 Vue -->
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
@@ -94,6 +94,7 @@
                 :default-sort = "{prop: '差异', order: 'descending'}"
                 border
                 show-summary
+                :summary-method="getSummaries"
              >
             <el-table-column
                     fixed
@@ -125,6 +126,7 @@
                     sortable
                     width="75"
                     align="center"
+                    :formatter="numberFormart"
             >
             </el-table-column>
             <el-table-column
@@ -181,6 +183,7 @@
             el: '#app',
             data: function() {
                 return {
+                    clickCount: 0,
                     pageIndex: 1,
                     pageSize:1000,
                     total:0,
@@ -341,9 +344,11 @@
                         .then(function (response) {
                             // console.log(response)
                             _vm.shopNames=response.data
-                            _vm.$nextTick(()=>{
-                                _vm.watermark();
-                            })
+                             if (_vm.clickCount===1){
+                                _vm.$nextTick(()=>{
+                                    _vm.watermark();
+                                })
+                            }
                             // console.log(_vm.shopNames);
                         })
                         .catch(function (error) {
@@ -378,6 +383,7 @@
                 },
                 search:function () {
                     const _vm = this;
+                    _vm.clickCount++;
                     // console.log(_vm.bq_date)
                     if (_vm.bq_date[0]===''){
                         alert("请选择开始时间")
@@ -396,13 +402,17 @@
                     // console.log(param)
                     axios.get('http://'+local+'/api/achievementCompareData?'+param)
                         .then(function (response) {
-                            console.log(response)
-                            _vm.tableData3=response.data.list
-                            _vm.total = response.data.total
-                            _vm.$nextTick(()=>{
-                                _vm.watermark();
-                            })
+                            _vm.tableData3=response.data.list;
+                            _vm.total = response.data.total;
                             _vm.loading = false;
+
+                            if (_vm.clickCount===1){
+                                _vm.$nextTick(()=>{
+                                    _vm.watermark();
+                                })
+                            }
+
+
                             // console.log(_vm.tableData3);
                         })
                         .catch(function (error) {
@@ -491,8 +501,6 @@
                 ,
                 selectValue(v){
                     const  t = this;
-                    // console.log(v)
-                    // console.log(t.shop)
                     const  shopArr=[];
                     const areaArr=[];
                     const zjArr=[];
@@ -561,7 +569,7 @@
                     }
                     return val.toLocaleString();
                 },
-                 watermark() {
+                watermark() {
                 //默认设置
                 var defaultSettings = {
                     watermark_txt: sessionStorage.getItem("userName"),
@@ -645,8 +653,31 @@
                     };
                 };
                 document.body.appendChild(oTemp);
-            }
+            },
+                getSummaries(param) {
+                    const {columns, data} = param;
+                    const sums = [];
+                    columns.forEach((column, index) => {
+                        if (index === 0) {
+                            sums[index] = '合计';
+                            return;
+                        }
+                        const values = data.map(item => Number(item[column.property]));
+                        if (!values.every(value => isNaN(value))) {
+                            sums[index] = values.reduce((prev, curr) => {
+                                const value = Number(curr);
+                                if (!isNaN(value)) {
+                                    return prev + curr;
+                                } else {
+                                    return prev;
+                                }
+                            }, 0).toLocaleString();
+                        }
+                        sums[index];
 
+                    });
+                    return sums;
+                }
             },
 
         })

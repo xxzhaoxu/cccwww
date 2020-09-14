@@ -761,52 +761,38 @@
 	</select>
 
 	<select id="selectAchievementCompareData" resultType="java.util.Map">
-		SELECT
-		b1.商店代码,
-		b1.商店名称,
-		b1.金额,
-		b3.金额 AS 对比金额,
-		b1.金额 - b3.金额 AS 百分比,
-		b3.商店名称 AS 对比店铺
+	SELECT
+		A.商店名称 as 商店名称,
+		SUM ( A.金额 ) AS 金额,
+		ISNULL( C.对比金额, 0 ) AS 对比金额,
+		SUM ( A.金额 ) - ISNULL( C.对比金额, 0 ) AS 百分比,
+		D.商店名称  as 对比店铺
 		FROM
-		(
-		SELECT
-		商店代码,
-		商店名称,
-		SUM (金额) AS 金额
+		QTLSDMX A
+		FULL JOIN CWBZ_DB_KHDM B ON A.商店代码 = B.KHDM
+		FULL JOIN DB_KEHU D ON D.商店代码 = B.DB_KHDM
+		FULL JOIN (
+		SELECT SUM
+		( C.金额 ) AS 对比金额,商店名称,商店代码
 		FROM
-		dbo.qtlsdmx AS a1
+		DBO.DB_QTLSDMX C
 		WHERE
-		日期
-		between
-		'${start}'
-		and
-		DATEADD(DAY,1,'${end}')
+		SUBSTRING ( CONVERT ( CHAR, C.日期, 120 ), 1, 10 ) <![CDATA[ >= ]]> '${start}'
+		AND SUBSTRING ( CONVERT ( CHAR, C.日期, 120 ), 1, 10 ) <![CDATA[ <= ]]> '${end}'
+		GROUP BY
+		商店名称,商店代码
+		) C ON B.DB_KHDM= C.商店代码
+		WHERE
+		SUBSTRING ( CONVERT ( CHAR, A.日期, 120 ), 1, 10 ) <![CDATA[ >= ]]> '${start}'
+		AND SUBSTRING ( CONVERT ( CHAR, A.日期, 120 ), 1, 10 )  <![CDATA[ <= ]]> '${end}'
 		<if test="area!=null">
-			and	商店名称 in (${area})
+			AND A.商店名称 IN (${area})
 		</if>
+
 		GROUP BY
-		商店代码,
-		商店名称
-		) AS b1
-		LEFT JOIN dbo.cwbz_db_khdm AS b2 ON b1.商店代码 = b2.khdm
-		LEFT JOIN (
-		SELECT
-		商店代码,
-		商店名称,
-		SUM (金额) AS 金额
-		FROM
-		dbo.db_qtlsdmx AS a1
-		WHERE
-		日期
-		between
-		'${start}'
-		and
-		DATEADD(DAY,1,'${end}')
-		GROUP BY
-		商店代码,
-		商店名称
-		) AS b3 ON b2.db_khdm = b3.商店代码
-		 ORDER BY b1.金额 DESC
+		A.商店名称,
+		D.商店名称,对比金额
+		ORDER BY
+		金额 DESC
 	</select>
 </mapper>

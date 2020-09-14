@@ -101,7 +101,6 @@
                     :data="tableData"
                     border
                      :style="'width:'+wd+'px'"
-
                     align="center">
                 <el-table-column
                      align="center"
@@ -195,7 +194,7 @@
     new Vue({
             el: '#app',
             data: function() {
-                return {
+                return {  clickCount: 0,
                     start: '',
                     end:'',
                     tableData:[],
@@ -295,6 +294,7 @@
                 /**时间选择器结束*/
                 search(){
                     const _vm = this;
+                    _vm.clickCount++;
                     if (_vm.end===""){
                         alert("请选择统计时间")
                         return
@@ -328,12 +328,14 @@
                     axios.get('http://'+local+'/api/smallTypeMonthData?'+param)
                         .then(function (response) {
                             // console.log(response)
-                            _vm.tableData=response.data
+                            _vm.tableData=response.data.list
                             _vm.loading = false;
                             _vm.total = response.data.total;
-                            _vm.$nextTick(()=>{
-                                _vm.watermark();
-                            })
+                             if (_vm.clickCount===1){
+                                _vm.$nextTick(()=>{
+                                    _vm.watermark();
+                                })
+                            }
                             // console.log(_vm.tableData);
                         })
                         .catch(function (error) {
