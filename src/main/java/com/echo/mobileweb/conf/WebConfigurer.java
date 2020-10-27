@@ -24,7 +24,19 @@ public class WebConfigurer implements WebMvcConfigurer {
         registry
                 .addInterceptor(userInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/","/login","/userLogin","/logout","/xjcontent/**","/api/**");
+                .excludePathPatterns(
+                        "/","/login",
+                        "/userLogin",
+                        "/logout",
+                        "/xjcontent/**",
+                        "/api/**",
+                        "/register",
+                        "/forget",
+                        "/getsmscode",
+                        "/userRegister",
+                        "/fgetsmscode",
+                        "userforget"
+                        );
     }
     @Bean
     public WebMvcConfigurer corsConfigurer() {

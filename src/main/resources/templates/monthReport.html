@@ -294,7 +294,7 @@
                 const nowDate = new Date();
                 let date = {
                     year: nowDate.getFullYear(),
-                    month: (nowDate.getMonth() + 1)>10?(nowDate.getMonth()+1):"0"+(nowDate.getMonth()+1),
+                    month: (nowDate.getMonth() + 1)>=10?(nowDate.getMonth()+1):"0"+(nowDate.getMonth()+1),
                     day: nowDate.getDate()>=10?nowDate.getDate():"0"+nowDate.getDate(),
                 }
                 const  start = date.year + '-'+ date.month + '-'+ date.day;
