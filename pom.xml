@@ -50,7 +50,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.54</version>
+            <version>1.2.83</version>
         </dependency>
 
         <!--热部署插件，注意编译版本1.7的话 可能会导致404 如果需要请改至1.8 -->
